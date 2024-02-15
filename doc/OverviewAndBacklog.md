@@ -115,12 +115,10 @@ gantt
     
 ```
 ###### Legend:
-<ul>
-<p style = "color : red"> Critical</p>
-<p> Done </p>
-<p style = "color : #a03fc0"> Inactive</p>
-<p style = "color : grey"> Active</p>
-</ul>
+	Critical-Red
+	Done-White
+	Inactive-Black
+	Active-Blue
 
 ### High Level Program Flow
 (To be updated as needed)
