@@ -41,7 +41,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
 
-public class CreateEvent extends AppCompatActivity {
+public class CreateEventActivity extends AppCompatActivity {
     //Defining UI objects
     EditText titleText;
     TextView startDateText;
