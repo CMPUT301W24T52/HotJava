@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateEvent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="-81dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/title_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="15dp"
+                android:ems="10"
+                android:hint="@string/title"
+                android:inputType="text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/poster_image" />
+
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:src="?attr/homeAsUpIndicator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_image_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:clickable="true"
+                app:backgroundTint="#74AE92"
+                app:layout_constraintBottom_toBottomOf="@+id/poster_image"
+                app:layout_constraintEnd_toEndOf="@+id/poster_image"
+                app:srcCompat="@android:drawable/ic_menu_edit" />
+
+            <ImageView
+                android:id="@+id/poster_image"
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
+                android:background="@drawable/grey_border"
+                app:layout_constraintTop_toBottomOf="@+id/back_button"
+                tools:layout_editor_absoluteX="1dp" />
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/dates"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title_text" />
+
+            <TextView
+                android:id="@+id/start_text"
+                android:layout_width="75dp"
+                android:layout_height="0dp"
+                android:background="@drawable/rounded_rect_startend"
+                android:gravity="center"
+                android:text="@string/start"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/start_container"
+                app:layout_constraintStart_toStartOf="@+id/start_container"
+                app:layout_constraintTop_toTopOf="@+id/start_container" />
+
+            <TextView
+                android:id="@+id/start_date_text"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:background="@drawable/grey_border"
+                android:gravity="center"
+                android:hint="mm/dd/yyyy"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="@+id/start_container"
+                app:layout_constraintEnd_toStartOf="@+id/start_time_text"
+                app:layout_constraintStart_toEndOf="@+id/start_text"
+                app:layout_constraintTop_toTopOf="@+id/start_container" />
+
+            <TextView
+                android:id="@+id/start_time_text"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/grey_border"
+                android:gravity="center"
+                android:hint="hh:mm"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="@+id/start_container"
+                app:layout_constraintEnd_toStartOf="@+id/start_cal_button"
+                app:layout_constraintTop_toTopOf="@+id/start_container" />
+
+            <ImageButton
+                android:id="@+id/start_cal_button"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="#74AE92"
+                app:layout_constraintBottom_toBottomOf="@+id/start_container"
+                app:layout_constraintEnd_toEndOf="@+id/start_container"
+                app:layout_constraintTop_toTopOf="@+id/start_container"
+                app:srcCompat="@android:drawable/ic_menu_my_calendar" />
+
+            <View
+                android:id="@+id/start_container"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/rounded_rectangle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/date_text" />
+
+            <TextView
+                android:id="@+id/end_text"
+                android:layout_width="75dp"
+                android:layout_height="0dp"
+                android:background="@drawable/rounded_rect_startend"
+                android:gravity="center"
+                android:text="@string/end"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/end_container"
+                app:layout_constraintStart_toStartOf="@+id/end_container"
+                app:layout_constraintTop_toTopOf="@+id/end_container" />
+
+            <TextView
+                android:id="@+id/end_date_text"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:background="@drawable/grey_border"
+                android:gravity="center"
+                android:hint="mm/dd/yyyy"
+                app:layout_constraintBottom_toBottomOf="@+id/end_container"
+                app:layout_constraintEnd_toStartOf="@+id/end_time_text"
+                app:layout_constraintStart_toEndOf="@+id/end_text"
+                app:layout_constraintTop_toTopOf="@+id/end_container" />
+
+            <TextView
+                android:id="@+id/end_time_text"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/grey_border"
+                android:gravity="center"
+                android:hint="hh:mm"
+                app:layout_constraintBottom_toBottomOf="@+id/end_container"
+                app:layout_constraintEnd_toStartOf="@+id/end_cal_button"
+                app:layout_constraintTop_toTopOf="@+id/end_container" />
+
+            <ImageButton
+                android:id="@+id/end_cal_button"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="#74AE92"
+                app:layout_constraintBottom_toBottomOf="@+id/end_container"
+                app:layout_constraintEnd_toEndOf="@+id/end_container"
+                app:layout_constraintTop_toTopOf="@+id/end_container"
+                app:srcCompat="@android:drawable/ic_menu_my_calendar" />
+
+            <View
+                android:id="@+id/end_container"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/rounded_rectangle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/start_container" />
+
+            <TextView
+                android:id="@+id/location_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/location"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/end_container" />
+
+            <EditText
+                android:id="@+id/location_input_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:ems="10"
+                android:hint="@string/address"
+                android:inputType="textPostalAddress"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/location_container"
+                app:layout_constraintEnd_toStartOf="@+id/map_button"
+                app:layout_constraintStart_toStartOf="@+id/location_container"
+                app:layout_constraintTop_toTopOf="@+id/location_container" />
+
+            <ImageButton
+                android:id="@+id/map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="5dp"
+                android:backgroundTint="#74AD91"
+                app:layout_constraintBottom_toBottomOf="@+id/location_container"
+                app:layout_constraintEnd_toEndOf="@+id/location_container"
+                app:layout_constraintTop_toTopOf="@+id/location_container"
+                app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+            <View
+                android:id="@+id/location_container"
+                android:layout_width="382dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/rounded_rectangle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/location_text" />
+
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/description"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/location_container" />
+
+            <EditText
+                android:id="@+id/description_input_text"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/grey_border"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="@string/about_event"
+                android:inputType="textMultiLine"
+                android:textAlignment="textStart"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/description_text" />
+
+            <TextView
+                android:id="@+id/qrcode_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/check_in_qr_code"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/max_attendee_input_text" />
+
+            <Button
+                android:id="@+id/qrcode_create_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="@string/create_new"
+                android:textColor="#A3BDAF"
+                android:textSize="8sp"
+                app:layout_constraintEnd_toStartOf="@+id/qrcode_choose_button"
+                app:layout_constraintHorizontal_bias="0.579"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/qrcode_text"
+                app:strokeColor="#3E7757"
+                app:strokeWidth="1dp" />
+
+            <Button
+                android:id="@+id/qrcode_choose_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="60dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="@string/choose_from_existing"
+                android:textColor="#B2C8BC"
+                android:textSize="8sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/qrcode_text"
+                app:strokeColor="#69967D"
+                app:strokeWidth="1dp" />
+
+            <Button
+                android:id="@+id/create_event_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="15dp"
+                android:backgroundTint="#74AF93"
+                android:text="@string/create_event"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/qrcode_choose_button"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/max_attendee_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:text="Max Attendees"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/description_input_text" />
+
+            <Switch
+                android:id="@+id/max_attendee_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="3dp"
+                android:checked="false"
+                app:layout_constraintStart_toEndOf="@+id/max_attendee_text"
+                app:layout_constraintTop_toBottomOf="@+id/description_input_text" />
+
+            <EditText
+                android:id="@+id/max_attendee_input_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:ems="10"
+                android:hint="Max Attendees"
+                android:inputType="numberSigned"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="@+id/max_attendee_container"
+                app:layout_constraintStart_toStartOf="@+id/max_attendee_container"
+                app:layout_constraintTop_toTopOf="@+id/max_attendee_container" />
+
+            <View
+                android:id="@+id/max_attendee_container"
+                android:layout_width="382dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_rectangle"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/max_attendee_text" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

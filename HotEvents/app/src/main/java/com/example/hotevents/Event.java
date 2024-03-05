@@ -1,21 +1,28 @@
 package com.example.hotevents;
 
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
 import com.google.type.DateTime;
+
+import java.util.Date;
 
 /**
  * Represents an Event object. Contains attributes and methods regarding Event data
  */
 public class Event {
 
-    private DateTime dateTime;
+    private Date startDateTime;
+    private Date endDateTime;
     private Integer maxAttendees;
     private String organiserId;
-    private ImageView poster;
-    private String qrCode;
+    private Bitmap poster;
+    private QRCodes qrCode;
     private String description;
     private String title;
+    private String eventId;
 
     /**
      * Constructor for Event Object
@@ -27,14 +34,16 @@ public class Event {
      * @param description Description of Event
      * @param title Event Tile
      */
-    Event(DateTime dateTime, Integer maxAttendees, String organiserId, ImageView poster, String qrCode, String description, String title){
-        this.dateTime = dateTime;
+    Event(Date startDateTime, Date endDateTime, @Nullable Integer maxAttendees, @Nullable String organiserId, Bitmap poster, QRCodes qrCode, String description, String title, String eventId){
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
         this.maxAttendees = maxAttendees;
         this.organiserId=organiserId;
         this.poster = poster;
         this.qrCode = qrCode;
         this.description = description;
         this.title = title;
+        this.eventId = eventId;
     }
 
     /**
@@ -53,13 +62,17 @@ public class Event {
         return title;
     }
 
-    public void setDateTime(DateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setStartDateTime(Date startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+    public void setEndDateTime(Date endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     public void setMaxAttendees(Integer maxAttendees) {
         this.maxAttendees = maxAttendees;
     }
+    public void setEventId(String eventId){this.eventId = eventId;}
 
     public void setOrganiserId(String organiserId) {
         this.organiserId = organiserId;
@@ -69,16 +82,19 @@ public class Event {
         this.description = description;
     }
 
-    public void setQrCode(String qrCode) {
+    public void setQrCode(QRCodes qrCode) {
         this.qrCode = qrCode;
     }
 
-    public void setPoster(ImageView poster) {
+    public void setPoster(Bitmap poster) {
         this.poster = poster;
     }
 
-    public DateTime getDateTime(){
-        return this.dateTime;
+    public Date getStartDateTime(){
+        return this.startDateTime;
+    }
+    public Date getEndDateTime(){
+        return this.endDateTime;
     }
     public Integer getMaxAttendees(){
         return this.maxAttendees;
@@ -87,7 +103,7 @@ public class Event {
         return this.organiserId;
     }
 
-    public ImageView getPoster() {
+    public Bitmap getPoster() {
         return poster;
     }
 
@@ -95,7 +111,8 @@ public class Event {
         return description;
     }
 
-    public String getQrCode() {
+    public QRCodes getQrCode() {
         return qrCode;
     }
+    public String getEventId(){return eventId;}
 }

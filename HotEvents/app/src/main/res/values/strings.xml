@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">hotevents</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="title">Title</string>
+    <string name="dates">Dates</string>
+    <string name="date">Date</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="location">Location</string>
+    <string name="address">Address</string>
+    <string name="description">Description</string>
+    <string name="about_event">About Event...</string>
+    <string name="check_in_qr_code">Check-In QR Code</string>
+    <string name="create_new">Create New</string>
+    <string name="choose_from_existing">Choose From Existing</string>
+    <string name="create_event">Create Event</string>
 </resources>
