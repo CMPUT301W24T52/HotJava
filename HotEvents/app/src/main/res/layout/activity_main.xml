@@ -48,7 +48,6 @@
             android:clickable="true"
             android:src="@android:drawable/ic_menu_view" />
 
-<<<<<<< HEAD
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
@@ -58,8 +57,7 @@
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-=======
->>>>>>> 9566b2aa0ac4e779a4e7b4a5aea654351006e38a
+
     </LinearLayout>
     <!--From Menu bar to the bottom-->
     <ScrollView
