@@ -2,6 +2,7 @@ package com.example.hotevents;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference eventsRef;
     MyEventsAdapter myEventsAdapter;
     ArrayList<Event> eventDataArray;
-//    ListView eventList;
-    GridView eventList;
+    ListView eventList;
+//    RecyclerView eventList;
     Button menuButton;
 
 
