@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference eventsRef;
     MyEventsAdapter myEventsAdapter;
     ArrayList<Event> eventDataArray;
-    ListView eventList;
+//    ListView eventList;
+    GridView eventList;
     Button menuButton;
     CircleImageView profileButton;
     Button NavButton;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                         String title = doc.getString("Title");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title) );
 
+                        //Displays My event info list
                         eventDataArray.add(new Event(title));
                     }
                     myEventsAdapter.notifyDataSetChanged();
