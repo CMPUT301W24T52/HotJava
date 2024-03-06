@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     CircleImageView profileButton;
     Button NavButton;
     private String UserName = "";
+    ArrayList<String> SignedUpEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         eventList.setAdapter(myEventsAdapter);
 
-        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceId = "gyvygvghcvhg";//Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
         db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
@@ -106,14 +107,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
         private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
-
-        UserName = "Deep";
-
+        SignedUpEvent = new ArrayList<String>();
+        UserName = "Harsh";
         Map<String, Object> newUser = new HashMap<>();
-        newUser.put("uid", deviceId);
+        newUser.put("ProfilePicture", "");
+        newUser.put("UID", deviceId);
         newUser.put("Name", UserName);
+        newUser.put("Contact", "");
+        newUser.put("Email ID", "");
+        newUser.put("Location", "");
+        newUser.put("SignedUpEvent",SignedUpEvent);
 
-        // Add a new document with the device ID as the document ID
+
+            // Add a new document with the device ID as the document ID
         db.collection("Users").document(deviceId).set(newUser)
                 .addOnSuccessListener(aVoid -> {
 
