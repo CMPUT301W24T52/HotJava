@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -18,6 +20,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -38,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     ListView eventList;
     Button menuButton;
     CircleImageView profileButton;
-
-
+    Button NavButton;
+    private String UserName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,22 @@ public class MainActivity extends AppCompatActivity {
         myEventsAdapter = new MyEventsAdapter(this, eventDataArray);
 
         eventList.setAdapter(myEventsAdapter);
+
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+
+        db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // Document exists, user "logged in"
+                     UserName = task.getResult().getString(("Name"));
+                } else {
+                    // No such document, user not "logged in"
+                    handleNewUserInput(db,deviceId);
+                }
+            }
+        });
 
         // Adds listener to event reference. Populates Event Array with Event data from DB
         eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -80,6 +100,23 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         });
 
+        NavButton = findViewById(R.id.NavButton);
+        NavButton.setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, NavigationMenu.class));
+        });
+    }
+        private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
 
+        UserName = "Deep";
+
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("uid", deviceId);
+        newUser.put("Name", UserName);
+
+        // Add a new document with the device ID as the document ID
+        db.collection("Users").document(deviceId).set(newUser)
+                .addOnSuccessListener(aVoid -> {
+
+        });
     }
 }
