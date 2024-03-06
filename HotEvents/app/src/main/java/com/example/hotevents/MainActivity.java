@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
         private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
         SignedUpEvent = new ArrayList<String>();
-        UserName = "Harsh";
+        UserName = "Harsh Patel";
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("ProfilePicture", "");
         newUser.put("UID", deviceId);
