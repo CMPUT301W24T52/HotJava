@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
->>>>>>> 06b6dad868527ac21987808a04547a30bab450ac
         // Adds listener to event reference. Populates Event Array with Event data from DB
         eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
