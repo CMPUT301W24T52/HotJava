@@ -77,6 +77,11 @@ public class CreateEventActivity extends AppCompatActivity {
     Uri posterUri;
 
 
+    /**
+     * Started on creation of the activity. Assigns the views to variables and assigns the click events
+     * for all of the buttons
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +123,10 @@ public class CreateEventActivity extends AppCompatActivity {
 //            startActivity(i);
         });
 
+        maxAttendeeSwitch.setOnClickListener(v->{
+            maxAttendeeSwitchClick();
+        });
+
         qrCreateButton.setOnClickListener(v-> {
             qrCreateClick();
         });
@@ -128,10 +137,6 @@ public class CreateEventActivity extends AppCompatActivity {
 
         createButton.setOnClickListener(v->{
             createButtonClick();
-        });
-
-        maxAttendeeSwitch.setOnClickListener(v->{
-            maxAttendeeSwitchClick();
         });
     }
 
@@ -160,6 +165,126 @@ public class CreateEventActivity extends AppCompatActivity {
         maxAttendeeSwitch = findViewById(R.id.max_attendee_switch);
     }
 
+    /**
+     * Generates a random string to get a different event id for each created event
+     * Reference: https://www.baeldung.com/java-random-string
+     * @return
+     */
+    protected String generateRandomStr(){
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        return generatedString;
+    }
+
+    /**
+     * Started when the Floating action button is pressed
+     * Opens the android event to prompt the user to upload a photo
+     */
+    void imageChooser() {
+
+        // create an instance of the
+        // intent of the type image
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+        // pass the constant to compare it
+        // with the returned requestCode
+        //startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
+        launchSomeActivity.launch(i);
+    }
+
+    /**
+     * The result from the Intent return from the imageChooser() method
+     * Gets the URI of the device's photo and converts it to a bitmap for display
+     */
+    ActivityResultLauncher<Intent> launchSomeActivity
+            = registerForActivityResult(
+            new ActivityResultContracts
+                    .StartActivityForResult(),
+            result -> {
+                if (result.getResultCode()
+                        == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    // do your operation from here....
+                    if (data != null
+                            && data.getData() != null) {
+                        Uri selectedImageUri = data.getData();
+                        Bitmap selectedImageBitmap = null;
+                        try {
+                            selectedImageBitmap
+                                    = MediaStore.Images.Media.getBitmap(
+                                    this.getContentResolver(),
+                                    selectedImageUri);
+                        }
+                        catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        posterImage.setImageBitmap(
+                                selectedImageBitmap);
+                        posterUri = selectedImageUri;
+                    }
+                }
+            });
+
+    /**
+     * Starts the process of setting the date and time of either the start or end fields.
+     * Once the date dialog picker is closed, this function opens the time dialog picker
+     * and the date selected is assigned to the textview
+     */
+    protected void openDateTimeDialog(TextView dateText, TextView timeText) {
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        int day = LocalDate.now().getDayOfMonth();
+
+        //Opening the date picker dialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+                        String monthStr = String.format("%02d", monthOfYear);
+                        String dayStr = String.format("%02d", dayOfMonth);
+                        dateText.setText(monthStr + "/" + dayStr + "/" + year);
+                        openTimeDialog(timeText);
+                    }
+                },
+                year, month, day);
+        datePickerDialog.show();
+    }
+
+    /**
+     * Opens a time dialog picker and sets the text of the associated TextView after selection of time was made
+     */
+    protected void openTimeDialog(TextView timeText) {
+        int hour = LocalDateTime.now().getHour();
+        int minute = LocalDateTime.now().getMinute();
+
+        //Opening the time picker dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        String hourStr = String.format("%02d", hour);
+                        String minuteStr = String.format("%02d", minute);
+                        timeText.setText(hourStr + ":" + minuteStr);
+                    }
+                },
+                hour, minute, false);
+        timePickerDialog.show();
+    }
+
+    /**
+     * Handles the click of the switch button that enables the max attendee field to appear/disappear
+     */
     protected void maxAttendeeSwitchClick(){
         boolean on = maxAttendeeSwitch.isChecked();
         if (on){
@@ -169,61 +294,11 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
-    protected void qrChooseClick(){
-        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
-        intentIntegrator.setPrompt("Scan a barcode or QR Code");
-        intentIntegrator.setOrientationLocked(false);
-        intentIntegrator.initiateScan();
-    }
-
-    protected void createButtonClick(){
-        //Validating input
-        //Validate data
-        if (!isValid()){
-            return;
-        }
-
-        //Getting the strings from all of the fields on the page
-        //Setting text fields
-        title = titleText.getText().toString();
-        description = descriptionText.getText().toString();
-        location = locationText.getText().toString();
-
-        //Converting date to Date variable for easy passing to firebase
-        String startDateStr = startDateText.getText().toString() + " " +
-                startTimeText.getText().toString();
-        String endDateStr = endDateText.getText().toString() + " " +
-                endTimeText.getText().toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-        try {
-            startDate = dateFormat.parse(startDateStr);
-            endDate = dateFormat.parse(endDateStr);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        //Checking whether the end date is after the start date
-        if (startDate.after(endDate) == true){
-            makeToast("Start date cannot be after end date");
-            return;
-        }
-
-
-        //Saving the poster image to the database
-        //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
-        poster = ((BitmapDrawable)posterImage.getDrawable()).getBitmap();
-
-        //Getting the maxAttendees field
-        if (maxAttendeeSwitch.isChecked()){
-            maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
-        }
-
-        //Getting organizer id
-
-        //Creating the class
-        //Event event = new Event(eventId, title, location, startDate, endDate, poster, description, qrCode, maxAttendees);
-    }
-
+    /**
+     * When the QR Code create button is pressed, start the process of generating the QR Code.
+     * The encoded string has the format [app:type:eventId] and the dimensions of the QR code come
+     * from the size of the device
+     */
     protected void qrCreateClick(){
         String type = "checkin";
 
@@ -259,73 +334,70 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
-     * Starts the process of setting the date and time of either the start or end fields.
-     * Once the date dialog picker is closed, this function opens the time dialog picker
-     *
-     * @param dateText
-     * @param timeText
+     * QR choose button click
      */
-    protected void openDateTimeDialog(TextView dateText, TextView timeText) {
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-        int day = LocalDate.now().getDayOfMonth();
 
-        //Opening the date picker dialog
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-                        String monthStr = String.format("%02d", monthOfYear);
-                        String dayStr = String.format("%02d", dayOfMonth);
-                        dateText.setText(monthStr + "/" + dayStr + "/" + year);
-                        openTimeDialog(timeText);
-                    }
-                },
-                year, month, day);
-        datePickerDialog.show();
+    protected void qrChooseClick(){
+        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+        intentIntegrator.setPrompt("Scan a barcode or QR Code");
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.initiateScan();
     }
 
     /**
-     * Opens a time dialog picker and sets the text of the associated TextView
-     *
-     * @param timeText
+     * Retrieves the data from all of the UI elements, creates the event, and uploads the event to
+     * the firebase database. Also runs the method to validate all of the data from the page
      */
-    protected void openTimeDialog(TextView timeText) {
-        int hour = LocalDateTime.now().getHour();
-        int minute = LocalDateTime.now().getMinute();
+    protected void createButtonClick() {
+        //Validating input
+        //Validate data
+        if (!isValid()) {
+            return;
+        }
 
-        //Opening the time picker dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(
-                this,
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        String hourStr = String.format("%02d", hour);
-                        String minuteStr = String.format("%02d", minute);
-                        timeText.setText(hourStr + ":" + minuteStr);
-                    }
-                },
-                hour, minute, false);
-        timePickerDialog.show();
-    }
+        //Getting the strings from all of the fields on the page
+        //Setting text fields
+        title = titleText.getText().toString();
+        description = descriptionText.getText().toString();
+        location = locationText.getText().toString();
 
-    //https://www.baeldung.com/java-random-string
-    protected String generateRandomStr(){
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
+        //Converting date to Date variable for easy passing to firebase
+        String startDateStr = startDateText.getText().toString() + " " +
+                startTimeText.getText().toString();
+        String endDateStr = endDateText.getText().toString() + " " +
+                endTimeText.getText().toString();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+        try {
+            startDate = dateFormat.parse(startDateStr);
+            endDate = dateFormat.parse(endDateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        return generatedString;
+        //Checking whether the end date is after the start date
+        if (startDate.after(endDate) == true) {
+            makeToast("Start date cannot be after end date");
+            return;
+        }
+
+
+        //Saving the poster image to the database
+        //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
+        poster = ((BitmapDrawable) posterImage.getDrawable()).getBitmap();
+
+        //Getting the maxAttendees field
+        if (maxAttendeeSwitch.isChecked()) {
+            maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
+        }
+
+        //Getting organizer id
+
+        //Creating the class
+        //Event event = new Event(eventId, title, location, startDate, endDate, poster, description, qrCode, maxAttendees);
     }
 
     /**
-     * Used to check for errors with any of the values input
+     * Used to check for errors with any of the values input into the UI elements
      */
     protected Boolean isValid() {
         //Checking whether any of the fields are empty
@@ -359,57 +431,23 @@ public class CreateEventActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Generate the toast for saying what error with the input is
+     * @param errStr
+     */
     protected void makeToast(String errStr){
         Toast toast = new Toast(this);
         toast.setText(errStr);
         toast.show();
     }
 
-    // this function is triggered when
-    // the Select Image Button is clicked
-    void imageChooser() {
-
-        // create an instance of the
-        // intent of the type image
-        Intent i = new Intent();
-        i.setType("image/*");
-        i.setAction(Intent.ACTION_GET_CONTENT);
-
-        // pass the constant to compare it
-        // with the returned requestCode
-        //startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
-        launchSomeActivity.launch(i);
-    }
-
-    ActivityResultLauncher<Intent> launchSomeActivity
-            = registerForActivityResult(
-            new ActivityResultContracts
-                    .StartActivityForResult(),
-            result -> {
-                if (result.getResultCode()
-                        == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    // do your operation from here....
-                    if (data != null
-                            && data.getData() != null) {
-                        Uri selectedImageUri = data.getData();
-                        Bitmap selectedImageBitmap = null;
-                        try {
-                            selectedImageBitmap
-                                    = MediaStore.Images.Media.getBitmap(
-                                    this.getContentResolver(),
-                                    selectedImageUri);
-                        }
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        posterImage.setImageBitmap(
-                                selectedImageBitmap);
-                        posterUri = selectedImageUri;
-                    }
-                }
-            });
-
+    /**
+     * On return from the Scan QR Code IntentIntegrator after a code has been scanned or the
+     * activity has been cancelled
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

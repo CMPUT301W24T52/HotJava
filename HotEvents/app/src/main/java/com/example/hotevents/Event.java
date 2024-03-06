@@ -26,15 +26,19 @@ public class Event {
 
     /**
      * Constructor for Event Object
-     * @param dateTime Date and time of the Event
+     * @param startDateTime start Date and time of the Event
+     * @param endDateTime end Date and time of the Event
      * @param maxAttendees Maximum number of Event Attendees [null if no max]?
      * @param organiserId Reference to Event organizer(user)
      * @param poster Reference to profile poster/banner imagee
      * @param qrCode Reference to Unique QR Code
      * @param description Description of Event
      * @param title Event Tile
+     * @param eventId Unique event ID
      */
-    Event(Date startDateTime, Date endDateTime, @Nullable Integer maxAttendees, @Nullable String organiserId, Bitmap poster, QRCodes qrCode, String description, String title, String eventId){
+    Event(Date startDateTime, Date endDateTime, @Nullable Integer maxAttendees,
+          @Nullable String organiserId, Bitmap poster, QRCodes qrCode, String description,
+          String title, String eventId){
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxAttendees = maxAttendees;

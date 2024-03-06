@@ -13,8 +13,13 @@ public class QRCodes {
     private String encodedStr;
     private QRGEncoder qrgEncoder;
 
-    //When QR Code is called, it automatically generates the QR Code based on the data that's been given
-    //But in this case, how will validating the QR codes be a thing? Will probably just have to query a search of the database
+    /**
+     * Constructor for the QR Codes class
+     * Also runs the method to generate the QR Code
+     * @param eventId Unique event ID
+     * @param type Either [checkin] or [promotional], will define how the system handles the QR Code
+     * @param dimensions dimensions of the screen to determine the Bitmap size of the QR Code
+     */
     QRCodes(String eventId, String type, int dimensions) {
         this.eventId = eventId;
         this.type = type;
@@ -22,6 +27,12 @@ public class QRCodes {
         generateQRCode(encodedStr, dimensions);
     }
 
+    /**
+     * Creates an instance of the QRGEncoded class based on the string to be encoded and the dimensions
+     * of the device
+     * @param data Full string to be encoded
+     * @param dimensions Dimensions of the device to determine size of the bitmap
+     */
     private void generateQRCode(String data, int dimensions){
         // encoder to generate our qr code.
         qrgEncoder = new QRGEncoder(data, null, Type.TEXT, dimensions);
@@ -32,8 +43,11 @@ public class QRCodes {
         bitmap = qrgEncoder.getBitmap();
     }
 
-    //Used to pass the received data from scanning the QR code to the class to validate whether the data is correct
-    //Will still have to workout how the scanning is going to work
+    /**
+     * Used to compare the QR code scanner output with the correct QR code for the event
+     * @param output Output from QR code scanner
+     * @return Boolean representing whether the QR code scanned was the correct one or not
+     */
     public Boolean validateQRCode(String output){
         return encodedStr.equals(output);
     }
