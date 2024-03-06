@@ -1,0 +1,17 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Button Background -->
+    <item android:width="50dp" android:height="50dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp" /> <!-- Adjust the radius for curved corners -->
+        </shape>
+    </item>
+
+    <!-- Edit Icon and Text -->
+    <item
+        android:drawable="@drawable/edit_icon"
+        android:gravity="center"
+        android:width="35dp"
+        android:height="35dp"/>
+
+</layer-list>

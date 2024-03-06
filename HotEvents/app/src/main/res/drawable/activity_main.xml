@@ -46,20 +46,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:src="@android:drawable/ic_menu_view" />
+            android:src="@android:drawable/ic_input_add" />
 
-<<<<<<< HEAD
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Welcome Back USER!"
-            android:gravity="center"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-=======
->>>>>>> 9566b2aa0ac4e779a4e7b4a5aea654351006e38a
     </LinearLayout>
     <!--From Menu bar to the bottom-->
     <ScrollView
@@ -98,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <view class="androidx.appcompat.app.AlertController$RecycleListView"
+                    <ListView
                         android:id="@+id/event_list"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -106,7 +94,7 @@
                         android:clickable="true"
                         android:focusable="true">
 
-                    </view>
+                    </ListView>
                 </LinearLayout>
             </HorizontalScrollView>
 

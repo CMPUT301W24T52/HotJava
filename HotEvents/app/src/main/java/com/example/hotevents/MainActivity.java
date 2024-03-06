@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -18,6 +19,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Home Page and control center of program
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ListView eventList;
 //    RecyclerView eventList;
     Button menuButton;
+    CircleImageView profileButton;
 
 
 
@@ -73,5 +77,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        profileButton = findViewById(R.id.profileButton);
+        profileButton.setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+        });
+
+
     }
 }
