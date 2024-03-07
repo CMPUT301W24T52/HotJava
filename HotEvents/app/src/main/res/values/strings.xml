@@ -16,4 +16,17 @@
     <string name="create_new">Create New</string>
     <string name="choose_from_existing">Choose From Existing</string>
     <string name="create_event">Create Event</string>
+    <string name="back_button_description">back button description</string>
+    <string name="profile">"Profile "</string>
+    <string name="fab_description">Add new item</string>
+    <string name="edit_profie">Edit Profile</string>
+    <string name="edit_name">Edit Name</string>
+    <string name="edit_email">Edit Email</string>
+    <string name="edit_contact">Edit Contact</string>
+    <string name="edit_location">Edit Location</string>
+    <string name="save_profile">Save Profile</string>
+    <string name="profile_button_description">Profile Button</string>
+    <string name="edit_profile_photo">Edit Profile Photo</string>
+
+
 </resources>

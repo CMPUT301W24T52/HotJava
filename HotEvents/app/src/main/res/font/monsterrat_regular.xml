@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Regular Style -->
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/montserrat_medium" />
+
+    <!-- Bold Style -->
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="700"
+        android:font="@font/montserrat_bold" />
+
+    <!-- Italic Style -->
+    <font
+        android:fontStyle="italic"
+        android:fontWeight="400"
+        android:font="@font/montserrat_italic" />
+
+    <!-- ... Add more styles if needed ... -->
+
+</font-family>
