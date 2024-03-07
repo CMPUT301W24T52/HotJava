@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         myEventsAdapter = new MyEventsAdapter(this, eventDataArray);
 
         eventList.setAdapter(myEventsAdapter);
+<<<<<<< HEAD
+=======
 
         String deviceId = "gyvygvghcvhg";//Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
