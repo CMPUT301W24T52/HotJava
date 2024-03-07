@@ -27,6 +27,8 @@
     <string name="save_profile">Save Profile</string>
     <string name="profile_button_description">Profile Button</string>
     <string name="edit_profile_photo">Edit Profile Photo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

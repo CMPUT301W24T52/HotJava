@@ -10,7 +10,9 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -20,6 +22,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     Button NavButton;
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
+
+    FloatingActionButton CreateEventButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +93,16 @@ public class MainActivity extends AppCompatActivity {
                     eventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         String title = doc.getString("Title");
+                        Date startDate = doc.getDate("StartDateTime");
+                        Date endDate = doc.getDate("EndDateTime");
+                        String description = doc.getString("Description");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title) );
 
-                        eventDataArray.add(new Event(title));
+                        Event newEvent = new Event(title);
+                        newEvent.setStartDateTime(startDate);
+                        newEvent.setEndDateTime(endDate);
+                        newEvent.setDescription(description);
+                        eventDataArray.add(newEvent);
                     }
                     myEventsAdapter.notifyDataSetChanged();
                 }
@@ -105,8 +117,19 @@ public class MainActivity extends AppCompatActivity {
         NavButton.setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, NavigationMenu.class));
         });
+
+        CreateEventButton = findViewById(R.id.floatingActionButton);
+        CreateEventButton.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
+        });
+
+        eventList.setOnItemClickListener((parent, view, position, id) -> {
+            Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
+            myIntent.putExtra("event", eventDataArray.get(position));
+            startActivity(myIntent);
+        });
     }
-        private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
+    private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
         SignedUpEvent = new ArrayList<String>();
         UserName = "Harsh Patel";
         Map<String, Object> newUser = new HashMap<>();
@@ -118,11 +141,11 @@ public class MainActivity extends AppCompatActivity {
         newUser.put("Location", "");
         newUser.put("SignedUpEvent",SignedUpEvent);
 
-
-            // Add a new document with the device ID as the document ID
+        // Add a new document with the device ID as the document ID
         db.collection("Users").document(deviceId).set(newUser)
                 .addOnSuccessListener(aVoid -> {
 
         });
+
     }
 }
