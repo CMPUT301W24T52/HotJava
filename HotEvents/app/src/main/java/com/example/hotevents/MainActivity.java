@@ -2,12 +2,17 @@ package com.example.hotevents;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -18,6 +23,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
 
+    DrawerLayout drawerLayout;
+    ImageView menu;
+    LinearLayout profile, signedUpEvents, publishedEvents, notifications, organizeEvent, admin;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         eventList.setAdapter(myEventsAdapter);
 
-        String deviceId = "gyvygvghcvhg";//Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
         db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
@@ -96,21 +109,60 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        profileButton = findViewById(R.id.profileButton);
-        profileButton.setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+        menu = findViewById(R.id.menu);
+        profile = findViewById(R.id.profile);
+//        signedUpEvents = findViewById(R.id.signedUpEvents);
+//        publishedEvents = findViewById(R.id.publishedEvents);
+//        notifications = findViewById(R.id.notifications);
+        organizeEvent = findViewById(R.id.organizeEvent);
+        admin = findViewById(R.id.admin);
+
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDrawer(drawerLayout);
+            }
+        });
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, ProfileActivity.class);
+            }
         });
 
-        NavButton = findViewById(R.id.NavButton);
-        NavButton.setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, NavigationMenu.class));
+        organizeEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, CreateEventActivity.class);
+            }
         });
+
+        admin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, AdminOptionsActivity.class);
+            }
+        });
+
+//        profileButton = findViewById(R.id.profileButton);
+//        profileButton.setOnClickListener(view -> {
+//            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+//        });
+//
+//        NavButton = findViewById(R.id.NavButton);
+//        NavButton.setOnClickListener(view -> {
+//            startActivity(new Intent(MainActivity.this, NavigationMenu.class));
+//        });
     }
         private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
         SignedUpEvent = new ArrayList<String>();
-        UserName = "Harsh Patel";
+        UserName = "Deep Patel";
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("ProfilePicture", "");
+        newUser.put("userType", "Normal");
         newUser.put("UID", deviceId);
         newUser.put("Name", UserName);
         newUser.put("Contact", "");
@@ -124,5 +176,25 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
 
         });
+    }
+
+    public static void openDrawer(DrawerLayout drawerLayout){
+        drawerLayout.openDrawer(GravityCompat.START);
+    }
+    public static void closeDrawer(DrawerLayout drawerLayout){
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+    public static void redirectActivity(Activity activity, Class secondActivity){
+        Intent intent = new Intent(activity, secondActivity);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+//        activity.finish();
+
+    }
+    protected void onPause(){
+        super.onPause();
+        closeDrawer(drawerLayout);
     }
 }
