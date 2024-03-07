@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
     Button menuButton;
     CircleImageView profileButton;
     Button NavButton;
-    private String UserName = "";
-    ArrayList<String> SignedUpEvent;
+    private String UserName = ""; //???
+    ArrayList<String> SignedUpEvent;  //???
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
