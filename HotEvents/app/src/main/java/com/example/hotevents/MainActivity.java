@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         eventList.setAdapter(myEventsAdapter);
 
-        String deviceId = "gyvygvghcvhg";//Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceId = "gyvygvghcg";//Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
         db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
