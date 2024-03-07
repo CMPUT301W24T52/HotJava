@@ -1,5 +1,7 @@
 package com.example.hotevents;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -10,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,23 +28,42 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.google.zxing.qrcode.encoder.QRCode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class CreateEventActivity extends AppCompatActivity {
+    //Firebase objects
+    FirebaseFirestore db;
+    FirebaseStorage sref;
+    CollectionReference eventsRef;
+
     //Defining UI objects
     EditText titleText;
     TextView startDateText;
@@ -74,7 +96,8 @@ public class CreateEventActivity extends AppCompatActivity {
     QRCodes qrCode = null;
     Bitmap poster = null;
     Integer maxAttendees = null;
-    Uri posterUri;
+    Uri posterUri = null;
+    String storageUri = null;
 
 
     /**
@@ -86,6 +109,12 @@ public class CreateEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
+
+        //Setting firebase instance
+        db = FirebaseFirestore.getInstance();
+        sref = FirebaseStorage.getInstance();
+        eventsRef = db.collection("Events");
+
         //Calling a function that sets the UI elements to variables
         setViews();
 
@@ -328,9 +357,7 @@ public class CreateEventActivity extends AppCompatActivity {
         qrCode = new QRCodes(eventId, type, dimen);
         //posterImage.setImageBitmap(qrCode.getBitmap());
         //titleText.setText(qrCode.getEncodedStr());
-        Toast toast = new Toast(this);
-        toast.setText("QR Code with data [" + qrCode.getEncodedStr() + "] created!");
-        toast.show();
+        makeToast("QR Code with data [" + qrCode.getEncodedStr() + "] created!");
     }
 
     /**
@@ -385,15 +412,85 @@ public class CreateEventActivity extends AppCompatActivity {
         //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
         poster = ((BitmapDrawable) posterImage.getDrawable()).getBitmap();
 
+        //Getting the firebase storage URL and saving it to a global variabl
+
         //Getting the maxAttendees field
         if (maxAttendeeSwitch.isChecked()) {
             maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
         }
 
+        savePoster();
+
         //Getting organizer id
 
         //Creating the class
-        //Event event = new Event(eventId, title, location, startDate, endDate, poster, description, qrCode, maxAttendees);
+        //Event event = new Event(startDate, endDate, maxAttendees, null, poster, qrCode, description, title, eventId);
+
+        //Uploading the event to firebase
+        //firebaseEventUpload(event);
+    }
+
+    protected void firebaseEventUpload(Event event){
+        //Creating the map to set the data to the event
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("StartDateTime", event.getStartDateTime());
+        eventMap.put("EndDateTime", event.getStartDateTime());
+        eventMap.put("Description", event.getDescription());
+        eventMap.put("Poster", storageUri);
+        eventMap.put("Max Attendees", event.getMaxAttendees());
+        eventMap.put("Organiser Id", "");
+        eventMap.put("SignedUpUsers", new ArrayList<String>());
+        eventMap.put("Title", event.getTitle());
+        //Might have to send the QR code to the database first, then get the ID based on that. But it doesn't matter
+        eventMap.put("QRCode", event.getQrCode().getEncodedStr());
+
+        eventsRef.document()
+                .set(eventMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                        makeToast("Failed to write to Firestore");
+                    }
+                });
+    }
+
+    protected void savePoster(){
+        storageUri = "gs://hotevents-hotjava.appspot.com/Event Images/" + "poster_" + title + ".jpg";
+        // Create a storage reference from our app
+        StorageReference storageRef = sref.getReferenceFromUrl("gs://hotevents-hotjava.appspot.com/Event Images");
+
+        // Create a reference to "mountains.jpg"
+        StorageReference posterRef = storageRef.child("poster_" + title + ".jpg");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        poster.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = posterRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                //Creating the class
+                Event event = new Event(startDate, endDate, maxAttendees, null, poster, qrCode, description, title, eventId);
+
+                //Uploading the event to firebase
+                firebaseEventUpload(event);
+            }
+        });
     }
 
     /**
@@ -436,9 +533,7 @@ public class CreateEventActivity extends AppCompatActivity {
      * @param errStr
      */
     protected void makeToast(String errStr){
-        Toast toast = new Toast(this);
-        toast.setText(errStr);
-        toast.show();
+        Toast.makeText(getBaseContext(), errStr, Toast.LENGTH_LONG).show();
     }
 
     /**
