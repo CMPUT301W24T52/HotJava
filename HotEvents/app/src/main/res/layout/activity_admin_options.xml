@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/browseProfiles"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="368dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="112dp"
+        android:drawableRight="@drawable/baseline_arrow_forward_ios_24"
+        android:text="Browse Profiles"
+        android:textAlignment="textStart"
+        android:textColor="#062E19"
+        android:textSize="15sp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rippleColor="#33AAAAAA"
+        app:strokeColor="@color/LightGreen"
+        app:strokeWidth="1dp" />
+
+    <Button
+        android:id="@+id/browseEvents"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="368dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="4dp"
+        android:text="Browse Events"
+        android:textAlignment="textStart"
+        android:textColor="#062E19"
+        android:textSize="15sp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/browseProfiles"
+        app:rippleColor="#33AAAAAA"
+        app:strokeColor="@color/LightGreen"
+        app:strokeWidth="1dp"
+        android:drawableRight="@drawable/baseline_arrow_forward_ios_24"/>
+
+    <Button
+        android:id="@+id/browsePictures"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="368dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="4dp"
+        android:drawableRight="@drawable/baseline_arrow_forward_ios_24"
+        android:text="Browse Pictures"
+        android:textAlignment="textStart"
+        android:textColor="#062E19"
+        android:textSize="15sp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/browseEvents"
+        app:rippleColor="#33AAAAAA"
+        app:strokeColor="@color/LightGreen"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="92dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="Hot Admins"
+        android:textSize="36dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_arrow_back_24" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
