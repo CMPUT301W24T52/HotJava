@@ -7,12 +7,13 @@ import androidx.annotation.Nullable;
 
 import com.google.type.DateTime;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Represents an Event object. Contains attributes and methods regarding Event data
  */
-public class Event {
+public class Event implements Serializable {
 
     private Date startDateTime;
     private Date endDateTime;
