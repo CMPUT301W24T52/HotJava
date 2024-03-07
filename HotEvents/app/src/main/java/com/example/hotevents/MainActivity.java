@@ -162,10 +162,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        CreateEventButton = findViewById(R.id.floatingActionButton);
-        CreateEventButton.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
-        });
+//        CreateEventButton = findViewById(R.id.floatingActionButton);
+//        CreateEventButton.setOnClickListener(v -> {
+//            startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
+//        });
 
         eventList.setOnItemClickListener((parent, view, position, id) -> {
             Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
