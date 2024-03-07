@@ -15,8 +15,13 @@
         android:theme="@style/Theme.Hotevents"
         tools:targetApi="31">
         <activity
+
+            android:name=".EventDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdminOptionsActivity"
             android:exported="true" />
+
         <activity android:name=".ProfileActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity
