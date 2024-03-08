@@ -29,6 +29,10 @@
     <string name="edit_profile_photo">Edit Profile Photo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="user_name">User Name</string>
+    <string name="browse_user_location">Location: City, Country</string>
+    <string name="delete_profile">Delete Profile</string>
+    <string name="user_uid">user id</string>
 
 
 </resources>

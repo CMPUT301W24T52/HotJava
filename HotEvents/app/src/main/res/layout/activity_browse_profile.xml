@@ -8,9 +8,8 @@
     android:padding="0dp"
     android:background="@color/white">
 
-    <!-- Toolbar for ActionBar -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/edit_delete_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="#5C8971"
@@ -44,8 +43,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/backButton"
             app:layout_constraintTop_toTopOf="parent" />
-
-
     </androidx.appcompat.widget.Toolbar>
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -56,10 +53,9 @@
         android:layout_marginTop="16dp"
         app:civ_border_width="2dp"
         app:civ_border_color="#5C8971"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/edit_delete_toolbar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -74,7 +70,7 @@
         app:layout_constraintTop_toBottomOf="@id/imageViewProfilePhoto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/textViewEmail"
@@ -90,7 +86,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp" />
 
     <TextView
         android:id="@+id/textViewPhoneNumber"
@@ -106,13 +102,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp" />
 
     <TextView
         android:id="@+id/textViewLocation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Location: City, Country"
+        android:text="@string/browse_user_location"
         android:textSize="16sp"
         android:textColor="@color/black"
         android:fontFamily="@font/monsterrat_regular"
@@ -122,38 +118,56 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp" />
 
+    <!-- Edit and Delete Profile Buttons -->
     <LinearLayout
-        android:id="@+id/linearEditProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/textViewLocation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
+        android:id="@+id/linearEditDeleteProfile"
+        android:layout_width="235dp"
+        android:layout_height="71dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
         android:padding="10dp"
-        android:background="@drawable/edit_profile_button_border">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewLocation">
 
-        <ImageView
-            android:id="@+id/imageViewEditProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_edit_profile_button" />
+        <!-- Edit Profile Button -->
 
-        <TextView
-            android:id="@+id/textViewEditProfile"
-            android:layout_width="wrap_content"
+        <!-- Add space between buttons -->
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content" />
+
+        <!-- Delete Profile Button -->
+        <LinearLayout
+            android:id="@+id/linearDeleteProfile"
+            android:layout_width="426dp"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
-            android:textColor="#5C8971"
-            android:textSize="18sp"
-            android:textStyle="italic"
-            android:layout_gravity="center"
-            android:fontFamily="@font/monsterrat_regular"
-            />
+            android:layout_weight="1"
+            android:background="@drawable/edit_profile_button_border"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageViewDeleteProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete_profile_button" />
+
+            <TextView
+                android:id="@+id/textViewDeleteProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/monsterrat_regular"
+                android:text="@string/delete_profile"
+                android:textColor="#5C8971"
+                android:textSize="16sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

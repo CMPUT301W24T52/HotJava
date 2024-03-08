@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/profilelistview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- Toolbar for ActionBar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="#5C8971"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:visibility="visible">
+
+        <!-- Back button -->
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/back_button_description"
+            android:src="@drawable/ic_arrow_back_2" />
+
+        <!-- Profile Name -->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/monsterrat_regular"
+            android:text="All Existing Users"
+            android:textColor="@android:color/white"
+            android:textSize="24sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Tabs Layout (LinearLayout) -->
+    <LinearLayout
+        android:id="@+id/tabsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- Attendees Tab -->
+        <TextView
+            android:id="@+id/tabAttendees"
+            style="@style/TabStyle"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Users" />
+
+        <!-- Organisers Tab -->
+        <TextView
+            android:id="@+id/tabOrganisers"
+            style="@style/TabStyle"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Admins" />
+    </LinearLayout>
+
+    <!-- Users List (ListView) -->
+    <ListView
+        android:id="@+id/usersList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tabsLayout"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:divider="@null"
+        android:dividerHeight="0dp" />
+
+</RelativeLayout>
