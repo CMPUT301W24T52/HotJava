@@ -189,9 +189,9 @@ public class MainActivity extends AppCompatActivity {
         newUser.put("userType", "Normal");
         newUser.put("UID", deviceId);
         newUser.put("Name", UserName);
-        newUser.put("Contact", "123456789");
-        newUser.put("Email ID", "test@gmail.com");
-        newUser.put("Location", "Edmonton, Canada");
+        newUser.put("Contact", "");
+        newUser.put("Email ID", "");
+        newUser.put("Location", "");
         newUser.put("SignedUpEvent",SignedUpEvent);
 
         // Add a new document with the device ID as the document ID
