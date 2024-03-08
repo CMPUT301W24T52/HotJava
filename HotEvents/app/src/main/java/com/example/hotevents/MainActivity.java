@@ -150,7 +150,11 @@ public class MainActivity extends AppCompatActivity {
         organizeEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                redirectActivity(MainActivity.this, CreateEventActivity.class);
+                //redirectActivity(MainActivity.this, CreateEventActivity.class);
+                //Sending the user ID to the create event page to be able to save the organizer with their event
+                Intent myIntent = new Intent(MainActivity.this, CreateEventActivity.class);
+                myIntent.putExtra("organiser", deviceId);
+                startActivity(myIntent);
             }
         });
 

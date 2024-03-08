@@ -55,6 +55,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ *Page for creating and updating an event
+ * TODO:
+ * - Set up choose QR button
+ * - Fix location picker from the map
+ * - Set up the update event components
+ */
+
 public class CreateEventActivity extends AppCompatActivity {
     //Firebase objects
     FirebaseFirestore db;
@@ -85,21 +93,24 @@ public class CreateEventActivity extends AppCompatActivity {
 
     //Defining variables used in creating the event
     String title;
-    String eventId;
+    String eventId = null;
     Date startDate;
     Date endDate;
     String description;
     String location;
     QRCodes qrCode = null;
+    QRCodes qrCodePromo = null;
     Bitmap poster = null;
     Integer maxAttendees = null;
     Uri posterUri = null;
     String storageUri = null;
+    String organiserId;
 
 
     /**
-     * Started on creation of the activity. Assigns the views to variables and assigns the click events
-     * for all of the buttons
+     * Started on creation of the activity. Assigns the views to variables, assigns the click events
+     * for all of the buttons, grabs argument from main page intent, and sets up the required
+     * firebase references
      * @param savedInstanceState
      */
     @Override
@@ -112,11 +123,19 @@ public class CreateEventActivity extends AppCompatActivity {
         sref = FirebaseStorage.getInstance();
         eventsRef = db.collection("Events");
 
+        //Creating the random eventId
+        eventId = generateRandomStr();
+
         //Calling a function that sets the UI elements to variables
         setViews();
 
-        //Creating the random eventId
-        eventId = generateRandomStr();
+        //Getting the arguments from the Intent
+        Intent myIntent = getIntent();
+        organiserId = myIntent.getStringExtra("organiser");
+
+        backButton.setOnClickListener(v-> {
+            returnPreviousActivity();
+        });
 
         //Add Image button listener
         //https://www.geeksforgeeks.org/how-to-select-an-image-from-gallery-in-android/
@@ -167,7 +186,35 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
-     * Assigns the interactive UI elements to their associated variables
+     * Returns to the previous activity when event is created or back button is pressed
+     * TODO
+     * - Currently only returns back to MainActivity. Will be fixed once edit functionality is corrected
+     */
+    protected void returnPreviousActivity(){
+        Intent myIntent = new Intent(CreateEventActivity.this, MainActivity.class);
+        startActivity(myIntent);
+    }
+
+    /**
+     * Generates a random string to get a different event id for each created event
+     * Reference: <a href="https://www.baeldung.com/java-random-string">...</a>
+     * @return the random string
+     */
+    protected String generateRandomStr(){
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        return generatedString;
+    }
+
+    /**
+     * Assigns the interactive UI elements to their associated variables for later reference
      */
     protected void setViews() {
         posterImage = findViewById(R.id.poster_image);
@@ -192,44 +239,22 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
-     * Generates a random string to get a different event id for each created event
-     * Reference: https://www.baeldung.com/java-random-string
-     * @return
-     */
-    protected String generateRandomStr(){
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        return generatedString;
-    }
-
-    /**
      * Started when the Floating action button is pressed
-     * Opens the android event to prompt the user to upload a photo
+     * Opens the android event to prompt the user to upload a photo from their device
      */
     void imageChooser() {
-
         // create an instance of the
         // intent of the type image
         Intent i = new Intent();
         i.setType("image/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
-
-        // pass the constant to compare it
-        // with the returned requestCode
-        //startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
         launchSomeActivity.launch(i);
     }
 
     /**
      * The result from the Intent return from the imageChooser() method
-     * Gets the URI of the device's photo and converts it to a bitmap for display
+     * Gets the URI of the device's photo and converts it to a bitmap for display.
+     * The URI is saved for upload to the database
      */
     ActivityResultLauncher<Intent> launchSomeActivity
             = registerForActivityResult(
@@ -264,6 +289,8 @@ public class CreateEventActivity extends AppCompatActivity {
      * Starts the process of setting the date and time of either the start or end fields.
      * Once the date dialog picker is closed, this function opens the time dialog picker
      * and the date selected is assigned to the textview
+     * @param dateText Reference to the textview which will contain the date returned
+     * @param timeText Reference to the textview that will contain the time returned
      */
     protected void openDateTimeDialog(TextView dateText, TextView timeText) {
         int year = LocalDate.now().getYear();
@@ -288,6 +315,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     /**
      * Opens a time dialog picker and sets the text of the associated TextView after selection of time was made
+     * @param timeText Reference to the textview that will contain the time returned
      */
     protected void openTimeDialog(TextView timeText) {
         int hour = LocalDateTime.now().getHour();
@@ -323,7 +351,8 @@ public class CreateEventActivity extends AppCompatActivity {
     /**
      * When the QR Code create button is pressed, start the process of generating the QR Code.
      * The encoded string has the format [app:type:eventId] and the dimensions of the QR code come
-     * from the size of the device
+     * from the size of the device.
+     * Also creates the promotional QR code for later saving within the database
      */
     protected void qrCreateClick(){
         String type = "checkin";
@@ -351,30 +380,37 @@ public class CreateEventActivity extends AppCompatActivity {
         int dimen = width < height ? width : height;
         dimen = dimen * 3 / 4;
 
+        //Creating the check in QR Code
         qrCode = new QRCodes(eventId, type, dimen);
-        //posterImage.setImageBitmap(qrCode.getBitmap());
-        //titleText.setText(qrCode.getEncodedStr());
+
+        //Creating the promotional QR Code
+        qrCodePromo = new QRCodes(eventId, "promo", dimen);
+
         makeToast("QR Code with data [" + qrCode.getEncodedStr() + "] created!");
     }
 
     /**
      * QR choose button click
+     * Enables the user to select from their previously generated QR codes and selected one for the current task
+     * TODO
+     * - Add functionality
      */
-
     protected void qrChooseClick(){
-        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
-        intentIntegrator.setPrompt("Scan a barcode or QR Code");
-        intentIntegrator.setOrientationLocked(false);
-        intentIntegrator.initiateScan();
+        //Code to open the QR Code scanner
+//        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+//        intentIntegrator.setPrompt("Scan a barcode or QR Code");
+//        intentIntegrator.setOrientationLocked(false);
+//        intentIntegrator.initiateScan();
     }
 
     /**
-     * Retrieves the data from all of the UI elements, creates the event, and uploads the event to
-     * the firebase database. Also runs the method to validate all of the data from the page
+     * Starts the process of creating the event and uploading the data to firebase.
+     * Data is validated, retrieved from UI elements, and prepared for firebase upload.
+     * Once all of this is complete, calls a method to upload the poster to firebase
+     * and post the rest of the information once this upload is complete.
      */
     protected void createButtonClick() {
         //Validating input
-        //Validate data
         if (!isValid()) {
             return;
         }
@@ -404,11 +440,6 @@ public class CreateEventActivity extends AppCompatActivity {
             return;
         }
 
-
-        //Saving the poster image to the database
-        //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
-        poster = ((BitmapDrawable) posterImage.getDrawable()).getBitmap();
-
         //Getting the firebase storage URL and saving it to a global variabl
 
         //Getting the maxAttendees field
@@ -416,16 +447,28 @@ public class CreateEventActivity extends AppCompatActivity {
             maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
         }
 
-        savePoster();
+        //Case where the poster isn't submitted, just upload it as null
+        if (posterImage.getDrawable() == null){
+            Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId);
 
-        //Getting organizer id
+            //Uploading the event to firebase
+            firebaseEventUpload(event);
+        }
+        else{
+            //Saving the poster image to the database
+            //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
+            poster = ((BitmapDrawable) posterImage.getDrawable()).getBitmap();
+            savePosterAndCreateEvent();
+        }
 
-        //Creating the class
-        //Event event = new Event(startDate, endDate, maxAttendees, null, poster, qrCode, description, title, eventId);
 
-        //Uploading the event to firebase
-        //firebaseEventUpload(event);
     }
+
+    /**
+     * From the recently created event class, creates a new document in firebase and uploads all of the
+     * data collected thus far
+     * @param event The class instance containing all of the input data
+     */
 
     protected void firebaseEventUpload(Event event){
         //Creating the map to set the data to the event
@@ -435,11 +478,11 @@ public class CreateEventActivity extends AppCompatActivity {
         eventMap.put("Description", event.getDescription());
         eventMap.put("Poster", storageUri);
         eventMap.put("Max Attendees", event.getMaxAttendees());
-        eventMap.put("Organiser Id", "");
+        eventMap.put("Organizer Id", event.getOrganiserId());
         eventMap.put("SignedUpUsers", new ArrayList<String>());
         eventMap.put("Title", event.getTitle());
-        //Might have to send the QR code to the database first, then get the ID based on that. But it doesn't matter
         eventMap.put("QRCode", event.getQrCode().getEncodedStr());
+        eventMap.put("QRCodePromo", qrCodePromo.getEncodedStr());
 
         eventsRef.document()
                 .set(eventMap)
@@ -447,6 +490,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
+                        returnPreviousActivity();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -458,7 +502,12 @@ public class CreateEventActivity extends AppCompatActivity {
                 });
     }
 
-    protected void savePoster(){
+    /**
+     * Retrieves the reference of the photo on the device. Uploads the photo from this reference
+     * to the database. Once this process is complete, calls the method to upload the rest of the
+     * data to the database
+     */
+    protected void savePosterAndCreateEvent(){
         storageUri = "gs://hotevents-hotjava.appspot.com/Event Images/" + "poster_" + title + ".jpg";
         // Create a storage reference from our app
         StorageReference storageRef = sref.getReferenceFromUrl("gs://hotevents-hotjava.appspot.com/Event Images");
@@ -482,7 +531,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 //Creating the class
-                Event event = new Event(startDate, endDate, maxAttendees, null, poster, qrCode, description, title, eventId);
+                Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId);
 
                 //Uploading the event to firebase
                 firebaseEventUpload(event);
@@ -517,17 +566,17 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         //Checking whether a poster was added
-        if (posterImage == null){
-            makeToast("Must upload a poster for the event");
-            return false;
-        }
+//        if (posterImage.getDrawable() == null){
+//            makeToast("Must upload a poster for the event");
+//            return false;
+//        }
 
         return true;
     }
 
     /**
      * Generate the toast for saying what error with the input is
-     * @param errStr
+     * @param errStr The string detailing the error to report to the user
      */
     protected void makeToast(String errStr){
         Toast.makeText(getBaseContext(), errStr, Toast.LENGTH_LONG).show();
@@ -535,7 +584,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
     /**
      * On return from the Scan QR Code IntentIntegrator after a code has been scanned or the
-     * activity has been cancelled
+     * activity has been cancelled.
+     * Not necessary for this activity, will be implemented on the main page and the check in button
      * @param requestCode
      * @param resultCode
      * @param data
