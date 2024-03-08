@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,13 +13,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -26,14 +24,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Home Page and control center of program
@@ -47,17 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-    MyEventsAdapter myEventsAdapter;
     ArrayList<Event> eventDataArray;
-    ListView eventList;
-    Button menuButton;
-    CircleImageView profileButton;
-    Button NavButton;
+    //ListView eventList;
+    RecyclerView myEventView;
+    RecyclerView.LayoutManager myEventViewLayoutManager;
+    LinearLayoutManager myEventHorizantleManager;
+    MyEventsAdapter myEventsAdapter;
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
 
-
-    FloatingActionButton CreateEventButton;
 
     DrawerLayout drawerLayout;
     ImageView menu;
@@ -71,14 +63,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        eventDataArray = new ArrayList<Event>();
+        myEventView = (RecyclerView) findViewById(R.id.event_list);
+        myEventHorizantleManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        myEventView.setLayoutManager(myEventHorizantleManager);
+
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events");
 
-        eventDataArray = new ArrayList<Event>();
-        eventList = findViewById(R.id.event_list);
-        myEventsAdapter = new MyEventsAdapter(this, eventDataArray);
+        eventDataArray.add(new Event("Rolling Stones"));
+        eventDataArray.add(new Event("Beatles"));
+        eventDataArray.add(new Event("Bon Jovi"));
+        eventDataArray.add(new Event("Kanye"));
 
-        eventList.setAdapter(myEventsAdapter);
+        myEventsAdapter = new MyEventsAdapter(eventDataArray, this);
+
+        myEventView.setAdapter(myEventsAdapter);
+
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         newEvent.setDescription(description);
                         eventDataArray.add(newEvent);
                     }
-                    myEventsAdapter.notifyDataSetChanged();
+//                    myEventsAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -167,11 +168,11 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
 //        });
 
-        eventList.setOnItemClickListener((parent, view, position, id) -> {
-            Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
-            myIntent.putExtra("event", eventDataArray.get(position));
-            startActivity(myIntent);
-        });
+//        eventList.setOnItemClickListener((parent, view, position, id) -> {
+//            Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
+//            myIntent.putExtra("event", eventDataArray.get(position));
+//            startActivity(myIntent);
+//        });
 
 //        profileButton = findViewById(R.id.profileButton);
 //        profileButton.setOnClickListener(view -> {

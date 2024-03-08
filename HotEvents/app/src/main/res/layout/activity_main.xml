@@ -262,15 +262,15 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                            <ListView
+                            <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/event_list"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:clickable="true"
                                 android:focusable="true">
 
-                            </ListView>
+                            </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
                     </HorizontalScrollView>
 
