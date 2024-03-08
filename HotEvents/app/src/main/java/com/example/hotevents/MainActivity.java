@@ -1,10 +1,5 @@
 package com.example.hotevents;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +10,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
@@ -25,8 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -186,15 +183,15 @@ public class MainActivity extends AppCompatActivity {
     }
     private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
         SignedUpEvent = new ArrayList<String>();
-        UserName = "Deep Patel";
+        UserName = "Test User";
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("ProfilePicture", "");
         newUser.put("userType", "Normal");
         newUser.put("UID", deviceId);
         newUser.put("Name", UserName);
-        newUser.put("Contact", "");
-        newUser.put("Email ID", "");
-        newUser.put("Location", "");
+        newUser.put("Contact", "123456789");
+        newUser.put("Email ID", "test@gmail.com");
+        newUser.put("Location", "Edmonton, Canada");
         newUser.put("SignedUpEvent",SignedUpEvent);
 
         // Add a new document with the device ID as the document ID
