@@ -104,16 +104,20 @@ public class MainActivity extends AppCompatActivity {
                 if (value != null){
                     eventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
+                        String eventId = doc.getId();
                         String title = doc.getString("Title");
                         Date startDate = doc.getDate("StartDateTime");
                         Date endDate = doc.getDate("EndDateTime");
                         String description = doc.getString("Description");
+                        String organizerId = doc.getString("Organizer Id");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title) );
 
                         Event newEvent = new Event(title);
+                        newEvent.setEventId(eventId);
                         newEvent.setStartDateTime(startDate);
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
+                        newEvent.setOrganiserId(organizerId);
                         eventDataArray.add(newEvent);
                     }
                     myEventsAdapter.notifyDataSetChanged();
