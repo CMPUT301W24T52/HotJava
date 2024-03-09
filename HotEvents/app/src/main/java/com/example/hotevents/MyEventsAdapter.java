@@ -31,13 +31,19 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 //    private OnItemClickListener onItemClickListener;
 
     /**
-     * Interface for clicking items
+     * View holder for RecyclerView
+     * implements onClickListen to create listener on each event
      */
     public class MyEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView myEventTitle;
         public TextView myEventLocation;
         public TextView myEventDate;
         public ImageView myEventImg;
+
+        /**
+         * Constructor for View holder class
+         * @param itemView object holding my event item view
+         */
         public MyEventViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
@@ -58,6 +64,11 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         }
     }
 
+    /**
+     * constructor for adapter
+     * @param myEvents array of events objects
+     * @param context context
+     */
     public MyEventsAdapter(ArrayList<Event> myEvents, Context context){
         this.myEvents = myEvents;
         this.context = context;
@@ -94,27 +105,5 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         return myEvents.size();
     }
 
-
-
-
-
-//    @NonNull
-//    @Override
-//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
-//        View view;
-//        if (convertView ==  null){
-//            view = LayoutInflater.from(getContext()).inflate(R.layout.contents_myevents, parent, false);
-//        } else {
-//            view = convertView;
-//        }
-//        Event event = myEvents.get(position);
-//
-//        TextView eventTitle = view.findViewById(R.id.event_title_text);
-//        ImageView poster = view.findViewById(R.id.imageView);       // to be implemented
-//
-//        eventTitle.setText(event.getTitle());
-////        poster.set
-//
-//        return view;
 
 }
