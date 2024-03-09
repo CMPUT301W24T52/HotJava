@@ -4,20 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -30,6 +27,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     EventPagerAdapter eventPagerAdapter;
+    TextView organiserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,20 +35,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details);
 
         myEvent = (Event) getIntent().getSerializableExtra("event");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> {
-            getOnBackPressedDispatcher().onBackPressed();
-        });
+        setViews();
 
-        eventTitle = findViewById(R.id.event_title);
-        assert myEvent != null;
         if (myEvent.getTitle() != null) {
             eventTitle.setText(myEvent.getTitle());
         }
 
-        startDate = findViewById(R.id.event_start_date);
-        endDate = findViewById(R.id.event_end_date);
 
         if (myEvent.getStartDateTime() != null) {
             startDate.setText(myEvent.getStartDateTime().toString());
@@ -61,13 +53,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
 //        Location missing
-//        Organiser id stuff missing
+        if (myEvent.getOrganiserId() != null && !myEvent.getOrganiserId().trim().isEmpty()) {
+            db.collection("Users").document(myEvent.getOrganiserId()).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    organiserName.setText(document.getString("Name"));
+                }
+            });
+        }
 //        Notifications not implemented yet
 
-        tabLayout = findViewById(R.id.tabLayout);
-        viewPager2 = findViewById(R.id.view_pager);
-        eventPagerAdapter = new EventPagerAdapter(this);
-        viewPager2.setAdapter(eventPagerAdapter);
+
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -96,6 +92,18 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     }
 
+    private void setViews() {
+        backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        eventTitle = findViewById(R.id.event_title);
+        startDate = findViewById(R.id.event_start_date);
+        endDate = findViewById(R.id.event_end_date);
+        organiserName = findViewById(R.id.organiser_name);
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager2 = findViewById(R.id.view_pager);
+        eventPagerAdapter = new EventPagerAdapter(this);
+        viewPager2.setAdapter(eventPagerAdapter);
+    }
     private class EventPagerAdapter extends FragmentStateAdapter {
 
         public EventPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
@@ -105,15 +113,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            switch (position){
-                case 0:
-                    EventDetailsAboutFragment eventDetailsAboutFragment = EventDetailsAboutFragment.newInstance(myEvent.getDescription());
-                    return eventDetailsAboutFragment;
-                case 1:
-                    return new EventDetailsAnnouncementFragment();
-                default:
-                    return new EventDetailsAboutFragment();
+            if (position == 1) {
+                return new EventDetailsAnnouncementFragment();
             }
+            return EventDetailsAboutFragment.newInstance(myEvent.getDescription());
         }
 
         @Override
