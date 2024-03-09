@@ -22,6 +22,7 @@
             android:src="@drawable/baseline_face_24"></ImageView>
 
         <TextView
+            android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="20dp"
@@ -95,7 +96,7 @@
         android:id="@+id/location"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -106,6 +107,14 @@
             android:drawableLeft="@drawable/baseline_room_24"
             android:drawablePadding="8dp">
         </TextView>
+        <Switch
+            android:id="@+id/toggleGeo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Allow Location Access"
+            android:paddingLeft="30dp"
+            android:paddingTop="10dp"/>
+
     </LinearLayout>
 
     <LinearLayout
