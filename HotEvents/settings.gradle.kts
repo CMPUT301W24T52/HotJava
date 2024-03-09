@@ -16,5 +16,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "HotEvents"
+rootProject.name = "hotevents"
 include(":app")

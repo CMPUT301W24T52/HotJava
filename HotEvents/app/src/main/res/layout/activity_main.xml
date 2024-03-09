@@ -246,33 +246,33 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <HorizontalScrollView
+                    <RelativeLayout
                         android:id="@+id/horizontalScrollView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="16dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/myEvents">
 
                         <LinearLayout
                             android:id="@+id/myevent_list"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
-                            <ListView
+                            <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/event_list"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:clickable="true"
-                                android:focusable="true">
+                                android:focusable="true"
+                                android:orientation="horizontal"
+                                android:scrollbars="horizontal">
 
-                            </ListView>
+                            </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
-                    </HorizontalScrollView>
+                    </RelativeLayout>
 
                     <TextView
                         android:id="@+id/upcoming_events"
