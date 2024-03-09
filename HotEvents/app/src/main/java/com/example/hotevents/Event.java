@@ -1,6 +1,7 @@
 package com.example.hotevents;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ public class Event implements Serializable {
 
     private Date startDateTime;
     private Date endDateTime;
+    private Location location;
     private Integer maxAttendees;
     private String organiserId;
     private Bitmap poster;
@@ -58,6 +60,14 @@ public class Event implements Serializable {
     Event(String title){
         this.title = title;
     }       // Unsure whether necessary or if theres a better way
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 
     public void setTitle(String title) {
         this.title = title;
