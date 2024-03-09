@@ -120,8 +120,9 @@ public class MainActivity extends AppCompatActivity {
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         eventDataArray.add(newEvent);
-                        myEventsAdapter.notifyDataSetChanged();
+
                     }
+                    myEventsAdapter.notifyDataSetChanged();
                 }
             }
         });
