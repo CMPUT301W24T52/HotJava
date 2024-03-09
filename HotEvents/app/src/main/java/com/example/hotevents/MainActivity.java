@@ -178,6 +178,21 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
 //        });
 
+
+
+
+
+
+//        myEventsAdapter.setOnItemClickListener(new MyEventsAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(int position) {
+//                Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
+//                myIntent.putExtra("event", eventDataArray.get(position));
+//                startActivity(myIntent);
+//            }
+//        });
+
+
 //        eventList.setOnItemClickListener((parent, view, position, id) -> {
 //            Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
 //            myIntent.putExtra("event", eventDataArray.get(position));
