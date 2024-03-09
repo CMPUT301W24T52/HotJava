@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
     MyEventsAdapter myEventsAdapter;
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
-
-
     DrawerLayout drawerLayout;
     ImageView menu;
     LinearLayout profile, signedUpEvents, publishedEvents, notifications, organizeEvent, admin;
@@ -65,16 +63,19 @@ public class MainActivity extends AppCompatActivity {
 
         eventDataArray = new ArrayList<Event>();
         myEventView = (RecyclerView) findViewById(R.id.event_list);
-        myEventHorizantleManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        myEventHorizantleManager = new LinearLayoutManager(this);
+        myEventHorizantleManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        myEventView.setHasFixedSize(false);
+//        myEventHorizantleManager.canScrollHorizontally();
         myEventView.setLayoutManager(myEventHorizantleManager);
 
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events");
 
-        eventDataArray.add(new Event("Rolling Stones"));
-        eventDataArray.add(new Event("Beatles"));
-        eventDataArray.add(new Event("Bon Jovi"));
-        eventDataArray.add(new Event("Kanye"));
+//        eventDataArray.add(new Event("Rolling Stones"));
+//        eventDataArray.add(new Event("Beatles"));
+//        eventDataArray.add(new Event("Bon Jovi"));
+//        eventDataArray.add(new Event("Kanye"));
 
         myEventsAdapter = new MyEventsAdapter(eventDataArray, this);
 
@@ -119,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         eventDataArray.add(newEvent);
+                        myEventsAdapter.notifyDataSetChanged();
                     }
-//                    myEventsAdapter.notifyDataSetChanged();
                 }
             }
         });
