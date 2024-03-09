@@ -40,8 +40,8 @@ public class Event implements Serializable {
      * @param eventId Unique event ID
      */
     Event(Date startDateTime, Date endDateTime, @Nullable Integer maxAttendees,
-          @Nullable String organiserId, Bitmap poster, QRCodes qrCode, String description,
-          String title, String eventId){
+          @Nullable String organiserId, @Nullable Bitmap poster, QRCodes qrCode, @Nullable String description,
+          String title, @Nullable String eventId){
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxAttendees = maxAttendees;

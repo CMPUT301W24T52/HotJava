@@ -21,7 +21,12 @@
         <activity
             android:name=".AdminOptionsActivity"
             android:exported="true" />
-
+        <activity
+            android:name=".BrowseProfilesActivity"
+            android:exported="true" />
+        <activity
+            android:name=".BrowseUserProfileActivity"
+            android:exported="true" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity

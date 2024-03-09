@@ -36,7 +36,6 @@ public class NavigationMenu extends AppCompatActivity{
         });
 
 
-
     }
 
 }
