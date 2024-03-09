@@ -27,6 +27,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         public TextView myEventTitle;
         public TextView myEventLocation;
         public TextView myEventDate;
+        public ImageView myEventImg;
         public MyEventViewHolder(@NonNull View itemView) {
             super(itemView);
             myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
@@ -54,7 +55,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         Log.d("MyEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText("Location");
-        holder.myEventDate.setText("Date");
+        holder.myEventDate.setText(event.getStartDateTime().toString());
         Log.d("Note", "made it here");
     }
 

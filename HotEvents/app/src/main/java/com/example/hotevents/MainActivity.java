@@ -66,16 +66,10 @@ public class MainActivity extends AppCompatActivity {
         myEventHorizantleManager = new LinearLayoutManager(this);
         myEventHorizantleManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         myEventView.setHasFixedSize(false);
-//        myEventHorizantleManager.canScrollHorizontally();
         myEventView.setLayoutManager(myEventHorizantleManager);
 
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events");
-
-//        eventDataArray.add(new Event("Rolling Stones"));
-//        eventDataArray.add(new Event("Beatles"));
-//        eventDataArray.add(new Event("Bon Jovi"));
-//        eventDataArray.add(new Event("Kanye"));
 
         myEventsAdapter = new MyEventsAdapter(eventDataArray, this);
 
