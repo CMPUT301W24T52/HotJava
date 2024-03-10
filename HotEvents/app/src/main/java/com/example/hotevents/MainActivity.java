@@ -50,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Event> eventDataArray;
     //ListView eventList;
     RecyclerView myEventView;
-    RecyclerView.LayoutManager myEventViewLayoutManager;
+    RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
+    LinearLayoutManager upcomingEventManager;
     MyEventsAdapter myEventsAdapter;
+    MyEventsAdapter upcomingEventsAdapter;
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
@@ -68,18 +70,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         eventDataArray = new ArrayList<Event>();
-        myEventView = (RecyclerView) findViewById(R.id.event_list);
+        myEventView = (RecyclerView) findViewById(R.id.signedupevent_list);
         myEventHorizantleManager = new LinearLayoutManager(this);
         myEventHorizantleManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         myEventView.setHasFixedSize(false);
         myEventView.setLayoutManager(myEventHorizantleManager);
+//
+//        upcomingEventManager = new LinearLayoutManager(this);
+//        upcomingEventView = (RecyclerView) findViewById(R.id.upcoming_events_list);
+//        upcomingEventView.setHasFixedSize(false);
+//        upcomingEventView.setLayoutManager(upcomingEventManager);
+
 
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events");
 
         myEventsAdapter = new MyEventsAdapter(eventDataArray, this);
+//        upcomingEventsAdapter = new MyEventsAdapter(eventDataArray, this);
 
         myEventView.setAdapter(myEventsAdapter);
+//        upcomingEventView.setAdapter(upcomingEventsAdapter);
 
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
