@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,14 +27,17 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -45,6 +49,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +64,7 @@ import java.util.Map;
  * - Make Event Icons functional
  * - [Optional] Refresh Functionality
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
@@ -113,7 +118,23 @@ public class MainActivity extends AppCompatActivity {
                     UserName.setText(document.getString("Name"));
                 } else {
                     // No such document, user not "logged in"
-                    handleNewUserInput(db,deviceId);
+                    // Retrieve the FCM registration token
+                    FirebaseMessaging.getInstance().getToken()
+                            .addOnCompleteListener(new OnCompleteListener<String>() {
+                                @Override
+                                public void onComplete(@NonNull Task<String> task) {
+                                    if (task.isSuccessful()) {
+                                        // Get the token
+                                        String token = task.getResult();
+                                        handleNewUserInput(db,deviceId,token);
+                                        Log.d(TAG, "FCM Registration Token: " + token);
+                                        Toast.makeText(MainActivity.this, "FCM Registration Token: " + token, Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        // Handle the error
+                                        Log.e(TAG, "Failed to retrieve FCM Registration Token", task.getException());
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -135,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                         Date endDate = doc.getDate("EndDateTime");
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
-                        Log.d("Firestore: ", String.format("Event (%s) fetched", title) );
+                        Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
                         newEvent.setEventId(eventId);
@@ -232,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
+    private void handleNewUserInput(FirebaseFirestore db, String deviceId, String token) {
         SignedUpEvent = new ArrayList<String>();
         UserName = "Test User";
         Map<String, Object> newUser = new HashMap<>();
@@ -245,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
         newUser.put("Location", "");
         newUser.put("SignedUpEvent",SignedUpEvent);
         newUser.put("geo",true);
+        newUser.put("fcmToken",token);
 
         // Add a new document with the device ID as the document ID
         db.collection("Users").document(deviceId).set(newUser)
@@ -305,7 +327,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 }
