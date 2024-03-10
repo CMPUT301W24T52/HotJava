@@ -6,9 +6,34 @@
     tools:context=".EventDetailsAnnouncementFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Announcements" />
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Announcements"
+            android:textSize="20dp"
+            android:padding="5dp"/>
+        <Button
+            android:id="@+id/send_announcement_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send Announcement">
+        </Button>
+
+        <EditText
+            android:id="@+id/announcement_message"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:inputType="text"
+            android:text="Name" />
+
+    </LinearLayout>
+
+
 
 </FrameLayout>

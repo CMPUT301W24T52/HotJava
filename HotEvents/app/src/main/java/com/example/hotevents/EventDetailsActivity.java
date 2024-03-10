@@ -8,13 +8,22 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -28,6 +37,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     ViewPager2 viewPager2;
     EventPagerAdapter eventPagerAdapter;
     TextView organiserName;
+    private static final String TAG = "EventDetailsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +100,49 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        Button signUpButton = findViewById(R.id.check_in_button);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSignUpButtonClick();
+            }
+        });
+
     }
+
+    private void onSignUpButtonClick() {
+        // Retrieve the device ID of the user
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // Store the device ID in Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String eventId = myEvent.getEventId();
+        String eventName = myEvent.getTitle();
+        Map<String, Object> signupData = new HashMap<>();
+        signupData.put("UID", deviceId);
+
+        // Add the device ID to the signups collection under the specific event's document
+        db.collection("Events").document(eventId).collection("signups")
+                .document(deviceId)
+                .set(signupData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Successfully stored the device ID in Firestore
+                        Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                        // You can add further logic here if needed
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to store the device ID
+                        Log.e(TAG, "Error storing device ID in Firestore", e);
+                        // You can handle the failure here
+                    }
+                });
+    }
+
 
     private void setViews() {
         backButton = findViewById(R.id.back_button);
@@ -101,20 +153,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         organiserName = findViewById(R.id.organiser_name);
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.view_pager);
-        eventPagerAdapter = new EventPagerAdapter(this);
+        eventPagerAdapter = new EventPagerAdapter(this,myEvent.getEventId());
         viewPager2.setAdapter(eventPagerAdapter);
     }
     private class EventPagerAdapter extends FragmentStateAdapter {
-
-        public EventPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+        private String eventId;
+        public EventPagerAdapter(@NonNull FragmentActivity fragmentActivity,String eventId) {
             super(fragmentActivity);
+            this.eventId = eventId;
         }
 
         @NonNull
         @Override
         public Fragment createFragment(int position) {
             if (position == 1) {
-                return new EventDetailsAnnouncementFragment();
+                return EventDetailsAnnouncementFragment.newInstance(eventId);
             }
             return EventDetailsAboutFragment.newInstance(myEvent.getDescription());
         }
