@@ -44,6 +44,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-messaging:23.4.1")
     implementation("androidx.work:work-runtime:2.9.0")
+    implementation("com.google.firebase:firebase-auth:22.3.1")
     testImplementation("junit:junit:4.13.2")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")

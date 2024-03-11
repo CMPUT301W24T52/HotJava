@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity{
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
-    ImageView menu;
+    ImageView menu, notifications_toolbar;
     LinearLayout profile, signedUpEvents, publishedEvents, notifications, organizeEvent, admin;
     Switch toggleGeo;
     private static final String TAG = "MainActivity";
@@ -178,7 +178,8 @@ public class MainActivity extends AppCompatActivity{
         profile = findViewById(R.id.profile);
 //        signedUpEvents = findViewById(R.id.signedUpEvents);
 //        publishedEvents = findViewById(R.id.publishedEvents);
-//        notifications = findViewById(R.id.notifications);
+        notifications = findViewById(R.id.notifications);
+        notifications_toolbar = findViewById(R.id.notifications_toolbar);
         organizeEvent = findViewById(R.id.organizeEvent);
         admin = findViewById(R.id.admin);
 
@@ -192,6 +193,19 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 redirectActivity(MainActivity.this, ProfileActivity.class);
+            }
+        });
+        notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, NotificationDisplayActivity.class);
+            }
+        });
+
+        notifications_toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, NotificationDisplayActivity.class);
             }
         });
 

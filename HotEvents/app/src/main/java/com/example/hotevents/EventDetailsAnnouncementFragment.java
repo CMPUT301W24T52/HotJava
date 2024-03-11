@@ -31,7 +31,7 @@ import okhttp3.Response;
  * Use the {@link EventDetailsAnnouncementFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EventDetailsAnnouncementFragment extends Fragment{
+public class EventDetailsAnnouncementFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,6 +51,7 @@ public class EventDetailsAnnouncementFragment extends Fragment{
         // Required empty public constructor
         firebaseMessaging = FirebaseMessaging.getInstance();
     }
+
     private FirebaseMessaging firebaseMessaging;
 
     // Constructor
@@ -85,7 +86,6 @@ public class EventDetailsAnnouncementFragment extends Fragment{
             eventTitle = getArguments().getString("eventTitle");
         }
         FirebaseApp.initializeApp(getActivity());
-
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,6 +105,7 @@ public class EventDetailsAnnouncementFragment extends Fragment{
 
         return rootView;
     }
+
     /**
      * Sends notification to all signups for the event.
      */
@@ -125,7 +126,7 @@ public class EventDetailsAnnouncementFragment extends Fragment{
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                         String fcmToken = documentSnapshot.getString("fcmToken"); // Get the FCM token from the document
-                        sendPushNotification(fcmToken, notificationMessage);
+                        sendPushNotification(fcmToken, notificationMessage, eventId);
                     }
                     Log.d("EventDetailsFragment", "Announcement sent successfully");
 //                    Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
@@ -139,10 +140,10 @@ public class EventDetailsAnnouncementFragment extends Fragment{
     /**
      * Sends a push notification to the specified FCM token with the given message.
      *
-     * @param fcmToken       The FCM token of the device.
-     * @param messageText    The message to be sent.
+     * @param fcmToken    The FCM token of the device.
+     * @param messageText The message to be sent.
      */
-    private void sendPushNotification(String fcmToken, String messageText) {
+    private void sendPushNotification(String fcmToken, String messageText, String eventId) {
         // Create a message with the given payload
 //        RemoteMessage notificationMessage = new RemoteMessage.Builder(fcmToken)
 //                .addData("message", "Hello")
@@ -161,28 +162,36 @@ public class EventDetailsAnnouncementFragment extends Fragment{
             JSONObject jsonNotif = new JSONObject();
             JSONObject wholeObj = new JSONObject();
             try {
-                jsonNotif.put("title","ANNOUNCEMENT - "+ eventTitle);
-                jsonNotif.put("body",messageText);
-                wholeObj.put("to",fcmToken);
-                wholeObj.put("notification",jsonNotif);
-            } catch (JSONException e){
+                jsonNotif.put("title", "ANNOUNCEMENT - " + eventTitle);
+                jsonNotif.put("body", messageText);
+                wholeObj.put("to", fcmToken);
+                wholeObj.put("notification", jsonNotif);
+            } catch (JSONException e) {
                 Log.d(TAG, e.toString());
             }
             RequestBody rBody = RequestBody.create(mediaType, wholeObj.toString());
             Request request = new Request.Builder().url("https://fcm.googleapis.com/fcm/send")
                     .post(rBody)
-                    .addHeader("Authorization","key=AAAAlidLyZE:APA91bF1suXeK0OgT_eZIP9uEPOCarD4zMfUyLWvo5-ljaXKQp4wuZhU2Ik2C63QLZKsvKGnOuzNIh_56WCIl1R8-rENZFlPPrwAB8Corgtnba5w8pMpknuhzp7_q1dTyshB37uTu4EN")
-                    .addHeader("Content-Type","application/json").build();
+                    .addHeader("Authorization", "key=AAAAlidLyZE:APA91bF1suXeK0OgT_eZIP9uEPOCarD4zMfUyLWvo5-ljaXKQp4wuZhU2Ik2C63QLZKsvKGnOuzNIh_56WCIl1R8-rENZFlPPrwAB8Corgtnba5w8pMpknuhzp7_q1dTyshB37uTu4EN")
+                    .addHeader("Content-Type", "application/json").build();
             Log.d(TAG, "think working");
 //            Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
 
             try {
+                // Execute the request synchronously
                 Response response = client.newCall(request).execute();
-            } catch (IOException e){
-                Log.d("mylog",e.toString());
+                // Check if the notification was sent successfully
+                if (response.isSuccessful()) {
+                    // Call the helper method to store the notification data
+                    NotificationStorer.storeNotification(fcmToken, eventId, messageText);
+                    Log.d(TAG, "Notification sent successfully");
+                } else {
+                    // Handle the case where notification sending failed
+                    Log.e(TAG, "Failed to send notification: " + response.message());
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "IOException: " + e.getMessage());
             }
         }).start();
-
     }
-
 }
