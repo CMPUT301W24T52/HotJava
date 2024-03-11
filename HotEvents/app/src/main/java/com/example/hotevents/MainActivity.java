@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     MyEventsAdapter myEventsAdapter;
     MyEventsAdapter upcomingEventsAdapter;
     private String UserName = "";
-    ArrayList<String> SignedUpEvent;
+    ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
     ImageView menu;
     LinearLayout profile, signedUpEvents, publishedEvents, notifications, organizeEvent, admin;
@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     myEventsAdapter.notifyDataSetChanged();
+//                    upcomingEventsAdapter.notifyDataSetChanged();
                 }
             }
         });

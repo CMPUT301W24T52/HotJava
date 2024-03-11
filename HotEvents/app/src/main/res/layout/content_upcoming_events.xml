@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cardview"
+    android:id="@+id/uppcoming_event_cardview"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     card_view:contentPadding="8dp"
@@ -26,11 +26,12 @@
             android:src="@drawable/default_poster" />
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginStart="12dp">
 
             <TextView
+                android:id="@+id/upcoming_event_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title"
@@ -38,9 +39,11 @@
                 android:textSize="20sp"/>
 
             <TextView
+                android:id="@+id/upcoming_event_description_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Desrcription" />
+                android:text="Desrcription"
+                android:fontFamily="@font/montserrat_medium"/>
 
         </LinearLayout>
     </LinearLayout>
