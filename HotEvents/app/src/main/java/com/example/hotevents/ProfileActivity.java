@@ -117,9 +117,9 @@ public class ProfileActivity extends AppCompatActivity {
                 String location = documentSnapshot.getString("Location");
 
                 textViewName.setText(name);
-                textViewEmail.setText(email);
-                textViewContact.setText(contact);
-                textViewLocation.setText(location);
+                textViewEmail.setText("Email ID: " + email);
+                textViewContact.setText("Contact: " + contact);
+                textViewLocation.setText("Location: " + location);
 
                 // Generate default profile photo based on the first letter of the name
                 char firstLetter = name.charAt(0);
@@ -267,14 +267,14 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Interface for upload complete callback.
+     * Interface for upload complete callback .
      */
     private interface OnUploadCompleteListener {
         void onUploadComplete();
     }
 
     private void updateProfilePictureInDatabase(String userId, String imageUrl) {
-        // Update the 'ProfilePicture' field in the database with the image URL
+        // Update the 'ProfilePicture' field in the database collection with the image URL
         db.collection("Users").document(userId).update("ProfilePicture", imageUrl)
                 .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
                 .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
