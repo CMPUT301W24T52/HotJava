@@ -15,6 +15,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -50,11 +52,15 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Home Page and control center of program
@@ -83,6 +89,9 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     private ListenerRegistration userListener;
     private TextView textViewName;
+    private CircleImageView profilePhotoImageView;
+    private FirebaseStorage storage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +182,8 @@ public class MainActivity extends AppCompatActivity{
         });
 
 
+
+
         drawerLayout = findViewById(R.id.drawerLayout);
         menu = findViewById(R.id.menu);
         profile = findViewById(R.id.profile);
@@ -182,6 +193,8 @@ public class MainActivity extends AppCompatActivity{
         notifications_toolbar = findViewById(R.id.notifications_toolbar);
         organizeEvent = findViewById(R.id.organizeEvent);
         admin = findViewById(R.id.admin);
+        profilePhotoImageView = findViewById(R.id.CImageView);
+
 
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,6 +280,28 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * Downloads the profile picture from the given URL and sets it to the profile photo image view.
+     *
+     * @param profilePictureUrl The URL of the profile picture.
+     */
+    private void downloadAndSetProfilePicture(String profilePictureUrl) {
+        storage = FirebaseStorage.getInstance();
+        // Create a reference to the Firebase Storage URL
+        StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
+
+        // Download the image into a Bitmap
+        final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+        photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
+            // Decode the byte array into a Bitmap
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            // Set the downloaded profile picture to the image view
+            profilePhotoImageView.setImageBitmap(bitmap);
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+            Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
+        });
+    }
     private void handleNewUserInput(FirebaseFirestore db, String deviceId, String token) {
         SignedUpEvent = new ArrayList<String>();
         UserName = "Test User";
@@ -335,7 +370,8 @@ public class MainActivity extends AppCompatActivity{
 
                 textViewName.setText(name);
 
-                // You can also handle profile photo here if it's stored in Firestore
+                String ProfilePic = documentSnapshot.getString("ProfilePicture");
+                downloadAndSetProfilePicture(ProfilePic);
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
