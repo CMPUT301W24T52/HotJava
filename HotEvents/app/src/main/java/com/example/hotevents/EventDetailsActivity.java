@@ -151,36 +151,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
-    public void fetchFCMTokenForOrganizer(String organizerId) {
-        db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(organizerId).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            orgfcmToken = document.getString("fcmToken");
-                            if (orgfcmToken != null) {
-                                // FCM token found, you can use it here
-                                sendMilestoneIfConditionMet();
-                                Log.d(TAG, "FCM Token for organizer " + organizerId + ": " + orgfcmToken);
-                                // Now you can perform any actions with the FCM token
-                            } else {
-                                // FCM token not found for the organizer
-                                Log.d(TAG, "FCM token not found for organizer ID: " + organizerId);
-                            }
-                        } else {
-                            // Document not found
-                            Log.d(TAG, "No document found for organizer ID: " + organizerId);
-                        }
-                    } else {
-                        // Error fetching document
-                        Log.e(TAG, "Error fetching document: ", task.getException());
-                    }
-                });
-    }
-
-
-
     /**
      * Handles the sign-up button click event.
      * Retrieves the device ID of the user and the FCM token from Firestore Users collection.
@@ -230,6 +200,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+    /**
+     * Adds the event ID to the mysignup array in the Firestore Users collection.
+     *
+     * @param deviceId The device ID of the user.
+     * @param eventId  The ID of the event to be added to the mysignup array.
+     */
     private void addToMySignupArray(String deviceId, String eventId) {
         // Get the reference to the document in the Users collection
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -243,6 +221,44 @@ public class EventDetailsActivity extends AppCompatActivity {
                 });
     }
 
+
+    /**
+     * Fetches the FCM token for the event organizer from the Firestore Users collection.
+     *
+     * @param organizerId The ID of the event organizer.
+     */
+    public void fetchFCMTokenForOrganizer(String organizerId) {
+        db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(organizerId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            orgfcmToken = document.getString("fcmToken");
+                            if (orgfcmToken != null) {
+                                // FCM token found, you can use it here
+                                sendMilestoneIfConditionMet();
+                                Log.d(TAG, "FCM Token for organizer " + organizerId + ": " + orgfcmToken);
+                                // Now you can perform any actions with the FCM token
+                            } else {
+                                // FCM token not found for the organizer
+                                Log.d(TAG, "FCM token not found for organizer ID: " + organizerId);
+                            }
+                        } else {
+                            // Document not found
+                            Log.d(TAG, "No document found for organizer ID: " + organizerId);
+                        }
+                    } else {
+                        // Error fetching document
+                        Log.e(TAG, "Error fetching document: ", task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Checks if the condition for sending milestone notifications is met.
+     * If the condition is met (e.g., signups count equals 1 or 3), sends the milestone notification to the organizer.
+     */
     void sendMilestoneIfConditionMet() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Events").document(eventId).collection("signups")
@@ -254,6 +270,13 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                     // Check if conditions for sending notifications are met
                     if (signupsCount == 1) {
+                        // Create a notification message based on the signups count
+                        String notificationMessage = "Milestone: Signups count for event '" + myeventTitle + "' is " + signupsCount + ".";
+                        // Send the notification to the organizer
+                        sendPushNotification(orgfcmToken, notificationMessage, eventId);
+//                        Toast.makeText(, "Milestone sent", Toast.LENGTH_SHORT).show();
+                    }
+                    if (signupsCount == 3) {
                         // Create a notification message based on the signups count
                         String notificationMessage = "Milestone: Signups count for event '" + myeventTitle + "' is " + signupsCount + ".";
                         // Send the notification to the organizer
