@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -16,8 +17,16 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -39,6 +48,10 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListenerRegistration userListener;
 
+    // Firebase Storage
+    private FirebaseStorage storage;
+    private StorageReference profilePicturesRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +68,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Initialize Firestore instance
         db = FirebaseFirestore.getInstance();
+
+        // Initialize Firebase Storage
+        storage = FirebaseStorage.getInstance();
+        profilePicturesRef = storage.getReference().child("ProfilePictures");
 
         // Fetch user profile data from Firestore and update UI
         fetchUserDataFromFirestore();
@@ -106,12 +123,24 @@ public class ProfileActivity extends AppCompatActivity {
 
                 // Generate default profile photo based on the first letter of the name
                 char firstLetter = name.charAt(0);
-                Bitmap defaultProfilePhoto = generateDefaultProfilePhoto(firstLetter);
-                profilePhotoImageView.setImageBitmap(defaultProfilePhoto);
+                generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
         });
+    }
+
+    /**
+     * Generates a default profile photo with the initial character of the name and uploads it to Firebase Storage.
+     *
+     * @param userId      The user's unique ID.
+     * @param initialChar The initial character of the name.
+     */
+    private void generateDefaultProfilePhotoAndUpload(String userId, char initialChar) {
+        // Generate default profile photo
+        Bitmap defaultProfilePhoto = generateDefaultProfilePhoto(initialChar);
+        // Upload default profile photo to Firebase Storage
+        uploadProfilePhotoToStorage(userId, defaultProfilePhoto);
     }
 
     /**
@@ -141,6 +170,51 @@ public class ProfileActivity extends AppCompatActivity {
         canvas.drawText(String.valueOf(initialChar), x, y, paint);
         return bitmap;
     }
+
+    /**
+     * Uploads the profile photo to Firebase Storage.
+     *
+     * @param userId The user's unique ID.
+     * @param bitmap The profile photo bitmap to upload.
+     */
+    private void uploadProfilePhotoToStorage(String userId, Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        // Create a reference to 'ProfilePictures/userId.png'
+        StorageReference photoRef = profilePicturesRef.child(userId + ".png");
+
+        UploadTask uploadTask = photoRef.putBytes(data);
+        uploadTask.continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            // Continue with the task to get the download URL
+            return photoRef.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                if (downloadUri != null) {
+                    // Handle the uploaded photo URL if needed
+                    String imageUrl = "gs://hotevents-hotjava.appspot.com/ProfilePictures/" + userId + ".png";
+                    // Update the database with the image URL
+                    updateProfilePictureInDatabase(userId, imageUrl);
+                }
+            } else {
+                // Handle failures
+                Log.e("ProfileActivity", "Failed to upload profile photo");
+            }
+        });
+    }
+
+    private void updateProfilePictureInDatabase(String userId, String imageUrl) {
+        // Update the 'ProfilePicture' field in the database with the image URL
+        db.collection("Users").document(userId).update("ProfilePicture", imageUrl)
+                .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
+                .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
+    }
+
 
     @Override
     protected void onStop() {
