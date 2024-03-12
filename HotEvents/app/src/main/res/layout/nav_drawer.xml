@@ -20,7 +20,8 @@
             android:layout_height="100dp"
             android:id="@+id/CImageView"
             android:layout_marginStart="15dp"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:src="@drawable/default_profile"/>
 
         <TextView
             android:id="@+id/userName"
