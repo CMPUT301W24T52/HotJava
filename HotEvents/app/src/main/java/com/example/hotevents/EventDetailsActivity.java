@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -153,6 +154,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                         // Successfully stored the device ID in Firestore
                                         Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
                                         // You can add further logic here if needed
+                                        addToMySignupArray(deviceId, eventId);
                                     })
                                     .addOnFailureListener(e -> {
                                         // Failed to store the device ID
@@ -165,6 +167,18 @@ public class EventDetailsActivity extends AppCompatActivity {
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());
                     }
+                });
+    }
+    private void addToMySignupArray(String deviceId, String eventId) {
+        // Get the reference to the document in the Users collection
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(deviceId)
+                .update("mysignup", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Event added to mysignup array");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error updating mysignup array", e);
                 });
     }
 
