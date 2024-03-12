@@ -21,13 +21,16 @@ public class AdminOptionsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_options);
 
         browseProfiles = findViewById(R.id.browseProfiles);
-//        browseEvents = findViewById(R.id.browseEvents);
+        browseEvents = findViewById(R.id.browseEvents);
 //        browsePictures = findViewById(R.id.browsePictures);
-
         backButton = findViewById(R.id.backButton);
 
         browseProfiles.setOnClickListener(view -> {
             startActivity(new Intent(AdminOptionsActivity.this, BrowseProfilesActivity.class));
+        });
+
+        browseEvents.setOnClickListener(view -> {
+            startActivity(new Intent(AdminOptionsActivity.this, AdminBrowseEventsActivity.class));
         });
 
         backButton.setOnClickListener(new View.OnClickListener() {
