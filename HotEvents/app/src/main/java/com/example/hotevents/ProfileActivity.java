@@ -2,6 +2,10 @@ package com.example.hotevents;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -99,11 +103,43 @@ public class ProfileActivity extends AppCompatActivity {
                 textViewEmail.setText(email);
                 textViewContact.setText(contact);
                 textViewLocation.setText(location);
-                // You can also handle profile photo here if it's stored in Firestore
+
+                // Generate default profile photo based on the first letter of the name
+                char firstLetter = name.charAt(0);
+                Bitmap defaultProfilePhoto = generateDefaultProfilePhoto(firstLetter);
+                profilePhotoImageView.setImageBitmap(defaultProfilePhoto);
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
         });
+    }
+
+    /**
+     * Generates a default profile photo with the initial character of the name.
+     *
+     * @param initialChar The initial character of the name.
+     * @return Bitmap The generated default profile photo.
+     */
+    private Bitmap generateDefaultProfilePhoto(char initialChar) {
+        // This method generates a default profile photo with the initial character of the name
+        // You can customize this method to generate the photo as you like
+        // Here, we are creating a simple Bitmap with the initial character drawn on it
+        // You can use any image manipulation library or implement your own method
+        int imageSize = getResources().getDimensionPixelSize(R.dimen.profile_image_size);
+        Bitmap bitmap = Bitmap.createBitmap(imageSize, imageSize, Bitmap.Config.ARGB_8888);
+        // Create a Canvas and draw the initial character on the Bitmap
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(getResources().getDimension(R.dimen.profile_image_text_size));
+        paint.setAntiAlias(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        // Adjust text position to center
+        float x = canvas.getWidth() / 2f;
+        float y = (canvas.getHeight() / 2f) - ((paint.descent() + paint.ascent()) / 2f);
+        canvas.drawColor(Color.GRAY); // Set background color
+        canvas.drawText(String.valueOf(initialChar), x, y, paint);
+        return bitmap;
     }
 
     @Override
