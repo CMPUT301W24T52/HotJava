@@ -370,8 +370,22 @@ public class MainActivity extends AppCompatActivity{
 
                 textViewName.setText(name);
 
-                String ProfilePic = documentSnapshot.getString("ProfilePicture");
-                downloadAndSetProfilePicture(ProfilePic);
+                // Check if ProfilePicture field is present
+                if (documentSnapshot.contains("ProfilePicture")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePicture");
+
+                    // Check if profilePicUrl is not null or empty
+                    if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                        // Download and set profile picture
+                        downloadAndSetProfilePicture(profilePicUrl);
+                    } else {
+                        // Handle the case where the profile picture URL is null or empty
+                        Log.d("ProfileActivity", "Profile picture URL is null or empty");
+                    }
+                } else {
+                    // Handle the case where the ProfilePicture field is not present in the document
+                    Log.d("ProfileActivity", "No ProfilePicture field in the document");
+                }
             } else {
                 Log.d("ProfileActivity", "No such document");
             }

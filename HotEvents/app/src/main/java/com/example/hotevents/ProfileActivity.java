@@ -124,13 +124,29 @@ public class ProfileActivity extends AppCompatActivity {
                 // Generate default profile photo based on the first letter of the name
                 char firstLetter = name.charAt(0);
                 generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
-                String ProfilePic = documentSnapshot.getString("ProfilePicture");
-                downloadAndSetProfilePicture(ProfilePic);
+
+                // Check if ProfilePicture field is present
+                if (documentSnapshot.contains("ProfilePicture")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePicture");
+
+                    // Check if profilePicUrl is not null or empty
+                    if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                        // Download and set profile picture
+                        downloadAndSetProfilePicture(profilePicUrl);
+                    } else {
+                        // Handle the case where the profile picture URL is null or empty
+                        Log.d("ProfileActivity", "Profile picture URL is null or empty");
+                    }
+                } else {
+                    // Handle the case where the ProfilePicture field is not present in the document
+                    Log.d("ProfileActivity", "No ProfilePicture field in the document");
+                }
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
         });
     }
+
 
     /**
      * Downloads the profile picture from the given URL and sets it to the profile photo image view.
@@ -144,15 +160,27 @@ public class ProfileActivity extends AppCompatActivity {
         // Download the image into a Bitmap
         final long FIVE_MEGABYTE = 5 * 1024 * 1024;
         photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
-            // Decode the byte array into a Bitmap
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            // Set the downloaded profile picture to the image view
-            profilePhotoImageView.setImageBitmap(bitmap);
+            // Check if the byte array is not null
+            if (bytes != null && bytes.length > 0) {
+                // Decode the byte array into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                // Check if the bitmap is not null
+                if (bitmap != null) {
+                    // Set the downloaded profile picture to the image view
+                    profilePhotoImageView.setImageBitmap(bitmap);
+                } else {
+                    Log.e("ProfileActivity", "Failed to decode byte array into Bitmap");
+                }
+            } else {
+                Log.e("ProfileActivity", "Downloaded byte array is null or empty");
+            }
         }).addOnFailureListener(exception -> {
             // Handle any errors
             Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
         });
     }
+
 
 
     /**
