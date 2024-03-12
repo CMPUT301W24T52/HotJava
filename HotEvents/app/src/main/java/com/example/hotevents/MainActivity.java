@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        // Adds listener to event reference. Populates Event Array with Event data from DB
+        // Adds listener to event reference. Populates upcoming Event Array with Event data from DB
         eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setOrganiserId(organizerId);
                         myEventDataArray.add(newEvent);
                         upcomingEventDataArray.add(newEvent);
+                        // if user.id is in signed up events --> myEventDataArray.add(newEvent);
 
                     }
                     myEventsAdapter.notifyDataSetChanged();
