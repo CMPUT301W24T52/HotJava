@@ -117,9 +117,9 @@ public class ProfileActivity extends AppCompatActivity {
                 String location = documentSnapshot.getString("Location");
 
                 textViewName.setText(name);
-                textViewEmail.setText(email);
-                textViewContact.setText(contact);
-                textViewLocation.setText(location);
+                textViewEmail.setText("Email ID: " + email);
+                textViewContact.setText("Contact: " + contact);
+                textViewLocation.setText("Location: " + location);
 
                 // Generate default profile photo based on the first letter of the name
                 char firstLetter = name.charAt(0);
