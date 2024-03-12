@@ -15,12 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -47,14 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-    ArrayList<Event> eventDataArray;
+    ArrayList<Event> myEventDataArray;      //Signed up events
+    ArrayList<Event> upcomingEventDataArray;
     //ListView eventList;
     RecyclerView myEventView;
     RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
     LinearLayoutManager upcomingEventManager;
     MyEventsAdapter myEventsAdapter;
-    MyEventsAdapter upcomingEventsAdapter;
+    UpcomingEventAdapter upcomingEventsAdapter;
     private String UserName = "";
     ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
@@ -69,27 +64,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        eventDataArray = new ArrayList<Event>();
+        myEventDataArray = new ArrayList<Event>();
+        upcomingEventDataArray = new ArrayList<Event>();
         myEventView = (RecyclerView) findViewById(R.id.signedupevent_list);
         myEventHorizantleManager = new LinearLayoutManager(this);
         myEventHorizantleManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         myEventView.setHasFixedSize(false);
         myEventView.setLayoutManager(myEventHorizantleManager);
-//
-//        upcomingEventManager = new LinearLayoutManager(this);
-//        upcomingEventView = (RecyclerView) findViewById(R.id.upcoming_events_list);
-//        upcomingEventView.setHasFixedSize(false);
-//        upcomingEventView.setLayoutManager(upcomingEventManager);
+
+        upcomingEventManager = new LinearLayoutManager(this);
+        upcomingEventView = (RecyclerView) findViewById(R.id.upcoming_events_list);
+        upcomingEventView.setHasFixedSize(false);
+        upcomingEventView.setLayoutManager(upcomingEventManager);
 
 
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events");
 
-        myEventsAdapter = new MyEventsAdapter(eventDataArray, this);
-//        upcomingEventsAdapter = new MyEventsAdapter(eventDataArray, this);
+        myEventsAdapter = new MyEventsAdapter(myEventDataArray, this);
+        upcomingEventsAdapter = new UpcomingEventAdapter(upcomingEventDataArray, this);
 
         myEventView.setAdapter(myEventsAdapter);
-//        upcomingEventView.setAdapter(upcomingEventsAdapter);
+        upcomingEventView.setAdapter(upcomingEventsAdapter);
 
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -117,7 +113,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 if (value != null){
-                    eventDataArray.clear();
+                    myEventDataArray.clear();
+                    upcomingEventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         String eventId = doc.getId();
                         String title = doc.getString("Title");
@@ -133,11 +130,12 @@ public class MainActivity extends AppCompatActivity {
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
-                        eventDataArray.add(newEvent);
+                        myEventDataArray.add(newEvent);
+                        upcomingEventDataArray.add(newEvent);
 
                     }
                     myEventsAdapter.notifyDataSetChanged();
-//                    upcomingEventsAdapter.notifyDataSetChanged();
+                    upcomingEventsAdapter.notifyDataSetChanged();
                 }
             }
         });
