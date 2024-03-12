@@ -3,6 +3,7 @@ package com.example.hotevents;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,8 +18,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -82,6 +81,7 @@ public class ProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
             startActivityForResult(intent, EDIT_PROFILE_REQUEST_CODE);
         });
+
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Fetches user profile data from Firestore and updates the UI.
+     * Fetches user profile data from Firestore including the profile picture and updates the UI.
      */
     private void fetchUserDataFromFirestore() {
         // Get device ID
@@ -124,6 +124,8 @@ public class ProfileActivity extends AppCompatActivity {
                 // Generate default profile photo based on the first letter of the name
                 char firstLetter = name.charAt(0);
                 generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
+                String ProfilePic = documentSnapshot.getString("ProfilePicture");
+                downloadAndSetProfilePicture(ProfilePic);
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
@@ -131,7 +133,31 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Generates a default profile photo with the initial character of the name and uploads it to Firebase Storage.
+     * Downloads the profile picture from the given URL and sets it to the profile photo image view.
+     *
+     * @param profilePictureUrl The URL of the profile picture.
+     */
+    private void downloadAndSetProfilePicture(String profilePictureUrl) {
+        // Create a reference to the Firebase Storage URL
+        StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
+
+        // Download the image into a Bitmap
+        final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+        photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
+            // Decode the byte array into a Bitmap
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            // Set the downloaded profile picture to the image view
+            profilePhotoImageView.setImageBitmap(bitmap);
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+            Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
+        });
+    }
+
+
+    /**
+     * Generates a default profile photo with the initial character of the name, uploads it to Firebase Storage,
+     * and updates the 'ProfilePicture' field in the Firestore database.
      *
      * @param userId      The user's unique ID.
      * @param initialChar The initial character of the name.
@@ -139,8 +165,13 @@ public class ProfileActivity extends AppCompatActivity {
     private void generateDefaultProfilePhotoAndUpload(String userId, char initialChar) {
         // Generate default profile photo
         Bitmap defaultProfilePhoto = generateDefaultProfilePhoto(initialChar);
+
         // Upload default profile photo to Firebase Storage
-        uploadProfilePhotoToStorage(userId, defaultProfilePhoto);
+        uploadProfilePhotoToStorage(userId, defaultProfilePhoto, () -> {
+            // Upload successful, update the 'ProfilePicture' field in the database with the image URL
+            String imageUrl = "gs://hotevents-hotjava.appspot.com/ProfilePictures/" + userId + ".png";
+            updateProfilePictureInDatabase(userId, imageUrl);
+        });
     }
 
     /**
@@ -176,8 +207,9 @@ public class ProfileActivity extends AppCompatActivity {
      *
      * @param userId The user's unique ID.
      * @param bitmap The profile photo bitmap to upload.
+     * @param onCompleteCallback Callback to execute after the upload is complete.
      */
-    private void uploadProfilePhotoToStorage(String userId, Bitmap bitmap) {
+    private void uploadProfilePhotoToStorage(String userId, Bitmap bitmap, OnUploadCompleteListener onCompleteCallback) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] data = baos.toByteArray();
@@ -196,10 +228,8 @@ public class ProfileActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Uri downloadUri = task.getResult();
                 if (downloadUri != null) {
-                    // Handle the uploaded photo URL if needed
-                    String imageUrl = "gs://hotevents-hotjava.appspot.com/ProfilePictures/" + userId + ".png";
-                    // Update the database with the image URL
-                    updateProfilePictureInDatabase(userId, imageUrl);
+                    // Callback to execute after the upload is complete
+                    onCompleteCallback.onUploadComplete();
                 }
             } else {
                 // Handle failures
@@ -208,13 +238,19 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Interface for upload complete callback.
+     */
+    private interface OnUploadCompleteListener {
+        void onUploadComplete();
+    }
+
     private void updateProfilePictureInDatabase(String userId, String imageUrl) {
         // Update the 'ProfilePicture' field in the database with the image URL
         db.collection("Users").document(userId).update("ProfilePicture", imageUrl)
                 .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
                 .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
     }
-
 
     @Override
     protected void onStop() {

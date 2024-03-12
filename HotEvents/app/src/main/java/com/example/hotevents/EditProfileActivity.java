@@ -101,7 +101,15 @@ public class EditProfileActivity extends AppCompatActivity {
             Intent resultIntent = new Intent();
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
+
+            // Refresh the profile activity to display the updated profile data
+            Intent refreshIntent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+            // Add flags to clear the activity stack and create a new instance of ProfileActivity
+            refreshIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(refreshIntent);
         });
+
+
     }
 
     @Override
