@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -90,18 +93,39 @@ public class EditProfileActivity extends AppCompatActivity {
             userRef.update("Contact", updatedContact);
             userRef.update("Location", updatedLocation);
 
-            // If new photo selected, update the profile picture field
-            if (newPhotoUri != null) {
-                // Assuming you have a method to upload the photo to storage and get the URL
-                String photoUrl = uploadPhotoAndGetUrl(newPhotoUri);
-                userRef.update("ProfilePicture", photoUrl);
-            }
-
             // Set result and finish activity
             Intent resultIntent = new Intent();
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
+
+            // Refresh the profile activity to display the updated profile data
+            Intent refreshIntent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+            // Add flags to clear the activity stack and create a new instance of ProfileActivity
+            refreshIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(refreshIntent);
         });
+
+
+    }
+    private void uploadPhoto(Uri photoUri) {
+        // Generating unique name for the image
+        String imageName = deviceId + ".png";
+
+        // Getting reference to Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child("ProfilePictures")
+                .child(imageName);
+
+        // Uploading image to Firebase Storage
+        storageRef.putFile(photoUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Image uploaded successfully
+                    Log.d("Upload", "Image uploaded successfully");
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure to upload image
+                    Log.e("Upload", "Failed to upload image: " + e.getMessage());
+                });
     }
 
     @Override
@@ -116,18 +140,12 @@ public class EditProfileActivity extends AppCompatActivity {
                     profilePhotoImageView.setImageURI(selectedImageUri);
                     // Store the URI of the selected image to pass it back to the ProfileActivity
                     newPhotoUri = selectedImageUri;
+
+                    // Upload the selected image to Firebase Storage
+                    uploadPhoto(newPhotoUri);
                 }
             }
         }
     }
 
-    /**
-     * Method to upload photo to storage and get URL.
-     * @param photoUri The URI of the photo to be uploaded.
-     * @return String The URL of the uploaded photo.
-     */
-    private String uploadPhotoAndGetUrl(Uri photoUri) {
-        // We have to figure out how to upload photo to storage and return the URL
-        return null;
-    }
 }
