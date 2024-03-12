@@ -199,7 +199,7 @@
         android:layout_marginEnd="56dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#74AF93"
-        android:text="Check In"
+        android:text="Sign Up"
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -207,8 +207,8 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
-        android:layout_width="0dp"
-        android:layout_height="156dp"
+        android:layout_width="390dp"
+        android:layout_height="244dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toTopOf="@+id/check_in_button"

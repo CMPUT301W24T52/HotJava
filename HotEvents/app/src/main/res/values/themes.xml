@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Hotevents" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
         <!-- Customize your light theme here. -->
          <item name="colorPrimary">@android:color/holo_blue_dark</item>
     </style>
 
-    <style name="Theme.Hotevents" parent="Base.Theme.Hotevents" />
+    <style name="Theme.Hotevents" parent="Base.Theme.Hotevents"/>
 </resources>
