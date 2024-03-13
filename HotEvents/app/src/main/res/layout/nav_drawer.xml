@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:background="@drawable/drawer_border">
 
     <!-- Header -->
@@ -21,6 +22,7 @@
             android:id="@+id/CImageView"
             android:layout_marginStart="15dp"
             android:padding="5dp"
+            android:elevation="9dp"
             android:src="@drawable/default_profile"/>
 
         <TextView
@@ -98,7 +100,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Published Events"
+                android:text="Organized Events"
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/monsterrat_regular"
@@ -129,13 +131,14 @@
 
             <Switch
                 android:id="@+id/toggleGeo"
-                android:layout_width="wrap_content"
+                android:layout_width="299dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/monsterrat_regular"
-                android:text="Allow Location Access"
-                android:textSize="15dp"
-                android:paddingLeft="30dp"
-                android:paddingTop="10dp"/>
+                android:paddingLeft="38dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
+                android:text="Allow location sharing when checkIn for an event"
+                android:textSize="15dp" />
         </LinearLayout>
 
         <!-- Notifications -->
@@ -171,7 +174,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Organize Event"
+                android:text="Create Event"
                 android:textSize="20sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/monsterrat_regular"
