@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="15dp"
-    android:background="@drawable/toolbar_background"
+    android:background="#FFFFFF"
     android:gravity="center_vertical">
 
     <!-- Menu Icon -->
