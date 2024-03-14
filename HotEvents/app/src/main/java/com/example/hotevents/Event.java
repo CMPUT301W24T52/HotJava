@@ -24,6 +24,7 @@ public class Event implements Serializable {
     private String description;
     private String title;
     private String eventId;
+    private String location;
 
     /**
      * Constructor for Event Object
@@ -39,7 +40,7 @@ public class Event implements Serializable {
      */
     Event(Date startDateTime, Date endDateTime, @Nullable Integer maxAttendees,
           @Nullable String organiserId, @Nullable Bitmap poster, QRCodes qrCode, @Nullable String description,
-          String title, @Nullable String eventId){
+          String title, @Nullable String eventId, String location){
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxAttendees = maxAttendees;
@@ -49,6 +50,7 @@ public class Event implements Serializable {
         this.description = description;
         this.title = title;
         this.eventId = eventId;
+        this.location = location;
     }
 
     /**
@@ -120,4 +122,6 @@ public class Event implements Serializable {
         return qrCode;
     }
     public String getEventId(){return eventId;}
+    public String getLocation(){return location;}
+    public void setLocation(String location) {this.location = location;}
 }

@@ -449,7 +449,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         //Case where the poster isn't submitted, just upload it as null
         if (posterImage.getDrawable() == null){
-            Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId);
+            Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId, location);
 
             //Uploading the event to firebase
             firebaseEventUpload(event);
@@ -483,6 +483,7 @@ public class CreateEventActivity extends AppCompatActivity {
         eventMap.put("Title", event.getTitle());
         eventMap.put("QRCode", event.getQrCode().getEncodedStr());
         eventMap.put("QRCodePromo", qrCodePromo.getEncodedStr());
+        eventMap.put("Location", event.getLocation());
 
         eventsRef.document()
                 .set(eventMap)
@@ -531,7 +532,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 //Creating the class
-                Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId);
+                Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId, location);
 
                 //Uploading the event to firebase
                 firebaseEventUpload(event);
