@@ -450,7 +450,6 @@ public class CreateEventActivity extends AppCompatActivity {
         //Case where the poster isn't submitted, just upload it as null
         if (posterImage.getDrawable() == null){
             Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId, location);
-
             //Uploading the event to firebase
             firebaseEventUpload(event);
         }

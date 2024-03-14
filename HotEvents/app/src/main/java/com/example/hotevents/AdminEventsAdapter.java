@@ -24,8 +24,8 @@ import java.util.ArrayList;
 /**
  * My Events View Adapter
  */
-public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEventViewHolder> {
-    private ArrayList<Event> myEvents;
+public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.AdminEventsViewHolder> {
+    private ArrayList<Event> adminEvents;
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
@@ -34,7 +34,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
      * View holder for RecyclerView
      * implements onClickListen to create listener on each event
      */
-    public class MyEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class AdminEventsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView myEventTitle;
         public TextView myEventLocation;
         public TextView myEventDate;
@@ -44,12 +44,12 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
          * Constructor for View holder class
          * @param itemView object holding my event item view
          */
-        public MyEventViewHolder(@NonNull View itemView) {
+        public AdminEventsViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
             myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
-            myEventLocation = (TextView) itemView.findViewById(R.id.event_location);
-            myEventDate = (TextView) itemView.findViewById(R.id.event_start_date);
+            myEventLocation = (TextView) itemView.findViewById(R.id.event_location_text);
+            myEventDate = (TextView) itemView.findViewById(R.id.event_start_time_text);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }
@@ -57,7 +57,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         @Override
         public void onClick(View v) {
             Intent myIntent = new Intent(context, EventDetailsActivity.class);
-            Event event = myEvents.get(getAdapterPosition());
+            Event event = adminEvents.get(getAdapterPosition());
             myIntent.putExtra("event", event);
             Log.d("MyEventAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(myIntent);
@@ -69,23 +69,23 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
      * @param myEvents array of events objects
      * @param context context
      */
-    public MyEventsAdapter(ArrayList<Event> myEvents, Context context){
-        this.myEvents = myEvents;
+    public AdminEventsAdapter(ArrayList<Event> myEvents, Context context){
+        this.adminEvents = myEvents;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public MyEventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdminEventsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView
-                = LayoutInflater.from(context).inflate(R.layout.content_myevents, parent, false);
-        return new MyEventViewHolder(itemView);
+                = LayoutInflater.from(context).inflate(R.layout.content_admin_events, parent, false);
+        return new AdminEventsViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyEventViewHolder holder, int position) {
-        Event event = myEvents.get(position);
-        Log.d("MyEventsAdapter",event.getTitle());
+    public void onBindViewHolder(@NonNull AdminEventsViewHolder holder, int position) {
+        Event event = adminEvents.get(position);
+        Log.d("AdminEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText("Location");
         holder.myEventDate.setText(event.getStartDateTime().toString());
@@ -102,7 +102,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 
     @Override
     public int getItemCount() {
-        return myEvents.size();
+        return adminEvents.size();
     }
 
 

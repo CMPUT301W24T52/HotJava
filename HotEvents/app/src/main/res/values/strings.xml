@@ -33,6 +33,6 @@
     <string name="browse_user_location">Location: City, Country</string>
     <string name="delete_profile">Delete Profile</string>
     <string name="user_uid">user id</string>
-
+    <string name="msg_token_fmt">message</string>
 
 </resources>

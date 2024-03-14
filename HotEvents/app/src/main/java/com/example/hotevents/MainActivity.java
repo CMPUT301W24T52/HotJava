@@ -1,29 +1,59 @@
 package com.example.hotevents;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,27 +70,30 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * - Make Event Icons functional
  * - [Optional] Refresh Functionality
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+    ArrayList<Event> myEventDataArray;      //Signed up events
+    ArrayList<Event> upcomingEventDataArray;
+    //ListView eventList;
+    RecyclerView myEventView;
+    RecyclerView upcomingEventView;
+    LinearLayoutManager myEventHorizantleManager;
+    LinearLayoutManager upcomingEventManager;
     MyEventsAdapter myEventsAdapter;
-    ArrayList<Event> eventDataArray;
-    ListView eventList;
-    Button menuButton;
-    CircleImageView profileButton;
-    Button NavButton;
+    UpcomingEventAdapter upcomingEventsAdapter;
     private String UserName = "";
-    ArrayList<String> SignedUpEvent;
-
-
-    FloatingActionButton CreateEventButton;
-
+    ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
-    ImageView menu;
+    ImageView menu, notifications_toolbar;
     LinearLayout profile, signedUpEvents, publishedEvents, notifications, organizeEvent, admin;
-
-
+    Switch toggleGeo;
+    private static final String TAG = "MainActivity";
+    private ListenerRegistration userListener;
+    private TextView textViewName;
+    private CircleImageView profilePhotoImageView;
+    private FirebaseStorage storage;
 
 
     @Override
@@ -68,32 +101,66 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        myEventDataArray = new ArrayList<Event>();
+        upcomingEventDataArray = new ArrayList<Event>();
+        myEventView = (RecyclerView) findViewById(R.id.signedupevent_list);
+        myEventHorizantleManager = new LinearLayoutManager(this);
+        myEventHorizantleManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        myEventView.setHasFixedSize(false);
+        myEventView.setLayoutManager(myEventHorizantleManager);
+
+        upcomingEventManager = new LinearLayoutManager(this);
+        upcomingEventView = (RecyclerView) findViewById(R.id.upcoming_events_list);
+        upcomingEventView.setHasFixedSize(false);
+        upcomingEventView.setLayoutManager(upcomingEventManager);
+
+
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events");
 
-        eventDataArray = new ArrayList<Event>();
-        eventList = findViewById(R.id.event_list);
-        myEventsAdapter = new MyEventsAdapter(this, eventDataArray);
+        myEventsAdapter = new MyEventsAdapter(myEventDataArray, this);
+        upcomingEventsAdapter = new UpcomingEventAdapter(upcomingEventDataArray, this);
 
-        eventList.setAdapter(myEventsAdapter);
+        myEventView.setAdapter(myEventsAdapter);
+        upcomingEventView.setAdapter(upcomingEventsAdapter);
+
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        TextView UserName = findViewById(R.id.userName);
+        textViewName = findViewById(R.id.userName);
 
         db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     // Document exists, user "logged in"
-                     UserName = task.getResult().getString(("Name"));
+//                    UserName = task.getResult().getString(("Name"));
+                    UserName.setText(document.getString("Name"));
                 } else {
                     // No such document, user not "logged in"
-                    handleNewUserInput(db,deviceId);
+                    // Retrieve the FCM registration token
+                    FirebaseMessaging.getInstance().getToken()
+                            .addOnCompleteListener(new OnCompleteListener<String>() {
+                                @Override
+                                public void onComplete(@NonNull Task<String> task) {
+                                    if (task.isSuccessful()) {
+                                        // Get the token
+                                        String token = task.getResult();
+                                        handleNewUserInput(db,deviceId,token);
+                                        Log.d(TAG, "FCM Registration Token: " + token);
+                                        Toast.makeText(MainActivity.this, "FCM Registration Token: " + token, Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        // Handle the error
+                                        Log.e(TAG, "Failed to retrieve FCM Registration Token", task.getException());
+                                    }
+                                }
+                            });
                 }
             }
         });
 
-        // Adds listener to event reference. Populates Event Array with Event data from DB
+        // Adds listener to event reference. Populates upcoming Event Array with Event data from DB
         eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -102,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 if (value != null){
-                    eventDataArray.clear();
+                    myEventDataArray.clear();
+                    upcomingEventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         String eventId = doc.getId();
                         String title = doc.getString("Title");
@@ -110,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                         Date endDate = doc.getDate("EndDateTime");
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
-                        Log.d("Firestore: ", String.format("Event (%s) fetched", title) );
+                        Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
                         newEvent.setEventId(eventId);
@@ -118,12 +186,18 @@ public class MainActivity extends AppCompatActivity {
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
-                        eventDataArray.add(newEvent);
+                        myEventDataArray.add(newEvent);
+                        upcomingEventDataArray.add(newEvent);
+                        // if user.id is in signed up events --> myEventDataArray.add(newEvent);
+
                     }
                     myEventsAdapter.notifyDataSetChanged();
+                    upcomingEventsAdapter.notifyDataSetChanged();
                 }
             }
         });
+
+
 
 
         drawerLayout = findViewById(R.id.drawerLayout);
@@ -131,9 +205,12 @@ public class MainActivity extends AppCompatActivity {
         profile = findViewById(R.id.profile);
 //        signedUpEvents = findViewById(R.id.signedUpEvents);
 //        publishedEvents = findViewById(R.id.publishedEvents);
-//        notifications = findViewById(R.id.notifications);
+        notifications = findViewById(R.id.notifications);
+        notifications_toolbar = findViewById(R.id.notifications_toolbar);
         organizeEvent = findViewById(R.id.organizeEvent);
         admin = findViewById(R.id.admin);
+        profilePhotoImageView = findViewById(R.id.CImageView);
+
 
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +222,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 redirectActivity(MainActivity.this, ProfileActivity.class);
+            }
+        });
+        notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, NotificationDisplayActivity.class);
+            }
+        });
+
+        notifications_toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, NotificationDisplayActivity.class);
             }
         });
 
@@ -159,6 +249,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         * Initializes and sets up the toggle switch for location access.
+         *
+         * This method initializes the toggle switch for location access, sets it to true by default,
+         * and sets up a listener to handle changes to the toggle state. When the toggle state changes,
+         * it updates the corresponding field in the Firestore database.
+         *
+         * @param context The context of the activity.
+         * @param db The instance of the Firestore database.
+         * @param TAG The tag used for logging.
+         * @param toggleGeo The toggle switch for location access.
+         */
+        toggleGeo = findViewById(R.id.toggleGeo);
+        toggleGeo.setChecked(true); // Set the toggle switch to true by default
+        toggleGeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Update the field in Firestore based on the toggle state
+                String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                DocumentReference userRef = db.collection("Users").document(deviceId);
+                userRef.update("geo", isChecked)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "Geo toggle state updated successfully");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e(TAG, "Error updating geo toggle state", e);
+                                // Handle failure
+                            }
+                        });
+            }
+        });
+
+
         admin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,30 +294,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-//        CreateEventButton = findViewById(R.id.floatingActionButton);
-//        CreateEventButton.setOnClickListener(v -> {
-//            startActivity(new Intent(MainActivity.this, CreateEventActivity.class));
-//        });
-
-        eventList.setOnItemClickListener((parent, view, position, id) -> {
-            Intent myIntent = new Intent(MainActivity.this, EventDetailsActivity.class);
-            myIntent.putExtra("event", eventDataArray.get(position));
-            startActivity(myIntent);
-        });
-
-//        profileButton = findViewById(R.id.profileButton);
-//        profileButton.setOnClickListener(view -> {
-//            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-//        });
-//
-//        NavButton = findViewById(R.id.NavButton);
-//        NavButton.setOnClickListener(view -> {
-//            startActivity(new Intent(MainActivity.this, NavigationMenu.class));
-//        });
-
     }
-    private void handleNewUserInput(FirebaseFirestore db, String deviceId) {
+
+    /**
+     * Downloads the profile picture from the given URL and sets it to the profile photo image view.
+     *
+     * @param profilePictureUrl The URL of the profile picture.
+     */
+    private void downloadAndSetProfilePicture(String profilePictureUrl) {
+        storage = FirebaseStorage.getInstance();
+        // Create a reference to the Firebase Storage URL
+        StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
+
+        // Download the image into a Bitmap
+        final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+        photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
+            // Decode the byte array into a Bitmap
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            // Set the downloaded profile picture to the image view
+            profilePhotoImageView.setImageBitmap(bitmap);
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+            Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
+        });
+    }
+    private void handleNewUserInput(FirebaseFirestore db, String deviceId, String token) {
         SignedUpEvent = new ArrayList<String>();
         UserName = "Test User";
         Map<String, Object> newUser = new HashMap<>();
@@ -201,13 +330,14 @@ public class MainActivity extends AppCompatActivity {
         newUser.put("Email ID", "");
         newUser.put("Location", "");
         newUser.put("SignedUpEvent",SignedUpEvent);
+        newUser.put("geo",true);
+        newUser.put("fcmToken",token);
 
         // Add a new document with the device ID as the document ID
         db.collection("Users").document(deviceId).set(newUser)
                 .addOnSuccessListener(aVoid -> {
 
         });
-
     }
 
     public static void openDrawer(DrawerLayout drawerLayout){
@@ -225,8 +355,57 @@ public class MainActivity extends AppCompatActivity {
 //        activity.finish();
 
     }
+
+    protected void onResume() {
+        super.onResume();
+        fetchUserDataFromFirestore();
+    }
     protected void onPause(){
         super.onPause();
         closeDrawer(drawerLayout);
     }
+    /**
+     * Fetches user data from Firestore and updates the Navigation drawer UI with the user's name.
+     * This method listens for changes in the user's profile data and automatically
+     * updates the UI when changes occur.
+     */
+    private void fetchUserDataFromFirestore() {
+        // Get device ID
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // Listen for changes in user profile data
+        userListener = db.collection("Users").document(deviceId).addSnapshotListener((documentSnapshot, e) -> {
+            if (e != null) {
+                Log.e("ProfileActivity", "Listen failed.", e);
+                return;
+            }
+
+            // Check if document exists and update UI with user data
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                String name = documentSnapshot.getString("Name");
+
+                textViewName.setText(name);
+
+                // Check if ProfilePicture field is present
+                if (documentSnapshot.contains("ProfilePicture")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePicture");
+
+                    // Check if profilePicUrl is not null or empty
+                    if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                        // Download and set profile picture
+                        downloadAndSetProfilePicture(profilePicUrl);
+                    } else {
+                        // Handle the case where the profile picture URL is null or empty
+                        Log.d("ProfileActivity", "Profile picture URL is null or empty");
+                    }
+                } else {
+                    // Handle the case where the ProfilePicture field is not present in the document
+                    Log.d("ProfileActivity", "No ProfilePicture field in the document");
+                }
+            } else {
+                Log.d("ProfileActivity", "No such document");
+            }
+        });
+    }
+
 }

@@ -1,11 +1,8 @@
 package com.example.hotevents;
 
 import android.graphics.Bitmap;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
-
-import com.google.type.DateTime;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +14,7 @@ public class Event implements Serializable {
 
     private Date startDateTime;
     private Date endDateTime;
+    private String location;
     private Integer maxAttendees;
     private String organiserId;
     private Bitmap poster;
@@ -24,7 +22,6 @@ public class Event implements Serializable {
     private String description;
     private String title;
     private String eventId;
-    private String location;
 
     /**
      * Constructor for Event Object
@@ -60,6 +57,14 @@ public class Event implements Serializable {
     Event(String title){
         this.title = title;
     }       // Unsure whether necessary or if theres a better way
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
+    }
 
     public void setTitle(String title) {
         this.title = title;
@@ -122,6 +127,4 @@ public class Event implements Serializable {
         return qrCode;
     }
     public String getEventId(){return eventId;}
-    public String getLocation(){return location;}
-    public void setLocation(String location) {this.location = location;}
 }
