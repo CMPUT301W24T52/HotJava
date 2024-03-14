@@ -1,0 +1,9 @@
+<!-- toolbar_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#FFFFFF"
+    android:endColor="#eef3f0"
+    android:angle="270"/>
+    <corners
+        android:radius="0dp"/>
+</shape>

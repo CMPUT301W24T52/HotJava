@@ -1,60 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="15dp"
-    android:id="@+id/toolbar"
-    android:background="@color/white"
+    android:background="@drawable/toolbar_background"
     android:gravity="center_vertical">
 
+    <!-- Menu Icon -->
     <ImageView
         android:id="@+id/menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:paddingRight="30dp"
-        android:src="@drawable/baseline_density_medium_24">
-    </ImageView>
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:src="@drawable/baseline_menu_40"
+        app:tint="@color/black" />
 
+    <!-- Title and Subtitle -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
+        <!-- Explore and Hot Events TextViews -->
         <LinearLayout
+            android:id="@+id/titleContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.086"
+            android:layout_marginEnd="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/titleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Explore"
-                android:textSize="16sp"></TextView>
+                android:textSize="20sp"
+                android:textStyle="italic"
+                android:textColor="@color/black"
+                android:fontFamily="@font/montserrat_italic"/>
 
             <TextView
+                android:id="@+id/subtitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hot Events"
-                android:textSize="34sp"></TextView>
-
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:fontFamily="@font/montserrat_bold"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Notifications Icon -->
     <ImageView
         android:id="@+id/notifications_toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:src="@drawable/baseline_notifications_24">
-    </ImageView>
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:src="@drawable/baseline_notifications_40"
+        app:tint="#000000" />
 </LinearLayout>

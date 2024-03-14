@@ -1,323 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<androidx.constraintlayout.widget.ConstraintLayout-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:layout_width="match_parent"-->
-<!--    tools:context=".MainActivity">-->
-
-<!--    <Button-->
-<!--        android:id="@+id/NavButton"-->
-<!--        android:layout_width="66dp"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:clickable="true"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/textView2"-->
-<!--        app:layout_constraintHorizontal_bias="0.28"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-
-<!--    <TextView-->
-<!--        android:id="@+id/textView2"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Welcome Back USER!"-->
-<!--        android:textSize="24sp"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:layout_marginTop="16dp" />-->
-
-<!--    &lt;!&ndash; Circular Profile Button &ndash;&gt;-->
-<!--    <de.hdodenhof.circleimageview.CircleImageView-->
-<!--        android:id="@+id/profileButton"-->
-<!--        android:layout_width="60dp"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:src="@drawable/img"-->
-<!--        app:layout_constraintTop_toTopOf="@id/textView2"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:layout_marginEnd="16dp"/>-->
-
-<!--    &lt;!&ndash; LinearLayout containing FloatingActionButton &ndash;&gt;-->
-<!--    <LinearLayout-->
-<!--        android:id="@+id/linearLayout"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        android:layout_marginEnd="16dp">-->
-
-<!--        &lt;!&ndash; FloatingActionButton &ndash;&gt;-->
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/floatingActionButton"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:clickable="true"-->
-<!--            android:src="@android:drawable/ic_input_add" />-->
-
-<!--    </LinearLayout>-->
-<!--    &lt;!&ndash;From Menu bar to the bottom&ndash;&gt;-->
-<!--    <ScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="45dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/textView2">-->
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content">-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/myEvents"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="My Events"-->
-<!--                android:textSize="28sp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            <HorizontalScrollView-->
-<!--                android:id="@+id/horizontalScrollView"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintHorizontal_bias="1.0"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/myEvents">-->
-
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/myevent_list"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal">-->
-
-<!--                    <ListView-->
-<!--                        android:id="@+id/event_list"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:clickable="true"-->
-<!--                        android:focusable="true">-->
-
-<!--                    </ListView>-->
-<!--                </LinearLayout>-->
-<!--            </HorizontalScrollView>-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/upcoming_events"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:text="All Upcoming Events"-->
-<!--                android:textSize="28sp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:padding="8dp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/upcoming_events">-->
-
-<!--                <ImageView-->
-<!--                    android:layout_width="50dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:src="@drawable/thumbnail" />-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content">-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:padding="4dp"-->
-<!--                        android:text="Event Title"-->
-<!--                        android:textSize="20dp" />-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="Location" />-->
-<!--                </LinearLayout>-->
-
-<!--            </LinearLayout>-->
-
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--    </ScrollView>-->
-
-<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
-
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/drawerLayout"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <!-- Decorative Elements -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/gradient_background"
+        android:layout_below="@id/myEvents"
+        android:layout_above="@id/upcoming_events"/>
+
+    <!-- Toolbar and Homepage Content -->
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/toolbar"></include>
+        <!-- Include the toolbar layout -->
+        <include layout="@layout/toolbar" />
 
-<!--            <Button-->
-<!--                android:id="@+id/NavButton"-->
-<!--                android:layout_width="66dp"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:clickable="true"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/textView2"-->
-<!--                app:layout_constraintHorizontal_bias="0.28"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45dp">
 
-
-<!--            <TextView-->
-<!--                android:id="@+id/textView2"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Welcome Back USER!"-->
-<!--                android:textSize="24sp"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                android:layout_marginTop="16dp" />-->
-
-<!--            &lt;!&ndash; Circular Profile Button &ndash;&gt;-->
-<!--            <de.hdodenhof.circleimageview.CircleImageView-->
-<!--                android:id="@+id/profileButton"-->
-<!--                android:layout_width="60dp"-->
-<!--                android:layout_height="60dp"-->
-<!--                android:src="@drawable/img"-->
-<!--                app:layout_constraintTop_toTopOf="@id/textView2"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                android:layout_marginEnd="16dp"/>-->
-
-<!--            &lt;!&ndash; LinearLayout containing FloatingActionButton &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:id="@+id/linearLayout"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                android:layout_marginBottom="16dp"-->
-<!--                android:layout_marginEnd="16dp">-->
-
-<!--                &lt;!&ndash; FloatingActionButton &ndash;&gt;-->
-<!--                <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--                    android:id="@+id/floatingActionButton"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:clickable="true"-->
-<!--                    android:src="@android:drawable/ic_input_add" />-->
-
-<!--            </LinearLayout>-->
-            <!--From Menu bar to the bottom-->
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="45dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2">
+                android:orientation="vertical">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <!-- My Signed Up Events TextView -->
+                <TextView
+                    android:id="@+id/myEvents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="My Signed Up Events"
+                    android:textSize="26sp"
+                    android:padding="10dp"
+                    android:textColor="@android:color/black" />
+
+                <RelativeLayout
+                    android:id="@+id/horizontalScrollView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
 
-                    <TextView
-                        android:id="@+id/myEvents"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="My Signed Up Events"
-                        android:textSize="28sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <RelativeLayout
-                        android:id="@+id/horizontalScrollView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/myEvents">
-
-                        <LinearLayout
-                            android:id="@+id/myevent_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/signedupevent_list"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:orientation="horizontal"
-                                android:scrollbars="none">
-
-                            </androidx.recyclerview.widget.RecyclerView>
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                    <TextView
-                        android:id="@+id/upcoming_events"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="All Upcoming Events"
-                        android:textSize="28sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
-
-                    <LinearLayout
+                    <!-- RecyclerView for Signed Up Events -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/signedupevent_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:orientation="horizontal"
-                        android:padding="0dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/upcoming_events">
+                        android:scrollbars="none"/>
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:id="@+id/upcoming_events_list">
+                </RelativeLayout>
 
-                        </androidx.recyclerview.widget.RecyclerView>
+                <!-- All Upcoming Events TextView -->
+                <TextView
+                    android:id="@+id/upcoming_events"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All Upcoming Events"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:textSize="26sp"
+                    android:layout_marginTop="16dp"
+                    android:padding="10dp"
+                    android:textColor="@android:color/black" />
 
+                <!-- RecyclerView for Upcoming Events -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/upcoming_events_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-                    </LinearLayout>
+            </LinearLayout>
 
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </ScrollView>
-
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </LinearLayout>
 
+    <!-- Navigation Drawer -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
         android:layout_gravity="start">
 
-        <include layout="@layout/nav_drawer"></include>
-    </RelativeLayout>
+        <include layout="@layout/nav_drawer" />
 
+    </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
