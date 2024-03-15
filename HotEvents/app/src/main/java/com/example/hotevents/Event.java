@@ -2,20 +2,25 @@ package com.example.hotevents;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Represents an Event object. Contains attributes and methods regarding Event data
  */
-public class Event implements Serializable {
+public class Event implements Serializable, Parcelable {
 
     private Date startDateTime;
     private Date endDateTime;
@@ -23,6 +28,7 @@ public class Event implements Serializable {
     private Integer maxAttendees;
     private String organiserId;
     private Bitmap poster;
+    private String posterStr;
     private QRCodes qrCode;
     private String description;
     private String title;
@@ -41,20 +47,19 @@ public class Event implements Serializable {
      * @param eventId Unique event ID
      */
     Event(Date startDateTime, Date endDateTime, @Nullable Integer maxAttendees,
-          @Nullable String organiserId, @Nullable Bitmap poster, QRCodes qrCode, @Nullable String description,
-          String title, @Nullable String eventId, String location){
+          @Nullable String organiserId, @Nullable Bitmap poster, @Nullable String posterStr,
+          QRCodes qrCode, @Nullable String description, String title, @Nullable String eventId, String location){
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.maxAttendees = maxAttendees;
         this.organiserId=organiserId;
         this.poster = poster;
+        this.posterStr = posterStr;
         this.qrCode = qrCode;
         this.description = description;
         this.title = title;
         this.eventId = eventId;
         this.location = location;
-
-        //storage = FirebaseStorage.getInstance();
     }
 
     /**
@@ -63,8 +68,63 @@ public class Event implements Serializable {
      */
     Event(String title){
         this.title = title;
-        //storage = FirebaseStorage.getInstance();
     }       // Unsure whether necessary or if theres a better way
+
+    //https://www.geeksforgeeks.org/android-pass-parcelable-object-from-one-activity-to-another-using-putextra/
+    //Implementing parcelable interface
+    protected Event(Parcel in){
+        startDateTime = (java.util.Date) in.readSerializable();
+        endDateTime = (java.util.Date) in.readSerializable();
+        maxAttendees = (Integer) in.readValue(Integer.class.getClassLoader());
+        organiserId = (String) in.readValue(String.class.getClassLoader());
+        qrCode = (QRCodes) in.readSerializable();
+        description = (String) in.readValue(String.class.getClassLoader());
+        title = in.readString();
+        eventId = (String) in.readValue(String.class.getClassLoader());
+        location = in.readString();
+        posterStr = in.readString();
+
+        if (posterStr != null){
+            try {
+                Thread thread = downloadAndSetPoster(FirebaseStorage.getInstance());
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeSerializable(startDateTime);
+        parcel.writeSerializable(endDateTime);
+        parcel.writeValue(maxAttendees);
+        parcel.writeValue(organiserId);
+        parcel.writeSerializable(qrCode);
+        parcel.writeValue(description);
+        parcel.writeString(title);
+        parcel.writeValue(eventId);
+        parcel.writeString(location);
+        parcel.writeString(posterStr);
+        poster = null;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>(){
+        @Override
+        public Event createFromParcel(Parcel parcel) {
+            return new Event(parcel);
+        }
+
+        @Override
+        public Event[] newArray(int i) {
+            return new Event[i];
+        }
+    };
 
     public void setLocation(String location) {
         this.location = location;
@@ -123,12 +183,29 @@ public class Event implements Serializable {
         return this.organiserId;
     }
 
+    //Used to download the poster from the posterStr and returns it
     public Bitmap getPoster() {
-        if (poster == null){
+        if (posterStr == null){
             Log.e("Event", "Poster bitmap is null");
             return null;
         }
+        else if (poster == null){
+            try {
+                Thread thread = downloadAndSetPoster(FirebaseStorage.getInstance());
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return poster;
+
+    }
+
+    public String getPosterStr(){
+        return posterStr;
+    }
+    public void setPosterStr(String posterStr){
+        this.posterStr = posterStr;
     }
 
     public String getDescription() {
@@ -139,4 +216,36 @@ public class Event implements Serializable {
         return qrCode;
     }
     public String getEventId(){return eventId;}
+
+    private Thread downloadAndSetPoster(FirebaseStorage storage) throws InterruptedException {
+        Thread thread = new Thread(() -> {
+            StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
+            final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+            photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
+                // Check if the byte array is not null
+                if (bytes != null && bytes.length > 0) {
+                    // Decode the byte array into a Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    // Check if the bitmap is not null
+                    if (bitmap != null) {
+                        // Set the downloaded profile picture to the image view
+                        Log.e("Event", "Setting poster bitmap");
+                        //Setting poster to the event
+                        this.setPoster(bitmap);
+                    } else {
+                        Log.e("Event", "Failed to decode byte array into Bitmap");
+                    }
+                } else {
+                    Log.e("Event", "Downloaded byte array is null or empty");
+                }
+            }).addOnFailureListener(exception -> {
+                // Handle any errors
+                Log.e("Event", "Failed to download profile picture: " + exception.getMessage());
+            });
+        });
+
+        thread.start();
+        return thread;
+    }
 }

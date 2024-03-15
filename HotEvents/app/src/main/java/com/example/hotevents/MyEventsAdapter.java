@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +61,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         public void onClick(View v) {
             Intent myIntent = new Intent(context, EventDetailsActivity.class);
             Event event = myEvents.get(getAdapterPosition());
-            myIntent.putExtra("event", event);
+            myIntent.putExtra("event", (Parcelable) event);
             Log.d("MyEventAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(myIntent);
         }

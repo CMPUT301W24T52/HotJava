@@ -193,16 +193,14 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
+                        newEvent.setPosterStr(posterStr);
 
 
                         //Downloading the poster and waiting for completion before adding event to array
                         if (posterStr != null){
-                            try {
-                                Thread thread = downloadAndSetPoster(posterStr, newEvent);
-                                thread.join();
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
+                            //Thread thread = downloadAndSetPoster(posterStr, newEvent);
+                            //thread.join();
+                            newEvent.getPoster();
                             myEventDataArray.add(newEvent);
                             upcomingEventDataArray.add(newEvent);
                         }
@@ -341,7 +339,7 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    private Thread downloadAndSetPoster(String posterStr, Event newEvent) throws InterruptedException {
+    private void downloadAndSetPoster(String posterStr, Event newEvent) throws InterruptedException {
         Thread thread = new Thread(() -> {
             Log.e("Event", "PosterStr: " + posterStr);
             StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
@@ -367,17 +365,11 @@ public class MainActivity extends AppCompatActivity{
             }).addOnFailureListener(exception -> {
                 // Handle any errors
                 Log.e("Event", "Failed to download profile picture: " + exception.getMessage());
-            }).addOnCompleteListener(v -> {
-                //myEventDataArray.add(newEvent);
-                //upcomingEventDataArray.add(newEvent);
-                //success = true;
-                //myEventsAdapter.notifyDataSetChanged();
-                //upcomingEventsAdapter.notifyDataSetChanged();
             });
         });
 
         thread.start();
-        return thread;
+        thread.join();
     }
     private void handleNewUserInput(FirebaseFirestore db, String deviceId, String token) {
         SignedUpEvent = new ArrayList<String>();

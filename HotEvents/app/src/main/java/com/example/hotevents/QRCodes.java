@@ -2,10 +2,12 @@ package com.example.hotevents;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
+
 import androidmads.library.qrgenearator.QRGContents.Type;
 import androidmads.library.qrgenearator.QRGEncoder;
 
-public class QRCodes {
+public class QRCodes implements Serializable {
     private String eventId;
     private String type;
     private final String app = "hotjava";

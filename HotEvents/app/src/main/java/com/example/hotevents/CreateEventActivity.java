@@ -449,7 +449,7 @@ public class CreateEventActivity extends AppCompatActivity {
             maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
         }
 
-        Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId, location);
+        Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, null, qrCode, description, title, eventId, location);
         //Uploading the event to firebase
         firebaseEventUpload(event);
 

@@ -3,6 +3,7 @@ package com.example.hotevents;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +72,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
         public void onClick(View v) {
             Intent intent = new Intent(context, EventDetailsActivity.class);
             Event event = upcomingEvents.get(getAdapterPosition());
-            intent.putExtra("event", event);
+            intent.putExtra("event", (Parcelable) event);
             Log.d("UpcomingEventAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(intent);
         }

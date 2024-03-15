@@ -10,6 +10,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,6 +31,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +70,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
-        myEvent = (Event) getIntent().getSerializableExtra("event");
+        myEvent = (Event) getIntent().getParcelableExtra("event");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         setViews();
@@ -105,6 +108,20 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
         }
+
+        //Adding poster if it exists on the event
+        if (myEvent.getPosterStr() != null){
+            Thread thread = new Thread(() -> {
+                Bitmap poster = null;
+                poster = myEvent.getPoster();
+                while (poster == null){
+                    poster = myEvent.getPoster();
+                }
+                eventImage.setImageBitmap(poster);
+            });
+            thread.start();
+        }
+
 //        Notifications not implemented yet
 
 
@@ -149,6 +166,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 fetchFCMTokenForOrganizer(organizerId);
             }
         });
+
+
     }
 
     /**
@@ -345,6 +364,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
+        eventImage = findViewById(R.id.eventImage);
         endDate = findViewById(R.id.event_end_date);
         organiserName = findViewById(R.id.organiser_name);
         tabLayout = findViewById(R.id.tabLayout);
