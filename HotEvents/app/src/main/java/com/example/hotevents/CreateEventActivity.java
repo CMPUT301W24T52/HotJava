@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -484,8 +485,13 @@ public class CreateEventActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
+                        //Add event to organiser array
+                        db.collection("Users").document(event.getOrganiserId())
+                                .update("CreatedEvents", FieldValue.arrayUnion(docRef.getId()));
+
                         //Case where the poster isn't submitted, return to previous activity
                         if (posterImage.getDrawable() == null){
+                            makeToast("Event successfully created!");
                             returnPreviousActivity();
                         }
                         else {
@@ -537,6 +543,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 docRef.update("Poster", storageUri);
 
                 //Return to the previous activity
+                makeToast("Event successfully created!");
                 returnPreviousActivity();
             }
         });

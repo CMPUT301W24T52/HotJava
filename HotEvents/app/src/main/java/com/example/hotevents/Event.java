@@ -1,8 +1,13 @@
 package com.example.hotevents;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -48,6 +53,8 @@ public class Event implements Serializable {
         this.title = title;
         this.eventId = eventId;
         this.location = location;
+
+        //storage = FirebaseStorage.getInstance();
     }
 
     /**
@@ -56,6 +63,7 @@ public class Event implements Serializable {
      */
     Event(String title){
         this.title = title;
+        //storage = FirebaseStorage.getInstance();
     }       // Unsure whether necessary or if theres a better way
 
     public void setLocation(String location) {
@@ -116,6 +124,10 @@ public class Event implements Serializable {
     }
 
     public Bitmap getPoster() {
+        if (poster == null){
+            Log.e("Event", "Poster bitmap is null");
+            return null;
+        }
         return poster;
     }
 

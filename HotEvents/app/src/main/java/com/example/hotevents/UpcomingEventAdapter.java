@@ -2,10 +2,12 @@ package com.example.hotevents;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,9 +33,16 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 
     @Override
     public void onBindViewHolder(@NonNull UpcomingEventViewHolder holder, int position) {
-        Event event = upcomingEvents.get(position);
+        //https://stackoverflow.com/questions/38182223/recyclerview-wrong-position-set-onbindviewholder
+        holder.setIsRecyclable(false);
+        Event event = upcomingEvents.get(holder.getAdapterPosition());
         holder.upcomingEventTitle.setText(event.getTitle());
         holder.upcomingEventDescription.setText(event.getDescription());
+
+        Bitmap poster = event.getPoster();
+        if (poster != null){
+            holder.upcomingEventPoster.setImageBitmap(event.getPoster());
+        }
     }
 
     @Override
@@ -44,6 +53,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
     public class UpcomingEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView upcomingEventTitle;
         public TextView upcomingEventDescription;
+        public ImageView upcomingEventPoster;
 
         // ...Other Event Information
 
@@ -52,6 +62,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
             context = itemView.getContext();
             upcomingEventTitle = (TextView) itemView.findViewById(R.id.upcoming_event_title_text);
             upcomingEventDescription = (TextView) itemView.findViewById(R.id.upcoming_event_description_text);
+            upcomingEventPoster = (ImageView) itemView.findViewById(R.id.imageView);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }
