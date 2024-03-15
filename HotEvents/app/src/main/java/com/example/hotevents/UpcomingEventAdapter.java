@@ -11,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdapter.UpcomingEventViewHolder> {
     private ArrayList<Event> upcomingEvents;
@@ -31,9 +33,16 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 
     @Override
     public void onBindViewHolder(@NonNull UpcomingEventViewHolder holder, int position) {
+
         Event event = upcomingEvents.get(position);
         holder.upcomingEventTitle.setText(event.getTitle());
-        holder.upcomingEventDescription.setText(event.getDescription());
+        // Format the startDateTime to a string representation
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm aa", Locale.getDefault());
+        String formattedStartDate = dateFormat.format(event.getStartDateTime());
+
+        holder.startDate.setText(formattedStartDate);
+        holder.upcomingEventTitle.setText(event.getTitle());
+
     }
 
     @Override
@@ -44,6 +53,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
     public class UpcomingEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView upcomingEventTitle;
         public TextView upcomingEventDescription;
+        public TextView startDate;
 
         // ...Other Event Information
 
@@ -51,7 +61,8 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
             super(itemView);
             context = itemView.getContext();
             upcomingEventTitle = (TextView) itemView.findViewById(R.id.upcoming_event_title_text);
-            upcomingEventDescription = (TextView) itemView.findViewById(R.id.upcoming_event_description_text);
+//            upcomingEventDescription = (TextView) itemView.findViewById(R.id.upcoming_event_description_text);
+            startDate = (TextView) itemView.findViewById(R.id.event_start_time_text);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }
