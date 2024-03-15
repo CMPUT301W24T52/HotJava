@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardview"
     android:layout_width="wrap_content"
     android:layout_height="200dp"
@@ -18,13 +19,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_margin="8dp">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="200dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/default_poster" />
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp"
+            android:layout_margin="1dp"
+            android:elevation="10dp">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="130dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:src="@drawable/default_poster" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/event_title_text"
@@ -32,18 +39,48 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
             android:text="This is Event Title"
-            android:textSize="22sp"
-            android:textAlignment="center"/>
-        <TextView
-            android:id="@+id/event_start_date"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/date"/>
-        <TextView
-            android:id="@+id/event_location"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/image_date_my_events"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/date_homepage" />
+            <TextView
+                android:id="@+id/event_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="@string/date"
+                android:textColor="#717B68" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/image_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/location" />
+            <TextView
+                android:id="@+id/event_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location"
+                android:textColor="#747688"
+                android:fontFamily="@font/montserrat_bold"/>
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -33,6 +33,7 @@
                     android:id="@+id/myEvents"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/montserrat_medium"
                     android:text="My Signed Up Events"
@@ -44,7 +45,7 @@
                     android:id="@+id/horizontalScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="8dp">
 
                     <!-- RecyclerView for Signed Up Events -->
                     <androidx.recyclerview.widget.RecyclerView
@@ -67,6 +68,7 @@
                     android:text="All Upcoming Events"
                     android:fontFamily="@font/montserrat_medium"
                     android:textSize="26sp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:padding="10dp"
                     android:textColor="@android:color/black" />
@@ -77,7 +79,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
             </LinearLayout>

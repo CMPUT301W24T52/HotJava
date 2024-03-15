@@ -54,7 +54,7 @@
                 android:textSize="34sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:fontFamily="@font/montserrat_bold"/>
+                android:fontFamily="@font/montserrat_semi_bold"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

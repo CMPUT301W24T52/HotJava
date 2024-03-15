@@ -35,5 +35,7 @@
     <string name="user_uid">user id</string>
     <string name="msg_token_fmt">message</string>
     <string name="notification">Notification</string>
+    <string name="date_description_my_events">date icon</string>
+    <string name="loc_description_my_events">loc icon</string>
 
 </resources>
