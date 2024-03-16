@@ -172,7 +172,9 @@
 
         <include layout="@layout/toolbar"></include>
 
-<!--            <Button-->
+
+
+        <!--            <Button-->
 <!--                android:id="@+id/NavButton"-->
 <!--                android:layout_width="66dp"-->
 <!--                android:layout_height="48dp"-->
@@ -226,27 +228,53 @@
 
 <!--            </LinearLayout>-->
             <!--From Menu bar to the bottom-->
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                    <LinearLayout
+                        android:id="@+id/searchLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/search_view_background"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.appcompat.widget.SearchView
+                            android:id="@+id/searchView"
+                            android:layout_width="350dp"
+                            android:layout_height="50dp"
+                            app:closeIconTint="@color/white"
+                            app:defaultQueryHint="Explore the Hot Events"
+                            app:iconifiedByDefault="false"
+                            app:queryBackground="@drawable/search_view_background"
+                            app:queryHint="Explore"
+                            app:searchIcon="@drawable/baseline_search_24" />
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/myEvents"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="25dp"
                         android:layout_marginLeft="30dp"
                         android:fontFamily="sans-serif-medium"
                         android:text="My Signed Up Events"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@id/searchLayout" />
 
                     <RelativeLayout
                         android:id="@+id/horizontalScrollView"
@@ -283,7 +311,7 @@
                         android:layout_marginLeft="30dp"
                         android:fontFamily="sans-serif-medium"
                         android:text="All Upcoming Events"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
 
@@ -301,6 +329,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:layout_marginTop="10dp"
+                            android:nestedScrollingEnabled="false"
                             android:id="@+id/upcoming_events_list">
 
                         </androidx.recyclerview.widget.RecyclerView>

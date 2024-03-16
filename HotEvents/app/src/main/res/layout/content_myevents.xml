@@ -8,7 +8,7 @@
     android:layout_height="230dp"
     card_view:contentPadding="8dp"
     card_view:cardCornerRadius="20dp"
-    card_view:cardElevation="12dp"
+    card_view:cardElevation="8dp"
     card_view:cardBackgroundColor="@color/white"
     android:layout_margin="6dp"
     android:clickable="true"
