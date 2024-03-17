@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity{
                         Date endDate = doc.getDate("EndDateTime");
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
+                        String location = doc.getString("Location");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -186,6 +187,7 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
+                        newEvent.setLocation(location);
                         myEventDataArray.add(newEvent);
                         upcomingEventDataArray.add(newEvent);
                         // if user.id is in signed up events --> myEventDataArray.add(newEvent);
