@@ -220,7 +220,14 @@ public class Event implements Serializable, Parcelable {
     public String getEventId(){return eventId;}
 
     private Thread downloadAndSetPoster(FirebaseStorage storage) throws InterruptedException {
+        try{
+            StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
+        }
+        catch (Exception e){
+            return new Thread();
+        }
         Thread thread = new Thread(() -> {
+            Log.d("Event", "PosterStr: " + posterStr);
             StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
             final long FIVE_MEGABYTE = 5 * 1024 * 1024;
             photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
@@ -246,7 +253,6 @@ public class Event implements Serializable, Parcelable {
                 Log.e("Event", "Failed to download profile picture: " + exception.getMessage());
             });
         });
-
         thread.start();
         return thread;
     }

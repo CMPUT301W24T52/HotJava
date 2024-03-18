@@ -382,7 +382,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void setViews() {
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        editButton = findViewById(R.id.edit_button);
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
         eventImage = findViewById(R.id.eventImage);
