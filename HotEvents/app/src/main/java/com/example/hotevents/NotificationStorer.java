@@ -17,7 +17,7 @@ public class NotificationStorer {
     private static final String TAG = "NotificationHelper";
     // Get the current timestamp
 
-    public static void storeNotification(String fcmToken, String eventId, String notificationMessage) {
+    public static void storeNotification(String fcmToken, String eventId, String notificationMessage, String notiType) {
         // Access Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -30,6 +30,7 @@ public class NotificationStorer {
         notificationData.put("eventId", eventId);
         notificationData.put("notificationMessage", notificationMessage);
         notificationData.put("timestamp", timestamp);
+        notificationData.put("notiType", notiType);
 
 
         // Add data to the Notifications collection

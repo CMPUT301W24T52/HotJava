@@ -67,6 +67,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     String deviceId;
     Button signUpButton;
+    String notiType = "Milestone";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -359,7 +360,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 // Check if the notification was sent successfully
                 if (response.isSuccessful()) {
                     // Call the helper method to store the notification data
-                    NotificationStorer.storeNotification(fcmToken, eventId, messageText);
+                    NotificationStorer.storeNotification(fcmToken, eventId, messageText, notiType);
                     Log.d(TAG, "Notification sent successfully");
                 } else {
                     // Handle the case where notification sending failed
