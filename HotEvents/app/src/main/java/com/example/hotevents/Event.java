@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import android.location.Location;
+
 import androidx.annotation.Nullable;
 
 import com.google.firebase.firestore.FirebaseFirestore;

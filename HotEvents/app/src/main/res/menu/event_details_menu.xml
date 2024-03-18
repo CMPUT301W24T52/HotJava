@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/event_details_option_edit"
+        android:title="Edit" />
+    <item
+        android:id="@+id/event_details_option_announce"
+        android:title="Make Announcement" />
+    <item
+        android:id="@+id/event_details_option_attendees"
+        android:title="List of Attendees" />
+    <item
+        android:id="@+id/event_details_option_share"
+        android:title="Share" />
+</menu>

@@ -1,51 +1,223 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/uppcoming_event_cardview"
-    android:layout_width="match_parent"
-    android:layout_height="100dp"
-    card_view:contentPadding="8dp"
-    card_view:cardCornerRadius="30dp"
-    card_view:cardElevation="12dp"
-    card_view:cardBackgroundColor="@color/white"
-    android:layout_margin="6dp"
-    android:clickable="true"
-    android:focusable="true">
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/uppcoming_event_cardview"
+android:layout_width="match_parent"
+android:layout_height="100dp"
+card_view:contentPadding="8dp"
+card_view:cardCornerRadius="15dp"
+card_view:cardElevation="4dp"
+card_view:cardBackgroundColor="@color/white"
+android:layout_margin="6dp"
+android:clickable="true"
+android:focusable="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_gravity="center|start">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:background="@color/white">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/circle"
+        android:layout_width="100dp"
+        android:layout_height="75dp"
+        app:cardCornerRadius="10dp"
+        tools:ignore="MissingConstraints">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/default_poster" />
-        <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_weight="1"
+            android:scaleType="fitXY"
+            android:src="@drawable/default_poster"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+    </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:id="@+id/upcoming_event_title_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Title"
-                android:fontFamily="@font/montserrat_bold"
-                android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/upcoming_event_title_text"
+        android:layout_width="253dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="This is Event Title"
+        android:textAlignment="textStart"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        card_view:layout_constraintBottom_toBottomOf="parent"
+        card_view:layout_constraintStart_toEndOf="@+id/circle"
+        card_view:layout_constraintTop_toTopOf="parent"
+        card_view:layout_constraintVertical_bias="0.541" />
 
-            <TextView
-                android:id="@+id/upcoming_event_description_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Desrcription"
-                android:fontFamily="@font/montserrat_medium"/>
+    <TextView
+        android:id="@+id/event_start_time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date Time"
+        android:textColor="@color/GreenButton"
+        card_view:layout_constraintBottom_toBottomOf="parent"
+        card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintHorizontal_bias="0.077"
+        card_view:layout_constraintStart_toEndOf="@+id/circle"
+        card_view:layout_constraintTop_toTopOf="parent"
+        card_view:layout_constraintVertical_bias="0.125"></TextView>
 
-        </LinearLayout>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/event_location_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/baseline_room_16"
+        android:drawablePadding="4dp"
+        android:drawableTint="#A1A1A1"
+        android:text="Location"
+        android:textColor="#A1A1A1"
+        card_view:layout_constraintBottom_toBottomOf="parent"
+        card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintHorizontal_bias="0.081"
+        card_view:layout_constraintStart_toEndOf="@+id/circle"
+        card_view:layout_constraintTop_toTopOf="parent"
+        card_view:layout_constraintVertical_bias="0.946"></TextView>
 
+</androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:id="@+id/uppcoming_event_cardview"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="100dp"-->
+<!--    card_view:contentPadding="8dp"-->
+<!--    card_view:cardCornerRadius="30dp"-->
+<!--    card_view:cardElevation="12dp"-->
+<!--    card_view:cardBackgroundColor="@color/white"-->
+<!--    android:layout_margin="6dp"-->
+<!--    android:clickable="true"-->
+<!--    android:focusable="true">-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_gravity="center|start">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:src="@drawable/default_poster" />-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_marginStart="12dp">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/upcoming_event_title_text"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Title"-->
+<!--                android:fontFamily="@font/montserrat_bold"-->
+<!--                android:textSize="20sp"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/upcoming_event_description_text"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Desrcription"-->
+<!--                android:fontFamily="@font/montserrat_medium"/>-->
+
+<!--        </LinearLayout>-->
+<!--    </LinearLayout>-->
+
+<!--</androidx.cardview.widget.CardView>-->
+
+<!--    <?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--android:id="@+id/uppcoming_event_cardview"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="100dp"-->
+<!--card_view:contentPadding="8dp"-->
+<!--card_view:cardCornerRadius="20dp"-->
+<!--card_view:cardElevation="6dp"-->
+<!--card_view:cardBackgroundColor="@color/white"-->
+<!--android:layout_margin="6dp"-->
+<!--android:clickable="true"-->
+<!--android:focusable="true">-->
+
+<!--<androidx.constraintlayout.widget.ConstraintLayout-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:descendantFocusability="blocksDescendants"-->
+<!--    android:orientation="vertical"-->
+<!--    android:padding="8dp"-->
+<!--    android:background="@color/white">-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="80dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:padding="8dp"-->
+<!--        android:src="@drawable/thumbnail"-->
+<!--        card_view:layout_constraintBottom_toBottomOf="parent"-->
+<!--        card_view:layout_constraintStart_toStartOf="parent"-->
+<!--        card_view:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/event_title_text"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="This is Event Title"-->
+<!--        android:textSize="18dp"-->
+<!--        android:textStyle="bold"-->
+<!--        card_view:layout_constraintBottom_toBottomOf="parent"-->
+<!--        card_view:layout_constraintEnd_toEndOf="parent"-->
+<!--        card_view:layout_constraintHorizontal_bias="0.363"-->
+<!--        card_view:layout_constraintStart_toStartOf="parent"-->
+<!--        card_view:layout_constraintTop_toTopOf="parent" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/event_start_time_text"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Date Time"-->
+<!--        android:textColor="@color/GreenButton"-->
+<!--        card_view:layout_constraintBottom_toBottomOf="parent"-->
+<!--        card_view:layout_constraintEnd_toEndOf="parent"-->
+<!--        card_view:layout_constraintHorizontal_bias="0.268"-->
+<!--        card_view:layout_constraintStart_toStartOf="parent"-->
+<!--        card_view:layout_constraintTop_toTopOf="parent"-->
+<!--        card_view:layout_constraintVertical_bias="0.131"></TextView>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/event_location_text"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:drawableLeft="@drawable/baseline_room_16"-->
+<!--        android:drawablePadding="4dp"-->
+<!--        android:drawableTint="#A1A1A1"-->
+<!--        android:text="Location"-->
+<!--        android:textColor="#A1A1A1"-->
+<!--        card_view:layout_constraintBottom_toBottomOf="parent"-->
+<!--        card_view:layout_constraintEnd_toEndOf="parent"-->
+<!--        card_view:layout_constraintHorizontal_bias="0.277"-->
+<!--        card_view:layout_constraintStart_toStartOf="parent"-->
+<!--        card_view:layout_constraintTop_toTopOf="parent"-->
+<!--        card_view:layout_constraintVertical_bias="0.868"></TextView>-->
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--</androidx.cardview.widget.CardView>-->
+
+

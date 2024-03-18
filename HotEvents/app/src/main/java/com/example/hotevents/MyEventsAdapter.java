@@ -21,7 +21,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+import com.bumptech.glide.Glide;
+
 
 /**
  * My Events View Adapter
@@ -41,6 +45,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         public TextView myEventLocation;
         public TextView myEventDate;
         public ImageView myEventImg;
+        public ImageView eventImage;
 
         /**
          * Constructor for View holder class
@@ -49,6 +54,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         public MyEventViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
+            eventImage = (ImageView) itemView.findViewById(R.id.imageView);
             myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
             myEventLocation = (TextView) itemView.findViewById(R.id.event_location);
             myEventDate = (TextView) itemView.findViewById(R.id.event_start_date);
@@ -99,6 +105,12 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         holder.myEventLocation.setText("Location");
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
+        // Format the date to show only day, month, day of the month, hour (12-hour), and AM/PM indicator
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd • hh:mm a", Locale.getDefault());
+        String formattedDate = sdf.format(event.getStartDateTime());
+        holder.myEventDate.setText(formattedDate);
+//        loadImageFromFirestoreStorage(event.getPosterUrl(), holder.eventImage);
+
         //Setting the poster bitmap
         Bitmap img = event.getPoster();
         if (img != null){
@@ -114,7 +126,14 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 //        });
         Log.d("Note", "made it here");
     }
-
+    public static void loadImageFromFirestoreStorage(String imageUrl, ImageView imageView) {
+        // Use Glide library to load the image from the provided URL into the ImageView
+        Glide.with(imageView.getContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.default_poster) // Placeholder image resource
+                .error(R.drawable.thumbnail) // Error image resource
+                .into(imageView);
+    }
     @Override
     public int getItemCount() {
         return myEvents.size();

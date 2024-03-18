@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity{
                         Date endDate = doc.getDate("EndDateTime");
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
+                        String location = doc.getString("Location");
                         String posterStr = doc.getString("Poster");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
+                        newEvent.setLocation(location);
                         newEvent.setPosterStr(posterStr);
 
 
