@@ -338,39 +338,6 @@ public class MainActivity extends AppCompatActivity{
             Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
         });
     }
-
-    private void downloadAndSetPoster(String posterStr, Event newEvent) throws InterruptedException {
-        Thread thread = new Thread(() -> {
-            Log.e("Event", "PosterStr: " + posterStr);
-            StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
-            final long FIVE_MEGABYTE = 5 * 1024 * 1024;
-            photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
-                // Check if the byte array is not null
-                if (bytes != null && bytes.length > 0) {
-                    // Decode the byte array into a Bitmap
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                    // Check if the bitmap is not null
-                    if (bitmap != null) {
-                        // Set the downloaded profile picture to the image view
-                        Log.e("Event", "Setting poster bitmap");
-                        //Setting poster to the event
-                        newEvent.setPoster(bitmap);
-                    } else {
-                        Log.e("Event", "Failed to decode byte array into Bitmap");
-                    }
-                } else {
-                    Log.e("Event", "Downloaded byte array is null or empty");
-                }
-            }).addOnFailureListener(exception -> {
-                // Handle any errors
-                Log.e("Event", "Failed to download profile picture: " + exception.getMessage());
-            });
-        });
-
-        thread.start();
-        thread.join();
-    }
     private void handleNewUserInput(FirebaseFirestore db, String deviceId, String token) {
         SignedUpEvent = new ArrayList<String>();
         UserName = "Test User";

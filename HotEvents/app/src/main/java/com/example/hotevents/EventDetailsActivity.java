@@ -9,11 +9,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +52,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     Event myEvent;
     ImageButton backButton;
+    Button editButton;
     ImageView eventImage;
     TextView eventTitle;
     TextView startDate;
@@ -167,6 +170,12 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        editButton.setOnClickListener(v -> {
+            Intent myIntent = new Intent(this, CreateEventActivity.class);
+            myIntent.putExtra("event", (Parcelable) myEvent);
+            Log.d("EventDetailsActivity", String.format("Event %s clicked", myEvent.getTitle()));
+            startActivity(myIntent);
+        });
 
     }
 
@@ -362,6 +371,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void setViews() {
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        editButton = findViewById(R.id.edit_button);
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
         eventImage = findViewById(R.id.eventImage);

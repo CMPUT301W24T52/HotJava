@@ -107,6 +107,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Uri posterUri = null;
     String storageUri = null;
     String organiserId;
+    Event updateEvent = null;
 
 
     /**
@@ -125,11 +126,14 @@ public class CreateEventActivity extends AppCompatActivity {
         sref = FirebaseStorage.getInstance();
         eventsRef = db.collection("Events");
 
-        //Creating the random eventId
-        eventId = generateRandomStr();
-
         //Calling a function that sets the UI elements to variables
         setViews();
+
+        //Getting the event. Might be null or on edit it will populate the fields
+//        updateEvent = (Event) getIntent().getParcelableExtra("event");
+//        if (updateEvent != null){
+//            setFields(updateEvent);
+//        }
 
         //Getting the arguments from the Intent
         Intent myIntent = getIntent();
@@ -198,24 +202,6 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
-     * Generates a random string to get a different event id for each created event
-     * Reference: <a href="https://www.baeldung.com/java-random-string">...</a>
-     * @return the random string
-     */
-    protected String generateRandomStr(){
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        return generatedString;
-    }
-
-    /**
      * Assigns the interactive UI elements to their associated variables for later reference
      */
     protected void setViews() {
@@ -238,6 +224,10 @@ public class CreateEventActivity extends AppCompatActivity {
         qrChooseButton = findViewById(R.id.qrcode_choose_button);
         createButton = findViewById(R.id.create_event_button);
         maxAttendeeSwitch = findViewById(R.id.max_attendee_switch);
+    }
+
+    protected void setFields(Event myEvent){
+
     }
 
     /**
