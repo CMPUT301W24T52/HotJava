@@ -7,15 +7,12 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import android.location.Location;
 
 import androidx.annotation.Nullable;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -35,7 +32,8 @@ public class Event implements Serializable, Parcelable {
     private String description;
     private String title;
     private String eventId;
-
+    private MyEventsAdapter myEventsAdapter;
+    private UpcomingEventAdapter upcomingEventAdapter;// Add this field
     /**
      * Constructor for Event Object
      * @param startDateTime start Date and time of the Event
@@ -63,6 +61,7 @@ public class Event implements Serializable, Parcelable {
         this.eventId = eventId;
         this.location = location;
     }
+
 
     /**
      * Optional Constructor
@@ -95,7 +94,12 @@ public class Event implements Serializable, Parcelable {
             }
         }
     }
-
+    public void setAdapter(MyEventsAdapter adapter) {
+        this.myEventsAdapter = adapter;
+    }
+    public void setAdapterUpComingEvents(UpcomingEventAdapter upcomingEventAdapter) {
+        this.upcomingEventAdapter = upcomingEventAdapter;
+    }
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeSerializable(startDateTime);
@@ -242,6 +246,12 @@ public class Event implements Serializable, Parcelable {
                         Log.e("Event", "Setting poster bitmap");
                         //Setting poster to the event
                         this.setPoster(bitmap);
+                        if (myEventsAdapter != null) {
+                            myEventsAdapter.notifyDataSetChanged();
+                        }
+                        if (upcomingEventAdapter != null) {
+                            upcomingEventAdapter.notifyDataSetChanged();
+                        }
                     } else {
                         Log.e("Event", "Failed to decode byte array into Bitmap");
                     }

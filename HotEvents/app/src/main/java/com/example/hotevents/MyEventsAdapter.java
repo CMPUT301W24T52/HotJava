@@ -100,6 +100,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
     public void onBindViewHolder(@NonNull MyEventViewHolder holder, int position) {
         holder.setIsRecyclable(false);
         Event event = myEvents.get(position);
+        event.setAdapter(this);
         Log.d("MyEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText("Location");

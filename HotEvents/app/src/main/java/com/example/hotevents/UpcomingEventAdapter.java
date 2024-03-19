@@ -39,6 +39,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
         //https://stackoverflow.com/questions/38182223/recyclerview-wrong-position-set-onbindviewholder
         holder.setIsRecyclable(false);
         Event event = upcomingEvents.get(holder.getAdapterPosition());
+        event.setAdapterUpComingEvents(this);
         holder.upcomingEventTitle.setText(event.getTitle());
         // Format the startDateTime to a string representation
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm aa", Locale.getDefault());
