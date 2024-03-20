@@ -5,29 +5,45 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/editProfilePhotoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
         android:layout_marginBottom="16dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/edit_image_profile_photo"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/img"
-            android:layout_gravity="center_horizontal"/>
+            android:src="@drawable/default_profile3"
+            android:layout_centerHorizontal="true"/>
+
+        <ImageButton
+            android:id="@+id/removeProfilePhotoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="16dp"
+            android:layout_alignTop="@id/edit_image_profile_photo"
+            android:layout_toEndOf="@id/edit_image_profile_photo"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/remove_profile_photo"
+            android:src="@drawable/delete_profile_icon" />
 
         <ImageButton
             android:id="@+id/editProfilePhotoButton"
-            android:layout_width="25sp"
-            android:layout_height="25sp"
-            android:layout_gravity="bottom|end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="16dp"
+            android:layout_alignBottom="@id/edit_image_profile_photo"
+            android:layout_toEndOf="@id/edit_image_profile_photo"
             android:background="@android:color/transparent"
-            android:src="@drawable/edit_icon"
-            android:contentDescription="@string/edit_profile_photo"/>
-    </LinearLayout>
+            android:contentDescription="@string/edit_profile_photo"
+            android:src="@drawable/edit_icon" />
+    </RelativeLayout>
+
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

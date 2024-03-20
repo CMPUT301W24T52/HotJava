@@ -344,7 +344,8 @@ public class MainActivity extends AppCompatActivity{
         SignedUpEvent = new ArrayList<String>();
         UserName = "Test User";
         Map<String, Object> newUser = new HashMap<>();
-        newUser.put("ProfilePicture", "");
+        newUser.put("ProfilePictureDefault", "");
+        newUser.put("ProfilePictureCustom", "");
         newUser.put("userType", "Normal");
         newUser.put("UID", deviceId);
         newUser.put("Name", UserName);
@@ -410,16 +411,20 @@ public class MainActivity extends AppCompatActivity{
                 textViewName.setText(name);
 
                 // Check if ProfilePicture field is present
-                if (documentSnapshot.contains("ProfilePicture")) {
-                    String profilePicUrl = documentSnapshot.getString("ProfilePicture");
+                // Check if ProfilePictureCustom field is present
+                if (documentSnapshot.contains("ProfilePictureCustom")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePictureCustom");
 
                     // Check if profilePicUrl is not null or empty
                     if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         // Download and set profile picture
                         downloadAndSetProfilePicture(profilePicUrl);
                     } else {
-                        // Handle the case where the profile picture URL is null or empty
-                        Log.d("ProfileActivity", "Profile picture URL is null or empty");
+                        // Generate default profile photo based on the first letter of the name
+                        char firstLetter = name.charAt(0);
+                        String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
+                        downloadAndSetProfilePicture(profilePicUrl1);
+
                     }
                 } else {
                     // Handle the case where the ProfilePicture field is not present in the document
