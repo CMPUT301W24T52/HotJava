@@ -1,16 +1,7 @@
 package com.example.hotevents;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -23,6 +14,14 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentReference;
@@ -59,7 +58,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     TextView eventLocation;
     String eventId;
     String myeventTitle;
-    String organizerId;
     String orgfcmToken;
     ImageButton optionsButton;
     private FirebaseFirestore db;
@@ -73,13 +71,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
+        // Grab the passed event, db, and deviceId
         myEvent = (Event) getIntent().getSerializableExtra("event");
         db = FirebaseFirestore.getInstance();
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        // Set the views and event details
         setViews();
         setEventDetails();
 
+        // Tab layout listeners
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -97,6 +98,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        // Switch tabs
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -105,18 +107,18 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        // Set optionButton to open popup menu
         optionsButton.setOnClickListener(this::showPopupMenu);
 
-
-        signUpButton = findViewById(R.id.check_in_button);
-        // Hide
-        if (deviceId == organizerId) {
+        // Hide the button if user is the organiser
+        if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             signUpButton.setVisibility(View.GONE);
         } else {
             handleButtonBehaviour();
             signUpButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Change behaviour based on button type/text (sign-up or check-in)
                     if (signUpButton.getText() == "Sign Up") {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             if (!NotificationManagerCompat.from(EventDetailsActivity.this).areNotificationsEnabled()) {
@@ -125,7 +127,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                         }
                         onSignUpButtonClick();
                         Log.d(TAG, "Attempting to send milestone notifications");
-                        fetchFCMTokenForOrganizer(organizerId);
+                        fetchFCMTokenForOrganizer(myEvent.getOrganiserId());
                     } else {
                         onCheckInButtonClick();
                     }
@@ -196,21 +198,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         checkinData.put("UID", deviceId);
 
         docRef.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            checkinData.put("count", document.getLong("count").intValue() + 1);
-                        } else {
-                            checkinData.put("count", 1);
-                        }
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    checkinData.put("count", document.getLong("count").intValue() + 1);
+                } else {
+                    checkinData.put("count", 1);
+                }
 
-                        docRef.set(checkinData).addOnSuccessListener(unused -> {
-                            Log.d(TAG, "Checked in successfully");
-                        }).addOnFailureListener(e -> {
-                            Log.d(TAG, "Error checking in", e);
-                        });
-                    }
+                docRef.set(checkinData).addOnSuccessListener(unused -> {
+                    Log.d(TAG, "Checked in successfully");
+                }).addOnFailureListener(e -> {
+                    Log.d(TAG, "Error checking in", e);
                 });
+            }
+        });
 
         Log.d(TAG, "CheckIn Button Working");
     }
@@ -218,7 +220,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     /**
      * Handles the sign-up/check-in button behaviour
      * Switches between sign-up and check-in based on if user has signed up
-     * */
+     */
     private void handleButtonBehaviour() {
         db.collection("Events")
                 .document(eventId)
@@ -238,6 +240,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
                 });
     }
+
     /**
      * Adds the event ID to the mysignup array in the Firestore Users collection.
      *
@@ -299,7 +302,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 
                     long signupsCount = queryDocumentSnapshots.size();
-                    Log.d(TAG, "signupsCount = "+signupsCount);
+                    Log.d(TAG, "signupsCount = " + signupsCount);
 
                     // Check if conditions for sending notifications are met
                     if (signupsCount == 1) {
@@ -307,19 +310,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                         String notificationMessage = "Milestone: Signups count for event '" + myeventTitle + "' is " + signupsCount + ".";
                         // Send the notification to the organizer
                         sendPushNotification(orgfcmToken, notificationMessage, eventId);
-//                        Toast.makeText(, "Milestone sent", Toast.LENGTH_SHORT).show();
+                        //                        Toast.makeText(, "Milestone sent", Toast.LENGTH_SHORT).show();
                     }
                     if (signupsCount == 3) {
                         // Create a notification message based on the signups count
                         String notificationMessage = "Milestone: Signups count for event '" + myeventTitle + "' is " + signupsCount + ".";
                         // Send the notification to the organizer
                         sendPushNotification(orgfcmToken, notificationMessage, eventId);
-//                        Toast.makeText(, "Milestone sent", Toast.LENGTH_SHORT).show();
+                        //                        Toast.makeText(, "Milestone sent", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to retrieve signups count", e);
-//                    Toast.makeText(new AnnouncementsAndMilestones(), "Failed to retrieve signups count", Toast.LENGTH_SHORT).show();
+                    //                    Toast.makeText(new AnnouncementsAndMilestones(), "Failed to retrieve signups count", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -351,7 +354,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     .addHeader("Authorization", "key=AAAAlidLyZE:APA91bF1suXeK0OgT_eZIP9uEPOCarD4zMfUyLWvo5-ljaXKQp4wuZhU2Ik2C63QLZKsvKGnOuzNIh_56WCIl1R8-rENZFlPPrwAB8Corgtnba5w8pMpknuhzp7_q1dTyshB37uTu4EN")
                     .addHeader("Content-Type", "application/json").build();
             Log.d(TAG, "think working");
-//            Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
+            //            Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
 
             try {
                 // Execute the request synchronously
@@ -372,7 +375,9 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Sets all the views and adapters
+     */
     private void setViews() {
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
@@ -383,38 +388,43 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventLocation = findViewById(R.id.event_location);
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.view_pager);
-        eventPagerAdapter = new EventPagerAdapter(this,myEvent.getEventId(), myEvent.getTitle());
+        eventPagerAdapter = new EventPagerAdapter(this, myEvent.getEventId());
         viewPager2.setAdapter(eventPagerAdapter);
         optionsButton = findViewById(R.id.options_button);
+        signUpButton = findViewById(R.id.check_in_button);
     }
 
+    /**
+     * Sets all the event details based on myEvent
+     */
     private void setEventDetails() {
+        // Set title
         if (myEvent.getTitle() != null) {
             myeventTitle = myEvent.getTitle();
             eventTitle.setText(myeventTitle);
         }
 
+        // Set eventId
         if (myEvent.getEventId() != null) {
             eventId = myEvent.getEventId();
         }
 
-        if (myEvent.getOrganiserId() != null) {
-            organizerId = myEvent.getOrganiserId();
-        }
-
-
+        // Set startDateTime
         if (myEvent.getStartDateTime() != null) {
             startDate.setText(myEvent.getStartDateTime().toString());
         }
 
+        // Set endDateTime
         if (myEvent.getEndDateTime() != null) {
             endDate.setText(myEvent.getEndDateTime().toString());
         }
 
+        // Set location
         if (myEvent.getLocation() != null) {
             eventLocation.setText(myEvent.getLocation());
         }
 
+        // Set organiser name if organiserId exists
         if (myEvent.getOrganiserId() != null && !myEvent.getOrganiserId().trim().isEmpty()) {
             db.collection("Users").document(myEvent.getOrganiserId()).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -425,9 +435,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Opens the popup menu with extra options
+     *
+     * @param v Current view
+     */
     private void showPopupMenu(View v) {
+        // Create the PopupMenu and inflate it with the appropriate menu layout
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenuInflater().inflate(R.menu.event_details_menu, popupMenu.getMenu());
+
+        // Set onclick listener for each specific menu option
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.event_details_option_announce) {
                 MakeAnnouncementFragment.newInstance(eventId, myeventTitle).show(getSupportFragmentManager(), "Make Announcement");
@@ -435,20 +453,26 @@ public class EventDetailsActivity extends AppCompatActivity {
             return false;
         });
 
+        // Hide options if not organiser (set boolean to true to see all options for testing)
         Menu menu = popupMenu.getMenu();
         boolean showItems = true;
-        // Hide options if not organiser (set boolean to true to see all options for testing)
         if (!Objects.equals(deviceId, myEvent.getOrganiserId())) {
             menu.findItem(R.id.event_details_option_announce).setVisible(showItems);
             menu.findItem(R.id.event_details_option_edit).setVisible(showItems);
             menu.findItem(R.id.event_details_option_attendees).setVisible(showItems);
         }
 
+        // Show popupMenu
         popupMenu.show();
     }
+
+    /**
+     * Adapter for About/Announcement section
+     */
     private class EventPagerAdapter extends FragmentStateAdapter {
-        private String eventId;
-        public EventPagerAdapter(@NonNull FragmentActivity fragmentActivity,String eventId, String eventTitle) {
+        private final String eventId;
+
+        public EventPagerAdapter(@NonNull FragmentActivity fragmentActivity, String eventId) {
             super(fragmentActivity);
             this.eventId = eventId;
         }
@@ -467,6 +491,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             return 2;
         }
     }
+
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0) {
