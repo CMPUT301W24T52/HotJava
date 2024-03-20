@@ -16,10 +16,13 @@ import java.util.Map;
 public class NotificationStorer {
     private static final String TAG = "NotificationHelper";
     // Get the current timestamp
-    static Date timestamp = new Date(System.currentTimeMillis());
-    public static void storeNotification(String fcmToken, String eventId, String notificationMessage) {
+
+    public static void storeNotification(String fcmToken, String eventId, String notificationMessage, String notiType) {
         // Access Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Get the current timestamp
+        Date timestamp = new Date(System.currentTimeMillis());
 
         // Create a map with the data to be stored
         Map<String, Object> notificationData = new HashMap<>();
@@ -27,6 +30,7 @@ public class NotificationStorer {
         notificationData.put("eventId", eventId);
         notificationData.put("notificationMessage", notificationMessage);
         notificationData.put("timestamp", timestamp);
+        notificationData.put("notiType", notiType);
 
 
         // Add data to the Notifications collection

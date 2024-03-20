@@ -36,6 +36,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -105,6 +107,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Uri posterUri = null;
     String storageUri = null;
     String organiserId;
+    Event updateEvent = null;
 
 
     /**
@@ -123,11 +126,14 @@ public class CreateEventActivity extends AppCompatActivity {
         sref = FirebaseStorage.getInstance();
         eventsRef = db.collection("Events");
 
-        //Creating the random eventId
-        eventId = generateRandomStr();
-
         //Calling a function that sets the UI elements to variables
         setViews();
+
+        //Getting the event. Might be null or on edit it will populate the fields
+//        updateEvent = (Event) getIntent().getParcelableExtra("event");
+//        if (updateEvent != null){
+//            setFields(updateEvent);
+//        }
 
         //Getting the arguments from the Intent
         Intent myIntent = getIntent();
@@ -196,24 +202,6 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
-     * Generates a random string to get a different event id for each created event
-     * Reference: <a href="https://www.baeldung.com/java-random-string">...</a>
-     * @return the random string
-     */
-    protected String generateRandomStr(){
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        return generatedString;
-    }
-
-    /**
      * Assigns the interactive UI elements to their associated variables for later reference
      */
     protected void setViews() {
@@ -236,6 +224,10 @@ public class CreateEventActivity extends AppCompatActivity {
         qrChooseButton = findViewById(R.id.qrcode_choose_button);
         createButton = findViewById(R.id.create_event_button);
         maxAttendeeSwitch = findViewById(R.id.max_attendee_switch);
+    }
+
+    protected void setFields(Event myEvent){
+
     }
 
     /**
@@ -447,19 +439,9 @@ public class CreateEventActivity extends AppCompatActivity {
             maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
         }
 
-        //Case where the poster isn't submitted, just upload it as null
-        if (posterImage.getDrawable() == null){
-            Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId);
-            //Uploading the event to firebase
-            firebaseEventUpload(event);
-        }
-        else{
-            //Saving the poster image to the database
-            //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
-            poster = ((BitmapDrawable) posterImage.getDrawable()).getBitmap();
-            savePosterAndCreateEvent();
-        }
-
+        Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, null, qrCode, description, title, eventId, location);
+        //Uploading the event to firebase
+        firebaseEventUpload(event);
 
     }
 
@@ -482,14 +464,32 @@ public class CreateEventActivity extends AppCompatActivity {
         eventMap.put("Title", event.getTitle());
         eventMap.put("QRCode", event.getQrCode().getEncodedStr());
         eventMap.put("QRCodePromo", qrCodePromo.getEncodedStr());
+        eventMap.put("Location", event.getLocation());
 
-        eventsRef.document()
-                .set(eventMap)
+        //Creating the document reference first so the document id can be retrieved later when uploading the photo
+        DocumentReference docRef = eventsRef.document();
+
+        //Uploading to the document
+        docRef.set(eventMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
-                        returnPreviousActivity();
+                        //Add event to organiser array
+                        db.collection("Users").document(event.getOrganiserId())
+                                .update("CreatedEvents", FieldValue.arrayUnion(docRef.getId()));
+
+                        //Case where the poster isn't submitted, return to previous activity
+                        if (posterImage.getDrawable() == null){
+                            makeToast("Event successfully created!");
+                            returnPreviousActivity();
+                        }
+                        else {
+                            //Saving the poster image to the database
+                            //https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
+                            poster = ((BitmapDrawable) posterImage.getDrawable()).getBitmap();
+                            savePoster(docRef);
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -506,13 +506,13 @@ public class CreateEventActivity extends AppCompatActivity {
      * to the database. Once this process is complete, calls the method to upload the rest of the
      * data to the database
      */
-    protected void savePosterAndCreateEvent(){
-        storageUri = "gs://hotevents-hotjava.appspot.com/Event Images/" + "poster_" + title + ".jpg";
+    protected void savePoster(DocumentReference docRef){
+        storageUri = "gs://hotevents-hotjava.appspot.com/Event Images/" + "poster_" + docRef.getId() + ".jpg";
         // Create a storage reference from our app
         StorageReference storageRef = sref.getReferenceFromUrl("gs://hotevents-hotjava.appspot.com/Event Images");
 
-        // Create a reference to "mountains.jpg"
-        StorageReference posterRef = storageRef.child("poster_" + title + ".jpg");
+        // Create a reference to the photo
+        StorageReference posterRef = storageRef.child("poster_" + docRef.getId() + ".jpg");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         poster.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -523,17 +523,18 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
+                Log.w(TAG, "Error writing poster to Firestore", exception);
+                makeToast("Failed to write to Firestore");
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                //Creating the class
-                Event event = new Event(startDate, endDate, maxAttendees, organiserId, poster, qrCode, description, title, eventId);
+                //Add to the newly created document
+                docRef.update("Poster", storageUri);
 
-                //Uploading the event to firebase
-                firebaseEventUpload(event);
+                //Return to the previous activity
+                makeToast("Event successfully created!");
+                returnPreviousActivity();
             }
         });
     }
@@ -563,12 +564,6 @@ public class CreateEventActivity extends AppCompatActivity {
             makeToast("Must generate a QR code for the event");
             return false;
         }
-
-        //Checking whether a poster was added
-//        if (posterImage.getDrawable() == null){
-//            makeToast("Must upload a poster for the event");
-//            return false;
-//        }
 
         return true;
     }
