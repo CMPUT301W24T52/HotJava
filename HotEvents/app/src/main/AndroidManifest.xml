@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Hotevents"
         tools:targetApi="31">
         <activity
+            android:name=".OrganizedEventsActivity"
+            android:exported="true" />
+        <activity
             android:name=".AdminBrowseEventsActivity"
             android:exported="true" />
         <activity
@@ -48,7 +51,9 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <data android:scheme="hotevents"/>
             </intent-filter>
+
         </activity>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

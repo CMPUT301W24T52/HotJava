@@ -22,12 +22,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import android.content.Intent;
+import android.os.Parcelable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 /**
  * My Events View Adapter
  */
-public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.AdminEventsViewHolder> {
-    private ArrayList<Event> adminEvents;
+public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEventsAdapter.OrganizedEventsViewHolder> {
+    private ArrayList<Event> organizedEvents;
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
@@ -36,7 +48,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
      * View holder for RecyclerView
      * implements onClickListen to create listener on each event
      */
-    public class AdminEventsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class OrganizedEventsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView myEventTitle;
         public TextView myEventLocation;
         public TextView myEventDate;
@@ -46,10 +58,10 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
          * Constructor for View holder class
          * @param itemView object holding my event item view
          */
-        public AdminEventsViewHolder(@NonNull View itemView) {
+        public OrganizedEventsViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
-            myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
+            myEventTitle = (TextView) itemView.findViewById(R.id.upcoming_event_title_text);
             myEventLocation = (TextView) itemView.findViewById(R.id.event_location_text);
             myEventDate = (TextView) itemView.findViewById(R.id.event_start_time_text);
             myEventImg = (ImageView) itemView.findViewById(R.id.imageView);
@@ -60,9 +72,9 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
         @Override
         public void onClick(View v) {
             Intent myIntent = new Intent(context, EventDetailsActivity.class);
-            Event event = adminEvents.get(getAdapterPosition());
+            Event event = organizedEvents.get(getAdapterPosition());
             myIntent.putExtra("event", (Parcelable) event);
-            Log.d("AdminAdapter", String.format("Event %s clicked", event.getTitle()));
+            Log.d("MyEventAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(myIntent);
         }
     }
@@ -72,40 +84,38 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
      * @param myEvents array of events objects
      * @param context context
      */
-    public AdminEventsAdapter(ArrayList<Event> myEvents, Context context){
-        this.adminEvents = myEvents;
+    public OrganizedEventsAdapter(ArrayList<Event> myEvents, Context context){
+        this.organizedEvents = myEvents;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public AdminEventsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public OrganizedEventsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView
-                = LayoutInflater.from(context).inflate(R.layout.content_admin_events, parent, false);
-        return new AdminEventsViewHolder(itemView);
+                = LayoutInflater.from(context).inflate(R.layout.content_upcoming_events, parent, false);
+        return new OrganizedEventsViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AdminEventsViewHolder holder, int position) {
-        holder.setIsRecyclable(false);
-        Event event = adminEvents.get(position);
-        event.setAdapterAdminEvents(this);
-        Log.d("AdminEventsAdapter",event.getTitle());
+    public void onBindViewHolder(@NonNull OrganizedEventsViewHolder holder, int position) {
+        Event event = organizedEvents.get(position);
+        event.setAdapterOrganizedEvents(this);
+        Log.d("OrganizedEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText("Location");
         holder.myEventDate.setText(event.getStartDateTime().toString());
-
         //Setting the poster bitmap
         Bitmap img = event.getPoster();
         if (img != null){
             holder.myEventImg.setImageBitmap(img);
         }
-        Log.d("Note", "made it here");
+
     }
 
     @Override
     public int getItemCount() {
-        return adminEvents.size();
+        return organizedEvents.size();
     }
 
 
