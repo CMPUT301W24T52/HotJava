@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity{
     ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
     ImageView menu, notifications_toolbar;
-    LinearLayout profile, signedUpEvents, publishedEvents, notifications, organizeEvent, admin;
+    LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
     Switch toggleGeo;
     private static final String TAG = "MainActivity";
     private ListenerRegistration userListener;
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity{
         menu = findViewById(R.id.menu);
         profile = findViewById(R.id.profile);
 //        signedUpEvents = findViewById(R.id.signedUpEvents);
-//        publishedEvents = findViewById(R.id.publishedEvents);
+        organizedEvents = findViewById(R.id.publishedEvents);
         notifications = findViewById(R.id.notifications);
         notifications_toolbar = findViewById(R.id.notifications_toolbar);
         organizeEvent = findViewById(R.id.organizeEvent);
@@ -245,6 +245,12 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 redirectActivity(MainActivity.this, ProfileActivity.class);
+            }
+        });
+        organizedEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, OrganizedEventsActivity.class);
             }
         });
         notifications.setOnClickListener(new View.OnClickListener() {

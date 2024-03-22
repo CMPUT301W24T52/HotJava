@@ -1,6 +1,7 @@
 package com.example.hotevents;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -13,10 +14,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -51,6 +54,7 @@ import okhttp3.Response;
 
 public class EventDetailsActivity extends AppCompatActivity {
 
+    private static final int SCAN_QR_CODE_REQUEST_CODE = 1;
     Event myEvent;
     ImageButton backButton;
     Button editButton;
@@ -68,6 +72,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     String organizerId;
     String orgfcmToken;
     ImageButton optionsButton;
+    ImageButton shareButton;
+    ImageButton deleteButton;
     private FirebaseFirestore db;
     private static final String TAG = "EventDetailsActivity";
 
@@ -114,6 +120,24 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
         optionsButton.setOnClickListener(this::showPopupMenu);
+
+
+        shareButton = findViewById(R.id.share_button);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onShareButtonClick();
+            }
+        });
+
+        deleteButton = findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteEvent();
+            }
+        });
+
 
 
         signUpButton = findViewById(R.id.check_in_button);
@@ -486,4 +510,94 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         }
     }
+    public void onShareButtonClick() {
+        // Create an instance of QRCodes class
+        QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo", 512); // Adjust dimensions as needed
+
+        // Get the QR code bitmap
+        Bitmap qrBitmap = qrCodes.getBitmap();
+
+        // Share the QR code bitmap
+        if (qrBitmap != null) {
+            shareBitmap(qrBitmap);
+        } else {
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Method to share the QR code bitmap
+    private void shareBitmap(Bitmap qrBitmap) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/png");
+
+        // Save the QR code bitmap to external storage
+        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QR Code", null);
+        Uri bitmapUri = Uri.parse(bitmapPath);
+
+        // Set the bitmap URI as the intent extra
+        shareIntent.putExtra(Intent.EXTRA_STREAM, bitmapUri);
+
+        // Start the share activity
+        startActivity(Intent.createChooser(shareIntent, "Share QR Code"));
+    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // Check if the result is from scanning the QR code
+//        if (requestCode == SCAN_QR_CODE_REQUEST_CODE && resultCode == RESULT_OK) {
+//            if (data != null && data.getData() != null) {
+//                String scannedUrl = data.getData().toString();
+//                // Parse the event ID from the scanned URL
+//                String eventId = parseEventIdFromUrl(scannedUrl);
+//                if (eventId != null) {
+//                    // Open the event using the parsed event ID
+//                    openEvent(eventId);
+//                } else {
+//                    // Show an error message if the event ID cannot be parsed
+//                    Toast.makeText(this, "Invalid QR code", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        }
+//    }
+
+//    private String parseEventIdFromUrl(String url) {
+//        // Parse the event ID from the URL
+//        // Example: hotjava:checkin:eventId
+//        String[] parts = url.split(":");
+//        if (parts.length == 3 && parts[0].equals("hotjava") && parts[1].equals("checkin")) {
+//            return parts[2]; // Return the event ID
+//        }
+//        return null; // Return null if the URL format is invalid
+//    }
+//
+//    private void openEvent(String eventId) {
+//        Intent intent = new Intent(this, EventDetailsActivity.class);
+//        intent.putExtra("event", (Parcelable) myEvent);
+////        Log.d("UpcomingEventAdapter", String.format("Event %s clicked", myEvent.getTitle()));
+//        startActivity(intent);
+//    }
+    private void deleteEvent() {
+        if (eventId != null) {
+            // Delete the event from Firestore
+            db.collection("Events").document(eventId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        // Event deleted successfully
+                        Toast.makeText(EventDetailsActivity.this, "Event deleted successfully", Toast.LENGTH_SHORT).show();
+                        // Finish the activity or navigate back to the previous screen
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Error deleting the event
+                        Toast.makeText(EventDetailsActivity.this, "Failed to delete event", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error deleting event", e);
+                    });
+        } else {
+            // Event ID is null, show an error message
+            Toast.makeText(EventDetailsActivity.this, "Event ID is null", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

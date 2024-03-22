@@ -85,6 +85,7 @@ public class AdminBrowseEventsActivity extends Activity {
                         Date endDate = doc.getDate("EndDateTime");
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
+                        String posterStr = doc.getString("Poster");
 //                        Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -93,6 +94,7 @@ public class AdminBrowseEventsActivity extends Activity {
                         newEvent.setEndDateTime(endDate);
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
+                        newEvent.setPosterStr(posterStr);
                         adminEventDataArray.add(newEvent);
 
                     }
