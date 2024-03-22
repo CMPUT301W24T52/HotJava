@@ -103,7 +103,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         event.setAdapter(this);
         Log.d("MyEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
-        holder.myEventLocation.setText("Location");
+        holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
         // Format the date to show only day, month, day of the month, hour (12-hour), and AM/PM indicator

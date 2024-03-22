@@ -67,11 +67,6 @@ public class NotificationsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private String formatTimestamp(long timestamp) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        return sdf.format(new Date(timestamp));
-    }
-
     private static class ViewHolder {
         TextView messageTextView;
         TextView timestampTextView;

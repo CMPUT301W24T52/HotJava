@@ -86,6 +86,7 @@ public class AdminBrowseEventsActivity extends Activity {
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
                         String posterStr = doc.getString("Poster");
+                        String location = doc.getString("Location");
 //                        Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -95,6 +96,7 @@ public class AdminBrowseEventsActivity extends Activity {
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
                         newEvent.setPosterStr(posterStr);
+                        newEvent.setLocation(location);
                         adminEventDataArray.add(newEvent);
 
                     }
