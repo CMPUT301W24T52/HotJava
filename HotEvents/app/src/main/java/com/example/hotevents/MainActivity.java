@@ -1,46 +1,32 @@
 package com.example.hotevents;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -50,7 +36,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Source;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -59,6 +44,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -94,6 +83,7 @@ public class MainActivity extends AppCompatActivity{
     private TextView textViewName;
     private CircleImageView profilePhotoImageView;
     private FirebaseStorage storage;
+    private Boolean success = false;
 
 
     @Override
@@ -116,6 +106,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         eventsRef = db.collection("Events");
 
         myEventsAdapter = new MyEventsAdapter(myEventDataArray, this);
@@ -168,6 +159,21 @@ public class MainActivity extends AppCompatActivity{
                     Log.e("FireStore", error.toString());
                     return;
                 }
+
+                //Downloading the posters happens in an asynchronous manner
+                //To get around this we can get a count of the query, and until this count is reached
+                //we loop to give the data array enough time to receive every event
+                Integer count = value.size();
+                Log.e("Event", "Query size: " + count);
+
+                ExecutorService es = Executors.newCachedThreadPool();
+                for(int i=0;i<5;i++){
+
+                }
+                es.shutdown();
+                //boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
+                // all tasks have finished or the time has been reached.
+
                 if (value != null){
                     myEventDataArray.clear();
                     upcomingEventDataArray.clear();
@@ -179,6 +185,7 @@ public class MainActivity extends AppCompatActivity{
                         String description = doc.getString("Description");
                         String organizerId = doc.getString("Organizer Id");
                         String location = doc.getString("Location");
+                        String posterStr = doc.getString("Poster");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -188,11 +195,25 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setDescription(description);
                         newEvent.setOrganiserId(organizerId);
                         newEvent.setLocation(location);
-                        myEventDataArray.add(newEvent);
-                        upcomingEventDataArray.add(newEvent);
-                        // if user.id is in signed up events --> myEventDataArray.add(newEvent);
+                        newEvent.setPosterStr(posterStr);
 
+
+                        //Downloading the poster and waiting for completion before adding event to array
+                        if (posterStr != null){
+                            //Thread thread = downloadAndSetPoster(posterStr, newEvent);
+                            //thread.join();
+                            newEvent.getPoster();
+                            myEventDataArray.add(newEvent);
+                            upcomingEventDataArray.add(newEvent);
+                        }
+                        else{
+                            myEventDataArray.add(newEvent);
+                            upcomingEventDataArray.add(newEvent);
+                        }
+
+                        // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     }
+
                     myEventsAdapter.notifyDataSetChanged();
                     upcomingEventsAdapter.notifyDataSetChanged();
                 }
@@ -304,7 +325,6 @@ public class MainActivity extends AppCompatActivity{
      * @param profilePictureUrl The URL of the profile picture.
      */
     private void downloadAndSetProfilePicture(String profilePictureUrl) {
-        storage = FirebaseStorage.getInstance();
         // Create a reference to the Firebase Storage URL
         StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
 
@@ -324,7 +344,8 @@ public class MainActivity extends AppCompatActivity{
         SignedUpEvent = new ArrayList<String>();
         UserName = "Test User";
         Map<String, Object> newUser = new HashMap<>();
-        newUser.put("ProfilePicture", "");
+        newUser.put("ProfilePictureDefault", "");
+        newUser.put("ProfilePictureCustom", "");
         newUser.put("userType", "Normal");
         newUser.put("UID", deviceId);
         newUser.put("Name", UserName);
@@ -332,6 +353,7 @@ public class MainActivity extends AppCompatActivity{
         newUser.put("Email ID", "");
         newUser.put("Location", "");
         newUser.put("SignedUpEvent",SignedUpEvent);
+        newUser.put("CreatedEvents", new ArrayList<String>());
         newUser.put("geo",true);
         newUser.put("fcmToken",token);
 
@@ -389,16 +411,22 @@ public class MainActivity extends AppCompatActivity{
                 textViewName.setText(name);
 
                 // Check if ProfilePicture field is present
-                if (documentSnapshot.contains("ProfilePicture")) {
-                    String profilePicUrl = documentSnapshot.getString("ProfilePicture");
+                // Check if ProfilePictureCustom field is present
+                if (documentSnapshot.contains("ProfilePictureCustom")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePictureCustom");
 
                     // Check if profilePicUrl is not null or empty
                     if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         // Download and set profile picture
                         downloadAndSetProfilePicture(profilePicUrl);
                     } else {
-                        // Handle the case where the profile picture URL is null or empty
-                        Log.d("ProfileActivity", "Profile picture URL is null or empty");
+                        // Generate default profile photo based on the first letter of the name
+                        char firstLetter = name.charAt(0);
+                        String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
+                        if (profilePicUrl1 != null && !profilePicUrl1.isEmpty()) {
+                            downloadAndSetProfilePicture(profilePicUrl1);
+                        }
+
                     }
                 } else {
                     // Handle the case where the ProfilePicture field is not present in the document

@@ -2,6 +2,8 @@ package com.example.hotevents;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,11 +33,14 @@ public class EditProfileActivity extends AppCompatActivity {
     // UI elements
     private CircleImageView profilePhotoImageView;
     private ImageButton editProfilePhotoButton;
+    private ImageButton removeProfilePhotoButton;
+
     private Uri newPhotoUri; // Variable to store the URI of the newly selected photo
 
     // Firebase
     private FirebaseFirestore db;
     private String deviceId;
+    private FirebaseStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,17 +49,31 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
         // Get unique device ID
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize UI elements
         profilePhotoImageView = findViewById(R.id.edit_image_profile_photo);
         editProfilePhotoButton = findViewById(R.id.editProfilePhotoButton);
+        removeProfilePhotoButton = findViewById(R.id.removeProfilePhotoButton);
+
 
         // Click listener for selecting profile photo from gallery
         editProfilePhotoButton.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, IMAGE_PICK_REQUEST_CODE);
+        });
+
+        // Click listener for removing custom profile photo
+        removeProfilePhotoButton.setOnClickListener(v -> {
+            // Remove the custom profile photo URL from Firestore
+            updateProfilePictureInDatabase(deviceId, "");
+
+            // Set the default profile photo
+            // Assuming "ProfilePictureDefault" is the field containing the default profile photo URL
+//            String defaultProfilePhotoUrl = documentSnapshot.getString("ProfilePictureDefault");
+//            downloadAndSetProfilePicture(defaultProfilePhotoUrl);
         });
 
         // Initialize EditText fields and save button
@@ -67,13 +86,30 @@ public class EditProfileActivity extends AppCompatActivity {
         // Fetch current user data from Firestore and populate the fields
         db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    editTextName.setText(document.getString("Name"));
-                    editTextEmail.setText(document.getString("Email ID"));
-                    editTextContact.setText(document.getString("Contact"));
-                    editTextLocation.setText(document.getString("Location"));
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists()) {
+                    editTextName.setText(documentSnapshot.getString("Name"));
+                    editTextEmail.setText(documentSnapshot.getString("Email ID"));
+                    editTextContact.setText(documentSnapshot.getString("Contact"));
+                    editTextLocation.setText(documentSnapshot.getString("Location"));
                     // You can handle profile photo here if it's stored in Firestore
+                    if (documentSnapshot.contains("ProfilePictureCustom")) {
+                        String profilePicUrl = documentSnapshot.getString("ProfilePictureCustom");
+
+                        // Check if profilePicUrl is not null or empty
+                        if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                            // Download and set profile picture
+                            downloadAndSetProfilePicture(profilePicUrl);
+                        } else {
+                            // Generate default profile photo based on the first letter of the name
+                            String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
+                            downloadAndSetProfilePicture(profilePicUrl1);
+
+                        }
+                    } else {
+                        // Handle the case where the ProfilePicture field is not present in the document
+                        Log.d("ProfileActivity", "No ProfilePicture field in the document");
+                    }
                 }
             }
         });
@@ -121,12 +157,60 @@ public class EditProfileActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot -> {
                     // Image uploaded successfully
                     Log.d("Upload", "Image uploaded successfully");
+
+                    // Constructing the image URL based on the storage location and file name
+                    String imageUrl = "gs://hotevents-hotjava.appspot.com/ProfilePictures/" + imageName;
+
+                    // Update the URL in the Firestore database
+                    updateProfilePictureInDatabase(deviceId, imageUrl);
                 })
                 .addOnFailureListener(e -> {
                     // Handle failure to upload image
                     Log.e("Upload", "Failed to upload image: " + e.getMessage());
                 });
     }
+
+    private void updateProfilePictureInDatabase(String userId, String imageUrl) {
+        // Update the 'ProfilePicture' field in the database collection with the image URL
+        db.collection("Users").document(userId).update("ProfilePictureCustom", imageUrl)
+                .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
+                .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
+    }
+
+
+    /**
+     * Downloads the profile picture from the given URL and sets it to the profile photo image view.
+     *
+     * @param profilePictureUrl The URL of the profile picture.
+     */
+    private void downloadAndSetProfilePicture(String profilePictureUrl) {
+        // Create a reference to the Firebase Storage URL
+        StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
+
+        // Download the image into a Bitmap
+        final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+        photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
+            // Check if the byte array is not null
+            if (bytes != null && bytes.length > 0) {
+                // Decode the byte array into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                // Check if the bitmap is not null
+                if (bitmap != null) {
+                    // Set the downloaded profile picture to the image view
+                    profilePhotoImageView.setImageBitmap(bitmap);
+                } else {
+                    Log.e("ProfileActivity", "Failed to decode byte array into Bitmap");
+                }
+            } else {
+                Log.e("ProfileActivity", "Downloaded byte array is null or empty");
+            }
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+            Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
+        });
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

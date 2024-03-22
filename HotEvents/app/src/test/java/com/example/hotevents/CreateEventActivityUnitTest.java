@@ -36,8 +36,8 @@ public class CreateEventActivityUnitTest {
     }
 
     private Event mockEvent(Date startDate, Date endDate) {
-        Event event = new Event(startDate, endDate, 50, "sdgwioegsjdgjsk",
-                null, mockQRCode(), "this is the description", "Event title", null);
+        Event event = new Event (startDate, endDate, 50, "sdgwioegsjdgjsk",
+                null, null,  mockQRCode(), "this is the description", "Event title", null, "Address");
         return event;
     }
 

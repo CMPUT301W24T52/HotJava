@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +58,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
             myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
             myEventLocation = (TextView) itemView.findViewById(R.id.event_location);
             myEventDate = (TextView) itemView.findViewById(R.id.event_start_date);
+            myEventImg = (ImageView) itemView.findViewById(R.id.imageView);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }
@@ -64,7 +67,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         public void onClick(View v) {
             Intent myIntent = new Intent(context, EventDetailsActivity.class);
             Event event = myEvents.get(getAdapterPosition());
-            myIntent.putExtra("event", event);
+            myIntent.putExtra("event", (Parcelable) event);
             Log.d("MyEventAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(myIntent);
         }
@@ -89,8 +92,15 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull MyEventViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
         Event event = myEvents.get(position);
+        event.setAdapter(this);
         Log.d("MyEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText("Location");
@@ -101,6 +111,12 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         String formattedDate = sdf.format(event.getStartDateTime());
         holder.myEventDate.setText(formattedDate);
 //        loadImageFromFirestoreStorage(event.getPosterUrl(), holder.eventImage);
+
+        //Setting the poster bitmap
+        Bitmap img = event.getPoster();
+        if (img != null){
+            holder.myEventImg.setImageBitmap(img);
+        }
 
         //listener
 //        holder.itemView.setOnClickListener(new View.OnClickListener() {

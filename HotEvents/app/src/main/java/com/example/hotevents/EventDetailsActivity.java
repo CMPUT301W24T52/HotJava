@@ -9,10 +9,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -29,6 +33,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +53,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     Event myEvent;
     ImageButton backButton;
+    Button editButton;
     ImageView eventImage;
     TextView eventTitle;
     TextView startDate;
@@ -67,14 +73,16 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     String deviceId;
     Button signUpButton;
+    String notiType = "Milestone";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        db = FirebaseFirestore.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
-        myEvent = (Event) getIntent().getSerializableExtra("event");
-        db = FirebaseFirestore.getInstance();
+        myEvent = (Event) getIntent().getParcelableExtra("event");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         setViews();
@@ -359,7 +367,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 // Check if the notification was sent successfully
                 if (response.isSuccessful()) {
                     // Call the helper method to store the notification data
-                    NotificationStorer.storeNotification(fcmToken, eventId, messageText);
+                    NotificationStorer.storeNotification(fcmToken, eventId, messageText, notiType);
                     Log.d(TAG, "Notification sent successfully");
                 } else {
                     // Handle the case where notification sending failed
@@ -378,6 +386,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
+        eventImage = findViewById(R.id.eventImage);
         endDate = findViewById(R.id.event_end_date);
         organiserName = findViewById(R.id.organiser_name);
         eventLocation = findViewById(R.id.event_location);
