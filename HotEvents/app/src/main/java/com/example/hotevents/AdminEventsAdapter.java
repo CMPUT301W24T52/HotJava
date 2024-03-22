@@ -92,7 +92,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
         event.setAdapterAdminEvents(this);
         Log.d("AdminEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
-        holder.myEventLocation.setText("Location");
+        holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
         //Setting the poster bitmap

@@ -97,6 +97,7 @@ public class OrganizedEventsActivity extends Activity {
                                                     String description = eventDoc.getString("Description");
                                                     String organizerId = eventDoc.getString("Organizer Id");
                                                     String posterStr = eventDoc.getString("Poster");
+                                                    String location = eventDoc.getString("Location");
 
                                                     Event newEvent = new Event(title);
                                                     newEvent.setEventId(eventId);
@@ -105,6 +106,7 @@ public class OrganizedEventsActivity extends Activity {
                                                     newEvent.setDescription(description);
                                                     newEvent.setOrganiserId(organizerId);
                                                     newEvent.setPosterStr(posterStr);
+                                                    newEvent.setLocation(location);
                                                     organizedEventDataArray.add(newEvent);
                                                 // Notify the adapter after adding events
                                                 organizedEventsAdapter.notifyDataSetChanged();

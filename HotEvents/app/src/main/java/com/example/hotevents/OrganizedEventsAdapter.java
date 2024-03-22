@@ -103,7 +103,7 @@ public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEvents
         event.setAdapterOrganizedEvents(this);
         Log.d("OrganizedEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
-        holder.myEventLocation.setText("Location");
+        holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
         //Setting the poster bitmap
         Bitmap img = event.getPoster();
