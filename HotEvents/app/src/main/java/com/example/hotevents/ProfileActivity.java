@@ -137,8 +137,9 @@ public class ProfileActivity extends AppCompatActivity {
                         char firstLetter = name.charAt(0);
                         generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
                         String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
-                        downloadAndSetProfilePicture(profilePicUrl1);
-
+                        if (profilePicUrl1 != null && !profilePicUrl1.isEmpty()) {
+                            downloadAndSetProfilePicture(profilePicUrl1);
+                        }
                     }
                 } else {
                     // Generate default profile photo based on the first letter of the name
