@@ -166,14 +166,6 @@ public class MainActivity extends AppCompatActivity{
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
 
-                ExecutorService es = Executors.newCachedThreadPool();
-                for(int i=0;i<5;i++){
-
-                }
-                es.shutdown();
-                //boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
-                // all tasks have finished or the time has been reached.
-
                 if (value != null){
                     myEventDataArray.clear();
                     upcomingEventDataArray.clear();
