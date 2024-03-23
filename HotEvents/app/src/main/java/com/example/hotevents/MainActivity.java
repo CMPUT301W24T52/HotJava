@@ -64,8 +64,7 @@ public class MainActivity extends AppCompatActivity{
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     ArrayList<Event> myEventDataArray;      //Signed up events
-    ArrayList<Event> upcomingEventDataArray;
-    //ListView eventList;
+    ArrayList<Event> upcomingEventDataArray;    //upcoming events array
     RecyclerView myEventView;
     RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity{
     private String UserName = "";
     ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
-    ImageView menu, notifications_toolbar;
+    ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
     Switch toggleGeo;
     private static final String TAG = "MainActivity";
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity{
     private TextView textViewName;
     private CircleImageView profilePhotoImageView;
     private FirebaseStorage storage;
-    private Boolean success = false;
+//    private Boolean success = false;
 
 
     @Override
