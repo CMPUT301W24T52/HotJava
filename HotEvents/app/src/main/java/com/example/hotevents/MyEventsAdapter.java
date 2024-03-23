@@ -24,8 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
-import com.bumptech.glide.Glide;
-
 
 /**
  * My Events View Adapter
@@ -127,14 +125,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 //        });
         Log.d("Note", "made it here");
     }
-    public static void loadImageFromFirestoreStorage(String imageUrl, ImageView imageView) {
-        // Use Glide library to load the image from the provided URL into the ImageView
-        Glide.with(imageView.getContext())
-                .load(imageUrl)
-                .placeholder(R.drawable.default_poster) // Placeholder image resource
-                .error(R.drawable.thumbnail) // Error image resource
-                .into(imageView);
-    }
+
     @Override
     public int getItemCount() {
         return myEvents.size();
