@@ -1,6 +1,7 @@
 package com.example.hotevents;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -447,8 +448,14 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Set onclick listener for each specific menu option
         popupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.event_details_option_announce) {
+            int itemID = item.getItemId();
+            if (itemID == R.id.event_details_option_announce) {
                 MakeAnnouncementFragment.newInstance(eventId, myeventTitle).show(getSupportFragmentManager(), "Make Announcement");
+            }
+            if (itemID == R.id.event_details_option_attendees) {
+                Intent intent = new Intent(this, AttendeeList.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                this.startActivity(intent);
             }
             return false;
         });
