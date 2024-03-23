@@ -33,6 +33,8 @@ public class MakeAnnouncementFragment extends DialogFragment {
     EditText notificationMessageInput;
     String eventId;
     String eventTitle;
+
+    String notiType = "Announcement";
     private static final String TAG = "MakeAnnouncement";
 
     public static MakeAnnouncementFragment newInstance(String eventId, String eventTitle) {
@@ -138,7 +140,7 @@ public class MakeAnnouncementFragment extends DialogFragment {
                 // Check if the notification was sent successfully
                 if (response.isSuccessful()) {
                     // Call the helper method to store the notification data
-                    NotificationStorer.storeNotification(fcmToken, eventId, messageText);
+                    NotificationStorer.storeNotification(fcmToken, eventId, messageText, notiType);
                     Log.d(TAG, "Notification sent successfully");
                 } else {
                     // Handle the case where notification sending failed

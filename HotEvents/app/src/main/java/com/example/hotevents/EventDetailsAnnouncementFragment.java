@@ -14,6 +14,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +26,7 @@ public class EventDetailsAnnouncementFragment extends Fragment {
 
     private String eventId;
     ArrayList<Notification> announcementList;
+    Set<String> processednotificationMessage = new HashSet<>();
     NotificationsAdapter announcementAdapter;
     ListView announcementListView;
     FirebaseFirestore db;
@@ -76,12 +79,14 @@ public class EventDetailsAnnouncementFragment extends Fragment {
         // Grab the notifications for this event
         db.collection("Notifications")
                 .whereEqualTo("eventId", eventId)
+                .whereEqualTo("notiType", "Announcement")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Clear announcement list
                         announcementList.clear();
                         // Loop through all notifications
+                        processednotificationMessage.clear(); // Clear the set of processed event IDs
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             // Retrieve data from Firestore document
                             String fcmToken = document.getString("fcmToken");
@@ -90,7 +95,9 @@ public class EventDetailsAnnouncementFragment extends Fragment {
                             Date timestamp = document.getDate("timestamp");
 
                             // Check if any of the fields is null
-                            if (fcmToken != null && eventId != null && notificationMessage != null) {
+                            if (fcmToken != null && eventId != null && notificationMessage != null && !processednotificationMessage.contains(notificationMessage)) {
+                                // Add the event ID to the set of processed event IDs
+                                processednotificationMessage.add(notificationMessage);
                                 Notification announcement = new Notification(fcmToken, eventId, notificationMessage, timestamp);
                                 announcementList.add(announcement);
                             }

@@ -21,15 +21,25 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
+import android.content.Intent;
+import android.os.Parcelable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 /**
  * My Events View Adapter
  */
-public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEventViewHolder> {
-    private ArrayList<Event> myEvents;
+public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEventsAdapter.OrganizedEventsViewHolder> {
+    private ArrayList<Event> organizedEvents;
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
@@ -38,24 +48,22 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
      * View holder for RecyclerView
      * implements onClickListen to create listener on each event
      */
-    public class MyEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class OrganizedEventsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView myEventTitle;
         public TextView myEventLocation;
         public TextView myEventDate;
         public ImageView myEventImg;
-        public ImageView eventImage;
 
         /**
          * Constructor for View holder class
          * @param itemView object holding my event item view
          */
-        public MyEventViewHolder(@NonNull View itemView) {
+        public OrganizedEventsViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
-            eventImage = (ImageView) itemView.findViewById(R.id.imageView);
-            myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
-            myEventLocation = (TextView) itemView.findViewById(R.id.event_location);
-            myEventDate = (TextView) itemView.findViewById(R.id.event_start_date);
+            myEventTitle = (TextView) itemView.findViewById(R.id.upcoming_event_title_text);
+            myEventLocation = (TextView) itemView.findViewById(R.id.event_location_text);
+            myEventDate = (TextView) itemView.findViewById(R.id.event_start_time_text);
             myEventImg = (ImageView) itemView.findViewById(R.id.imageView);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
@@ -64,7 +72,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         @Override
         public void onClick(View v) {
             Intent myIntent = new Intent(context, EventDetailsActivity.class);
-            Event event = myEvents.get(getAdapterPosition());
+            Event event = organizedEvents.get(getAdapterPosition());
             myIntent.putExtra("event", (Parcelable) event);
             Log.d("MyEventAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(myIntent);
@@ -76,59 +84,38 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
      * @param myEvents array of events objects
      * @param context context
      */
-    public MyEventsAdapter(ArrayList<Event> myEvents, Context context){
-        this.myEvents = myEvents;
+    public OrganizedEventsAdapter(ArrayList<Event> myEvents, Context context){
+        this.organizedEvents = myEvents;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public MyEventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public OrganizedEventsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView
-                = LayoutInflater.from(context).inflate(R.layout.content_myevents, parent, false);
-        return new MyEventViewHolder(itemView);
+                = LayoutInflater.from(context).inflate(R.layout.content_upcoming_events, parent, false);
+        return new OrganizedEventsViewHolder(itemView);
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MyEventViewHolder holder, int position) {
-        holder.setIsRecyclable(false);
-        Event event = myEvents.get(position);
-        event.setAdapter(this);
-        Log.d("MyEventsAdapter",event.getTitle());
+    public void onBindViewHolder(@NonNull OrganizedEventsViewHolder holder, int position) {
+        Event event = organizedEvents.get(position);
+        event.setAdapterOrganizedEvents(this);
+        Log.d("OrganizedEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
-
-        // Format the date to show only day, month, day of the month, hour (12-hour), and AM/PM indicator
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd • hh:mm a", Locale.getDefault());
-        String formattedDate = sdf.format(event.getStartDateTime());
-        holder.myEventDate.setText(formattedDate);
-//        loadImageFromFirestoreStorage(event.getPosterUrl(), holder.eventImage);
-
         //Setting the poster bitmap
         Bitmap img = event.getPoster();
         if (img != null){
             holder.myEventImg.setImageBitmap(img);
         }
 
-        //listener
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-        Log.d("Note", "made it here");
     }
 
     @Override
     public int getItemCount() {
-        return myEvents.size();
+        return organizedEvents.size();
     }
 
 

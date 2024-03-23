@@ -98,6 +98,9 @@ public class ProfileActivity extends AppCompatActivity {
     /**
      * Fetches user profile data from Firestore including the profile picture and updates the UI.
      */
+    /**
+     * Fetches user profile data from Firestore including the profile picture and updates the UI.
+     */
     private void fetchUserDataFromFirestore() {
         // Get device ID
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -121,31 +124,34 @@ public class ProfileActivity extends AppCompatActivity {
                 textViewContact.setText("Contact: " + contact);
                 textViewLocation.setText("Location: " + location);
 
-                // Generate default profile photo based on the first letter of the name
-                char firstLetter = name.charAt(0);
-                generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
-
-                // Check if ProfilePicture field is present
-                if (documentSnapshot.contains("ProfilePicture")) {
-                    String profilePicUrl = documentSnapshot.getString("ProfilePicture");
+                // Check if ProfilePictureCustom field is present
+                if (documentSnapshot.contains("ProfilePictureCustom")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePictureCustom");
 
                     // Check if profilePicUrl is not null or empty
                     if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         // Download and set profile picture
                         downloadAndSetProfilePicture(profilePicUrl);
                     } else {
-                        // Handle the case where the profile picture URL is null or empty
-                        Log.d("ProfileActivity", "Profile picture URL is null or empty");
+                        // Generate default profile photo based on the first letter of the name
+                        char firstLetter = name.charAt(0);
+                        generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
+                        String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
+                        if (profilePicUrl1 != null && !profilePicUrl1.isEmpty()) {
+                            downloadAndSetProfilePicture(profilePicUrl1);
+                        }
                     }
                 } else {
-                    // Handle the case where the ProfilePicture field is not present in the document
-                    Log.d("ProfileActivity", "No ProfilePicture field in the document");
+                    // Generate default profile photo based on the first letter of the name
+                    char firstLetter = name.charAt(0);
+                    generateDefaultProfilePhotoAndUpload(deviceId, firstLetter);
                 }
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
         });
     }
+
 
 
     /**
@@ -267,15 +273,15 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Interface for upload complete callback.
+     * Interface for upload complete callback .
      */
     private interface OnUploadCompleteListener {
         void onUploadComplete();
     }
 
     private void updateProfilePictureInDatabase(String userId, String imageUrl) {
-        // Update the 'ProfilePicture' field in the database with the image URL
-        db.collection("Users").document(userId).update("ProfilePicture", imageUrl)
+        // Update the 'ProfilePicture' field in the database collection with the image URL
+        db.collection("Users").document(userId).update("ProfilePictureDefault", imageUrl)
                 .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
                 .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
     }

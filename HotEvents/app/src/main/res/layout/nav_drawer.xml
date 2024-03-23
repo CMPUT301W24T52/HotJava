@@ -22,8 +22,7 @@
             android:id="@+id/CImageView"
             android:layout_marginStart="15dp"
             android:padding="5dp"
-            android:elevation="9dp"
-            android:src="@drawable/default_profile"/>
+            android:elevation="9dp"/>
 
         <TextView
             android:id="@+id/userName"
