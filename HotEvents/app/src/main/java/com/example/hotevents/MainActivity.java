@@ -198,8 +198,8 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setOrganiserId(organizerId);
                         newEvent.setLocation(location);
                         newEvent.setPosterStr(posterStr);
-                        newEvent.setQRCode(new QRCodes(qrCodeStr, 512));
-                        newEvent.setQRCode(new QRCodes(qrCodePromoStr, 512));
+                        newEvent.setQRCode(new QRCodes(qrCodeStr));
+                        newEvent.setQRCode(new QRCodes(qrCodePromoStr));
 
                         //Downloading the poster and waiting for completion before adding event to array
                         if (posterStr != null){

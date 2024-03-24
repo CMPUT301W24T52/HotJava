@@ -436,10 +436,10 @@ public class CreateEventActivity extends AppCompatActivity {
         dimen = dimen * 3 / 4;
 
         //Creating the check in QR Code
-        qrCode = new QRCodes(event, type, dimen);
+        qrCode = new QRCodes(event, type);
 
         //Creating the promotional QR Code
-        qrCodePromo = new QRCodes(event, "promo", dimen);
+        qrCodePromo = new QRCodes(event, "promo");
 
         //Returning both recently created strings
         //If it's QR code choose though, the check in QR code is going to be different

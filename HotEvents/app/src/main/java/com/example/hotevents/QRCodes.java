@@ -1,8 +1,5 @@
 package com.example.hotevents;
 
-//import static android.content.Context.WINDOW_SERVICE;
-//import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -28,7 +25,6 @@ public class QRCodes implements Serializable {
     private String eventId;
     private String type;
     private final String app = "hotevents";
-    private Bitmap bitmap;
     private String encodedStr;
     private QRGEncoder qrgEncoder;
 
@@ -40,16 +36,18 @@ public class QRCodes implements Serializable {
      * @param dimensions dimensions of the screen to determine the Bitmap size of the QR Code
      */
 
-    QRCodes(String eventId, String type, int dimen){
+    QRCodes(String eventId, String type){
         this.eventId = eventId;
         this.type = type;
         this.encodedStr = app + ":" + type + ":" + eventId;
-        generateQRCode(encodedStr, dimen);
     }
 
-    QRCodes(String qrCodeStr, int dimen){
+    QRCodes(String qrCodeStr){
         this.encodedStr = qrCodeStr;
-        generateQRCode(encodedStr, dimen);
+
+        String[] parts = encodedStr.split(":");
+        this.eventId = parts[2];
+        this.type = parts[1];
     }
 
 
@@ -59,14 +57,14 @@ public class QRCodes implements Serializable {
      * @param data Full string to be encoded
      * @param dimensions Dimensions of the device to determine size of the bitmap
      */
-    private void generateQRCode(String data, int dimensions){
+    private Bitmap generateQRCode(String data, int dimensions){
         // encoder to generate our qr code.
         qrgEncoder = new QRGEncoder(data, null, Type.TEXT, dimensions);
 
         // getting our qrcode in the form of bitmap.
         qrgEncoder.setColorWhite(0xFFFFFFFF);
         qrgEncoder.setColorBlack(0xFF000000);
-        bitmap = qrgEncoder.getBitmap();
+        return qrgEncoder.getBitmap();
     }
 
     /**
@@ -79,10 +77,7 @@ public class QRCodes implements Serializable {
     }
 
     public Bitmap getBitmap(){
-        if (bitmap == null){
-            //Make sure you create a toast telling people to first send in the display so that we can get the bitmap
-        }
-        return bitmap;
+        return generateQRCode(encodedStr, 512);
     }
 
     public String getEventId(){
@@ -111,6 +106,8 @@ public class QRCodes implements Serializable {
      * @param context Context of the activity or application
      */
     private void uploadQRCodeToFirebase(final Context context) {
+        Bitmap bitmap = generateQRCode(encodedStr, 512);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] data = baos.toByteArray();

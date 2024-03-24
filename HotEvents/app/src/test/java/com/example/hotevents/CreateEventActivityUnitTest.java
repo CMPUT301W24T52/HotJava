@@ -34,7 +34,7 @@ public class CreateEventActivityUnitTest {
     CollectionReference eventsRef;
 
     private QRCodes mockQRCode(){
-        return new QRCodes("asfowegiwdvslegjwks", "checkin", 512);
+        return new QRCodes("asfowegiwdvslegjwks", "checkin");
     }
 
     private Event mockEvent(Date startDate, Date endDate) {

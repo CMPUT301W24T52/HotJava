@@ -529,7 +529,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         Display display = manager.getDefaultDisplay();
 
         // Create an instance of QRCodes class
-        QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo", 512); // Adjust dimensions as needed
+        QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo"); // Adjust dimensions as needed
 
         // Get the QR code bitmap
         Bitmap qrBitmap = qrCodes.getBitmap();
