@@ -308,7 +308,7 @@ public class Event implements Serializable, Parcelable {
         });
         thread.start();
         //Looping until the poster is properly set before returning
-        while(poster == null){}
+        //while(poster == null){}
         return thread;
     }
 }
