@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 import static org.junit.Assert.assertEquals;
 
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -32,7 +34,7 @@ public class CreateEventActivityUnitTest {
     CollectionReference eventsRef;
 
     private QRCodes mockQRCode(){
-        return new QRCodes("asfowegiwdvslegjwks", "checkin", 5);
+        return new QRCodes("asfowegiwdvslegjwks", "checkin", 512);
     }
 
     private Event mockEvent(Date startDate, Date endDate) {

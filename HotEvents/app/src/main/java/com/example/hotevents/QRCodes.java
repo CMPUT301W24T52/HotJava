@@ -1,8 +1,14 @@
 package com.example.hotevents;
 
+//import static android.content.Context.WINDOW_SERVICE;
+//import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.Toast;
 import android.content.Context;
 
@@ -33,12 +39,19 @@ public class QRCodes implements Serializable {
      * @param type Either [checkin] or [promotional], will define how the system handles the QR Code
      * @param dimensions dimensions of the screen to determine the Bitmap size of the QR Code
      */
-    QRCodes(String eventId, String type, int dimensions) {
+
+    QRCodes(String eventId, String type, int dimen){
         this.eventId = eventId;
         this.type = type;
         this.encodedStr = app + ":" + type + ":" + eventId;
-        generateQRCode(encodedStr, dimensions);
+        generateQRCode(encodedStr, dimen);
     }
+
+    QRCodes(String qrCodeStr, int dimen){
+        this.encodedStr = qrCodeStr;
+        generateQRCode(encodedStr, dimen);
+    }
+
 
     /**
      * Creates an instance of the QRGEncoded class based on the string to be encoded and the dimensions
@@ -66,6 +79,9 @@ public class QRCodes implements Serializable {
     }
 
     public Bitmap getBitmap(){
+        if (bitmap == null){
+            //Make sure you create a toast telling people to first send in the display so that we can get the bitmap
+        }
         return bitmap;
     }
 

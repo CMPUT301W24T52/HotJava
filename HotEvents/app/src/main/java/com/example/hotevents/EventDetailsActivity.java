@@ -22,8 +22,10 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -137,8 +139,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 deleteEvent();
             }
         });
-
-
 
         signUpButton = findViewById(R.id.check_in_button);
         // Hide
@@ -475,6 +475,17 @@ public class EventDetailsActivity extends AppCompatActivity {
             menu.findItem(R.id.event_details_option_announce).setVisible(showItems);
             menu.findItem(R.id.event_details_option_edit).setVisible(showItems);
             menu.findItem(R.id.event_details_option_attendees).setVisible(showItems);
+
+            //Setting the editButton and the click event for the newly displayed button
+            editButton.findViewById(R.id.event_details_option_edit);
+            editButton.setOnClickListener(x-> {
+                Intent myIntent = new Intent(EventDetailsActivity.this, CreateEventActivity.class);
+                //Stating that we are entering the activity in the create event state
+                myIntent.putExtra("State", false);
+                myIntent.putExtra("organiser", deviceId);
+                myIntent.putExtra("event", (Parcelable) myEvent);
+                startActivity(myIntent);
+            });
         }
 
         popupMenu.show();
@@ -511,6 +522,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
     public void onShareButtonClick() {
+        //Both the following lines are used by the QR code class to get the proper dimensions for the QR code
+        WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        // initializing a variable for default display.
+        Display display = manager.getDefaultDisplay();
+
         // Create an instance of QRCodes class
         QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo", 512); // Adjust dimensions as needed
 

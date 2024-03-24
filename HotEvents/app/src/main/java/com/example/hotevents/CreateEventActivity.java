@@ -109,6 +109,25 @@ public class CreateEventActivity extends AppCompatActivity {
     String organiserId;
     Event updateEvent = null;
 
+    //Defining an enum that will be used to specify whether the QR code will be getting created
+    //or chosen from the list of previously used QR codes
+
+    protected enum QRCodeState {
+        CREATE,
+        CHOOSE
+    }
+
+    //Defining an enum that will be used to will change how this activity is handled depending
+    //Either in create mode or update mode. Default is create mode
+    protected enum ActivityState{
+        CREATE,
+        UPDATE
+    }
+
+    //Setting default state to CREATE
+    QRCodeState codeState = QRCodeState.CREATE;
+    ActivityState activityState = ActivityState.CREATE;
+
 
     /**
      * Started on creation of the activity. Assigns the views to variables, assigns the click events
@@ -130,10 +149,17 @@ public class CreateEventActivity extends AppCompatActivity {
         setViews();
 
         //Getting the event. Might be null or on edit it will populate the fields
-//        updateEvent = (Event) getIntent().getParcelableExtra("event");
-//        if (updateEvent != null){
-//            setFields(updateEvent);
-//        }
+        //Pass a boolean inside instead, will make it a lot easier to implement
+        Boolean createEvent = getIntent().getBooleanExtra("State", true);
+
+        if (!createEvent){
+            updateEvent = (Event) getIntent().getParcelableExtra("event");
+            if (updateEvent.getEventId() != null){
+                activityState = ActivityState.UPDATE;
+                eventId = updateEvent.getEventId();
+                setFields(updateEvent);
+            }
+        }
 
         //Getting the arguments from the Intent
         Intent myIntent = getIntent();
@@ -227,6 +253,35 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     protected void setFields(Event myEvent){
+        titleText.setText(myEvent.getTitle());
+        if (myEvent.getLocation() != null){
+            locationText.setText(myEvent.getLocation());
+        }
+
+        if (myEvent.getDescription() != null){
+            descriptionText.setText(myEvent.getDescription());
+        }
+
+        if (myEvent.getMaxAttendees() != null){
+            maxAttendeeSwitch.setChecked(true);
+            maxAttendeeSwitchClick();
+            maxAttendeeText.setText(myEvent.getMaxAttendees().toString());
+        }
+
+        //Setting QR Codes
+        qrCode = myEvent.getQrCode();
+        qrCodePromo = myEvent.getQrCodePromo();
+
+        //Setting poster
+        if (myEvent.getPosterStr() != null){
+            posterImage.setImageBitmap(myEvent.getPoster());
+        }
+
+        //Setting dates
+        startDateText.setText(myEvent.getStartDateStr());
+        startTimeText.setText(myEvent.getStartTimeStr());
+        endDateText.setText(myEvent.getEndDateStr());
+        endTimeText.setText(myEvent.getEndTimeStr());
 
     }
 
@@ -347,6 +402,11 @@ public class CreateEventActivity extends AppCompatActivity {
      * Also creates the promotional QR code for later saving within the database
      */
     protected void qrCreateClick(){
+        codeState = QRCodeState.CREATE;
+        makeToast("QR Code created!");
+    }
+
+    protected String[] QRCreate(String event){
         String type = "checkin";
 
         //https://www.geeksforgeeks.org/how-to-generate-qr-code-in-android/
@@ -357,6 +417,9 @@ public class CreateEventActivity extends AppCompatActivity {
 
         // initializing a variable for default display.
         Display display = manager.getDefaultDisplay();
+
+        //https://www.geeksforgeeks.org/how-to-generate-qr-code-in-android/
+        //Need to generate dimensions for the QR code bitmap
 
         // creating a variable for point which
         // is to be displayed in QR Code.
@@ -373,12 +436,17 @@ public class CreateEventActivity extends AppCompatActivity {
         dimen = dimen * 3 / 4;
 
         //Creating the check in QR Code
-        qrCode = new QRCodes(eventId, type, dimen);
+        qrCode = new QRCodes(event, type, dimen);
 
         //Creating the promotional QR Code
-        qrCodePromo = new QRCodes(eventId, "promo", dimen);
+        qrCodePromo = new QRCodes(event, "promo", dimen);
 
-        makeToast("QR Code with data [" + qrCode.getEncodedStr() + "] created!");
+        //Returning both recently created strings
+        //If it's QR code choose though, the check in QR code is going to be different
+        if (codeState == QRCodeState.CREATE){
+            return new String[]{qrCode.getEncodedStr(), qrCodePromo.getEncodedStr()};
+        }
+        return new String[]{null, qrCodePromo.getEncodedStr()};
     }
 
     /**
@@ -393,6 +461,8 @@ public class CreateEventActivity extends AppCompatActivity {
 //        intentIntegrator.setPrompt("Scan a barcode or QR Code");
 //        intentIntegrator.setOrientationLocked(false);
 //        intentIntegrator.initiateScan();
+
+        codeState = QRCodeState.CHOOSE;
     }
 
     /**
@@ -462,12 +532,21 @@ public class CreateEventActivity extends AppCompatActivity {
         eventMap.put("Organizer Id", event.getOrganiserId());
         eventMap.put("SignedUpUsers", new ArrayList<String>());
         eventMap.put("Title", event.getTitle());
-        eventMap.put("QRCode", event.getQrCode().getEncodedStr());
-        eventMap.put("QRCodePromo", qrCodePromo.getEncodedStr());
+        eventMap.put("QRCode", null);
+        eventMap.put("QRCodePromo", null);
         eventMap.put("Location", event.getLocation());
 
         //Creating the document reference first so the document id can be retrieved later when uploading the photo
-        DocumentReference docRef = eventsRef.document();
+        //Case where we're creating the event for the first time
+        DocumentReference docRef;
+        if (eventId == null){
+            docRef = eventsRef.document();
+        }
+        //Case where we're in update
+        else{
+            docRef = eventsRef.document(eventId);
+        }
+
 
         //Uploading to the document
         docRef.set(eventMap)
@@ -499,6 +578,33 @@ public class CreateEventActivity extends AppCompatActivity {
                         makeToast("Failed to write to Firestore");
                     }
                 });
+
+        //Case where both of the QR codes must be created
+        if (qrCode == null && qrCodePromo == null){
+            //Adding the QR code to the document
+            String[] qrCodeStrArr = QRCreate(docRef.getId());
+            if (codeState == QRCodeState.CHOOSE){
+                //Set the chosen QR Code from the choose method
+                //Return to this
+                //qrCodeStrArr
+            }
+            //Updating the QR code fields in the firebase document
+            docRef.update("QRCode", qrCodeStrArr[0]);
+            docRef.update("QRCodePromo", qrCodeStrArr[1]);
+        }
+        //Case where the QR code was chosen, but the promo QR code still needs to be created
+        else if (qrCode != null && qrCodePromo == null){
+            String[] qrCodeStrArr = QRCreate(docRef.getId());
+            //Updating the QR code fields in the firebase document
+            docRef.update("QRCode", qrCode.getEncodedStr());
+            docRef.update("QRCodePromo", qrCodeStrArr[1]);
+        }
+        //Update case where both the QR code and the promo QR code were fetched from firebase already
+        else{
+            docRef.update("QRCode", qrCode.getEncodedStr());
+            docRef.update("QRCodePromo", qrCodePromo.getEncodedStr());
+        }
+
     }
 
     /**

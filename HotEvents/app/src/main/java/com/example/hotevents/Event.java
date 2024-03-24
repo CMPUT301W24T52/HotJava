@@ -14,6 +14,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -29,6 +31,7 @@ public class Event implements Serializable, Parcelable {
     private Bitmap poster;
     private String posterStr;
     private QRCodes qrCode;
+    private QRCodes qrCodePromo;
     private String description;
     private String title;
     private String eventId;
@@ -176,9 +179,10 @@ public class Event implements Serializable, Parcelable {
         this.description = description;
     }
 
-    public void setQrCode(QRCodes qrCode) {
+    public void setQRCode(QRCodes qrCode) {
         this.qrCode = qrCode;
     }
+    public void setQRCodePromo(QRCodes qrCode) {this.qrCodePromo = qrCode;}
 
     public void setPoster(Bitmap poster) {
         this.poster = poster;
@@ -190,6 +194,31 @@ public class Event implements Serializable, Parcelable {
     public Date getEndDateTime(){
         return this.endDateTime;
     }
+
+    //Reference: https://stackoverflow.com/questions/5683728/convert-java-util-date-to-string
+    public String getStartDateStr() {
+        String pattern = "MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
+
+    public String getEndDateStr(){
+        String pattern = "MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
+
+    public String getStartTimeStr(){
+        String pattern = "HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
+
+    public String getEndTimeStr(){
+        String pattern = "HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
     public Integer getMaxAttendees(){
         return this.maxAttendees;
     }
@@ -199,11 +228,10 @@ public class Event implements Serializable, Parcelable {
 
     //Used to download the poster from the posterStr and returns it
     public Bitmap getPoster() {
-        if (posterStr == null){
-            Log.e("Event", "Poster bitmap is null");
+        if (posterStr == null) {
             return null;
         }
-        else if (poster == null){
+        if (poster == null){
             try {
                 Thread thread = downloadAndSetPoster(FirebaseStorage.getInstance());
                 thread.join();
@@ -229,6 +257,7 @@ public class Event implements Serializable, Parcelable {
     public QRCodes getQrCode() {
         return qrCode;
     }
+    public QRCodes getQrCodePromo() {return qrCodePromo; }
     public String getEventId(){return eventId;}
 
     private Thread downloadAndSetPoster(FirebaseStorage storage) throws InterruptedException {
@@ -278,6 +307,8 @@ public class Event implements Serializable, Parcelable {
             });
         });
         thread.start();
+        //Looping until the poster is properly set before returning
+        while(poster == null){}
         return thread;
     }
 }

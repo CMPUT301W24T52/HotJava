@@ -186,6 +186,8 @@ public class MainActivity extends AppCompatActivity{
                         String organizerId = doc.getString("Organizer Id");
                         String location = doc.getString("Location");
                         String posterStr = doc.getString("Poster");
+                        String qrCodeStr = doc.getString("QRCode");
+                        String qrCodePromoStr = doc.getString("QRCodePromo");
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -196,7 +198,8 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setOrganiserId(organizerId);
                         newEvent.setLocation(location);
                         newEvent.setPosterStr(posterStr);
-
+                        newEvent.setQRCode(new QRCodes(qrCodeStr, 512));
+                        newEvent.setQRCode(new QRCodes(qrCodePromoStr, 512));
 
                         //Downloading the poster and waiting for completion before adding event to array
                         if (posterStr != null){
@@ -273,6 +276,8 @@ public class MainActivity extends AppCompatActivity{
                 //redirectActivity(MainActivity.this, CreateEventActivity.class);
                 //Sending the user ID to the create event page to be able to save the organizer with their event
                 Intent myIntent = new Intent(MainActivity.this, CreateEventActivity.class);
+                //Stating that we are entering the activity in the create event state
+                myIntent.putExtra("State", true);
                 myIntent.putExtra("organiser", deviceId);
                 startActivity(myIntent);
             }
