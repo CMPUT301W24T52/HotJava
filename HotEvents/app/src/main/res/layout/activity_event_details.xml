@@ -81,8 +81,18 @@
         android:textColor="#5C8971"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/remove_poster_button"
         app:layout_constraintStart_toEndOf="@+id/start_title"
+        app:layout_constraintTop_toBottomOf="@+id/eventImage" />
+
+    <ImageButton
+        android:id="@+id/remove_poster_button"
+        android:layout_width="56dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_remove_poster"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventImage" />
 
     <TextView
@@ -91,13 +101,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="7dp"
         android:text="SAT, MAY 1 (3:00 PM)"
         android:textColor="#5C8971"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/event_title"
+        app:layout_constraintEnd_toStartOf="@+id/remove_poster_button"
         app:layout_constraintStart_toEndOf="@+id/end_title"
-        app:layout_constraintTop_toBottomOf="@id/event_start_date" />
+        app:layout_constraintTop_toBottomOf="@+id/event_start_date" />
 
     <TextView
         android:id="@+id/event_title"

@@ -27,7 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * EditProfileActivity allows users to edit their profile information and profile photo.
  */
-public class EditProfileActivity extends AppCompatActivity {
+public class    EditProfileActivity extends AppCompatActivity {
     private static final int IMAGE_PICK_REQUEST_CODE = 1;
 
     // UI elements

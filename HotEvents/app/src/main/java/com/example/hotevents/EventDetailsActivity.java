@@ -68,6 +68,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     TextView organiserName;
     TextView eventLocation;
     String eventId;
+
+    String posterStr;
     String myeventTitle;
     String organizerId;
     String orgfcmToken;
@@ -138,7 +140,21 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-
+        // Find the remove poster button
+        ImageButton removePosterButton = findViewById(R.id.remove_poster_button);
+        // Set OnClickListener for the button
+        removePosterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call method to remove the poster
+                db.collection("Events").document(eventId).update("Poster", "")
+                        .addOnSuccessListener(aVoid -> Log.d("Remove Poster", "Remove Poster  updated successfully"))
+                        .addOnFailureListener(e -> Log.e("Remove Poster", "Error updating Remove Poster ", e));
+//                posterStr="";
+//                myEvent.setPosterStr(posterStr);
+                //removePoster();
+            }
+        });
 
         signUpButton = findViewById(R.id.check_in_button);
         // Hide
@@ -165,6 +181,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    // Method to remove the poster and update with a default one
+    private void removePoster() {
+        myEvent.setPosterStr(""); // Assuming default_poster is your default image resource
+        // You may need to update the poster in your Firebase database or storage as well
+        // For simplicity, I'm assuming you're just updating the ImageView in the UI
     }
 
     /**
@@ -430,7 +453,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (myEvent.getEventId() != null) {
             eventId = myEvent.getEventId();
         }
-
+        if (myEvent.getPosterStr() != null) {
+             posterStr = myEvent.getPosterStr();
+        }
         if (myEvent.getOrganiserId() != null) {
             organizerId = myEvent.getOrganiserId();
         }
