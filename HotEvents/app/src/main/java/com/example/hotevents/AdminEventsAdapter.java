@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
             myEventTitle = (TextView) itemView.findViewById(R.id.event_title_text);
             myEventLocation = (TextView) itemView.findViewById(R.id.event_location_text);
             myEventDate = (TextView) itemView.findViewById(R.id.event_start_time_text);
+            myEventImg = (ImageView) itemView.findViewById(R.id.imageView);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }
@@ -60,7 +62,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
             Intent myIntent = new Intent(context, EventDetailsActivity.class);
             Event event = adminEvents.get(getAdapterPosition());
             myIntent.putExtra("event", (Parcelable) event);
-            Log.d("MyEventAdapter", String.format("Event %s clicked", event.getTitle()));
+            Log.d("AdminAdapter", String.format("Event %s clicked", event.getTitle()));
             context.startActivity(myIntent);
         }
     }
@@ -85,19 +87,19 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull AdminEventsViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
         Event event = adminEvents.get(position);
+        event.setAdapterAdminEvents(this);
         Log.d("AdminEventsAdapter",event.getTitle());
         holder.myEventTitle.setText(event.getTitle());
-        holder.myEventLocation.setText("Location");
+        holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
-        //listener
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        //Setting the poster bitmap
+        Bitmap img = event.getPoster();
+        if (img != null){
+            holder.myEventImg.setImageBitmap(img);
+        }
         Log.d("Note", "made it here");
     }
 

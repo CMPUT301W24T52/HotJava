@@ -33,7 +33,9 @@ public class Event implements Serializable, Parcelable {
     private String title;
     private String eventId;
     private MyEventsAdapter myEventsAdapter;
-    private UpcomingEventAdapter upcomingEventAdapter;// Add this field
+    private UpcomingEventAdapter upcomingEventAdapter;
+    private AdminEventsAdapter adminEventsAdapter;
+    private OrganizedEventsAdapter organizedEventsAdapter;
     /**
      * Constructor for Event Object
      * @param startDateTime start Date and time of the Event
@@ -99,6 +101,12 @@ public class Event implements Serializable, Parcelable {
     }
     public void setAdapterUpComingEvents(UpcomingEventAdapter upcomingEventAdapter) {
         this.upcomingEventAdapter = upcomingEventAdapter;
+    }
+    public void setAdapterAdminEvents(AdminEventsAdapter adminEventsAdapter) {
+        this.adminEventsAdapter = adminEventsAdapter;
+    }
+    public void setAdapterOrganizedEvents(OrganizedEventsAdapter organizedEventsAdapter) {
+        this.organizedEventsAdapter = organizedEventsAdapter;
     }
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
@@ -251,6 +259,12 @@ public class Event implements Serializable, Parcelable {
                         }
                         if (upcomingEventAdapter != null) {
                             upcomingEventAdapter.notifyDataSetChanged();
+                        }
+                        if (adminEventsAdapter != null) {
+                            adminEventsAdapter.notifyDataSetChanged();
+                        }
+                        if (organizedEventsAdapter != null) {
+                            organizedEventsAdapter.notifyDataSetChanged();
                         }
                     } else {
                         Log.e("Event", "Failed to decode byte array into Bitmap");

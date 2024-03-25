@@ -41,6 +41,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
         Event event = upcomingEvents.get(holder.getAdapterPosition());
         event.setAdapterUpComingEvents(this);
         holder.upcomingEventTitle.setText(event.getTitle());
+        holder.upcomingLocation.setText(event.getLocation());
         // Format the startDateTime to a string representation
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm aa", Locale.getDefault());
         String formattedStartDate = dateFormat.format(event.getStartDateTime());
@@ -65,6 +66,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
         public TextView upcomingEventDescription;
         public TextView startDate;
         public ImageView upcomingEventPoster;
+        public TextView upcomingLocation;
 
         // ...Other Event Information
 
@@ -75,6 +77,7 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 //            upcomingEventDescription = (TextView) itemView.findViewById(R.id.upcoming_event_description_text);
             startDate = (TextView) itemView.findViewById(R.id.event_start_time_text);
             upcomingEventPoster = (ImageView) itemView.findViewById(R.id.imageView);
+            upcomingLocation = (TextView) itemView.findViewById(R.id.event_location_text);
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
         }

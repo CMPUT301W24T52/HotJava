@@ -32,7 +32,7 @@ public class NotificationDisplayActivity extends AppCompatActivity {
     private ArrayList<Notification> notificationsList;
     private NotificationsAdapter notificationsAdapter;
     private FirebaseFirestore db;
-    private String TAG = "MY";
+    private String TAG = "NotificationsDisplayActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +85,7 @@ public class NotificationDisplayActivity extends AppCompatActivity {
                 .whereEqualTo("fcmToken", userFcmToken)
                 .get()
                 .addOnCompleteListener(notificationTask -> {
+                    Log.d(TAG, "Fetching Notifications");
                     if (notificationTask.isSuccessful()) {
                         // Clear existing notifications to avoid duplicates
                         notificationsList.clear();
@@ -108,6 +109,7 @@ public class NotificationDisplayActivity extends AppCompatActivity {
                         }
                         // Notify the adapter that the data set has changed
                         notificationsAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "All Notifications fetched");
                     } else {
                         // Handle the error
                         Log.e(TAG, "Error getting notifications", notificationTask.getException());

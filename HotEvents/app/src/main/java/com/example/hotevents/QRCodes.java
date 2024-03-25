@@ -1,7 +1,18 @@
 package com.example.hotevents;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.widget.Toast;
+import android.content.Context;
 
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.Serializable;
 
 import androidmads.library.qrgenearator.QRGContents.Type;
@@ -10,7 +21,7 @@ import androidmads.library.qrgenearator.QRGEncoder;
 public class QRCodes implements Serializable {
     private String eventId;
     private String type;
-    private final String app = "hotjava";
+    private final String app = "hotevents";
     private Bitmap bitmap;
     private String encodedStr;
     private QRGEncoder qrgEncoder;
@@ -68,6 +79,56 @@ public class QRCodes implements Serializable {
 
     public String getEncodedStr(){
         return encodedStr;
+    }
+
+    /**
+     * Shares the QR code bitmap and event URL
+     * @param context Context of the activity or application
+     */
+    public void shareQRCodeAndURL(Context context) {
+        // Upload the QR code image to Firebase Cloud Storage
+        uploadQRCodeToFirebase(context);
+    }
+
+    /**
+     * Uploads the QR code image to Firebase Cloud Storage
+     * @param context Context of the activity or application
+     */
+    private void uploadQRCodeToFirebase(final Context context) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference qrCodeRef = storageRef.child("qrcodes/" + eventId + ".png");
+
+        UploadTask uploadTask = qrCodeRef.putBytes(data);
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+            Toast.makeText(context, "Failed to upload QR code image", Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            // Task completed successfully
+            qrCodeRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                // Get the download URL for the QR code image
+                String downloadUrl = uri.toString();
+
+                // Share the download URL
+                shareUrl(context, downloadUrl);
+            });
+        });
+    }
+
+    /**
+     * Shares the download URL of the QR code image
+     * @param context Context of the activity or application
+     * @param downloadUrl Download URL of the QR code image
+     */
+    private void shareUrl(Context context, String downloadUrl) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, downloadUrl);
+        context.startActivity(Intent.createChooser(shareIntent, "Share QR Code"));
     }
 
 }
