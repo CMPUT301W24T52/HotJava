@@ -40,10 +40,10 @@
         android:text="Sign ups"
         android:textStyle="italic"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintTop_toBottomOf="@+id/signups_number" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/signups_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -56,17 +56,17 @@
         app:layout_constraintTop_toBottomOf="@+id/back_button" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/checkins_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="2"
         android:textAlignment="center"
         android:textColor="#120D26"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView5"
+        app:layout_constraintBottom_toBottomOf="@+id/signups_number"
         app:layout_constraintEnd_toEndOf="@+id/textView4"
         app:layout_constraintStart_toStartOf="@+id/textView4"
-        app:layout_constraintTop_toTopOf="@+id/textView5" />
+        app:layout_constraintTop_toTopOf="@+id/signups_number" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -81,11 +81,14 @@
         app:srcCompat="@android:drawable/ic_menu_mapmode" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/attendee_recycler_view"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="40dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="24dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
