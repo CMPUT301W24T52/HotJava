@@ -37,6 +37,7 @@ public class AttendeeListAdapter extends RecyclerView.Adapter<AttendeeListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull AttendeeListAdapter.MyViewHolder holder, int position) {
+        // Whenever an item pops into view, set the items data
         Attendee attendee = attendeesArray.get(position);
         holder.attendeeName.setText(attendee.getName());
         holder.attendeeCheckin.setText("Check in: " + attendee.getCheckinCount());

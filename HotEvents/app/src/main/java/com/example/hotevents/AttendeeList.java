@@ -14,8 +14,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
+
+/**
+ * Attendee List page
+ */
 public class AttendeeList extends AppCompatActivity {
     ImageButton backButton;
     private FirebaseFirestore db;
@@ -32,17 +35,11 @@ public class AttendeeList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
+        // Get DB and eventId
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getExtras().getString("eventId");
 
-
         setViews();
-
-        RecyclerView recyclerView = findViewById(R.id.attendee_recycler_view);
-
-        attendeeListAdapter = new AttendeeListAdapter(this, attendeesArray);
-        recyclerView.setAdapter(attendeeListAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Listen for changes in event checkin data
         db.collection("Events")
@@ -53,14 +50,17 @@ public class AttendeeList extends AppCompatActivity {
                         Log.e("AttendeeList", "Listen failed", error);
                         return;
                     }
+                    // Clear attendee list
                     attendeesArray.clear();
-                    List<String> signups = new ArrayList<>();
-                    List<String> checkins = new ArrayList<>();
+                    // Init signup and checkin counts
+                    int signups = 0;
+                    int checkins = 0;
                     for (QueryDocumentSnapshot doc : value) {
-                        signups.add(doc.getString("UID"));
-                        if (doc.getLong("count") > 0) {
-                            checkins.add(doc.getString("UID"));
-                        }
+                        // Add to signup count for every attendee
+                        signups++;
+                        // Check if attendee has checked in at least once
+                        if (doc.getLong("count") > 0) checkins++;
+                        // Grab attendee's user document
                         db.collection("Users")
                                 .document(doc.getString("UID"))
                                 .get()
@@ -68,16 +68,19 @@ public class AttendeeList extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         DocumentSnapshot userDoc = task.getResult();
                                         if (userDoc.exists()) {
+                                            // Get attendees name, checkin count, and profile picture url
                                             String name = userDoc.getString("Name");
                                             int checkinCount = doc.getLong("count").intValue();
                                             String profilePicture;
                                             String profilePictureCustom = userDoc.getString("ProfilePictureCustom");
                                             String profilePictureDefault = userDoc.getString("ProfilePictureDefault");
+                                            // Check if custom picture or default
                                             if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
                                                 profilePicture = profilePictureCustom;
                                             } else {
                                                 profilePicture = profilePictureDefault;
                                             }
+                                            // Add new Attendee and notify dataset change
                                             attendeesArray.add(new Attendee(name, checkinCount, profilePicture));
                                             attendeeListAdapter.notifyDataSetChanged();
                                             Log.d(TAG, "user added");
@@ -89,8 +92,10 @@ public class AttendeeList extends AppCompatActivity {
                                     }
                                 });
                     }
-                    signups_number.setText(String.valueOf(signups.size()));
-                    checkins_number.setText(String.valueOf(checkins.size()));
+
+                    // Set the text to the counts
+                    signups_number.setText(String.valueOf(signups));
+                    checkins_number.setText(String.valueOf(checkins));
                 });
     }
 
@@ -99,29 +104,9 @@ public class AttendeeList extends AppCompatActivity {
         checkins_number = findViewById(R.id.checkins_number);
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-    }
-}
-
-class Attendee {
-    private String name;
-    private int checkinCount;
-    private String profileImageUrl;
-
-    public Attendee(String name, int checkinCount, String profileImageUrl) {
-        this.name = name;
-        this.checkinCount = checkinCount;
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCheckinCount() {
-        return checkinCount;
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
+        RecyclerView recyclerView = findViewById(R.id.attendee_recycler_view);
+        attendeeListAdapter = new AttendeeListAdapter(this, attendeesArray);
+        recyclerView.setAdapter(attendeeListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }
