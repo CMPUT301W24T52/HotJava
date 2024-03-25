@@ -33,6 +33,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
+    private Boolean photoDownloaded = false;
 
     /**
      * View holder for RecyclerView
@@ -108,12 +109,15 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd • hh:mm a", Locale.getDefault());
         String formattedDate = sdf.format(event.getStartDateTime());
         holder.myEventDate.setText(formattedDate);
-//        loadImageFromFirestoreStorage(event.getPosterUrl(), holder.eventImage);
 
-        //Setting the poster bitmap
-        Bitmap img = event.getPoster();
-        if (img != null){
-            holder.myEventImg.setImageBitmap(img);
+        if (!photoDownloaded){
+            event.assignPoster(holder.myEventImg);
+            photoDownloaded = true;
+        }
+        else{
+            if (event.getPoster() != null){
+                holder.myEventImg.setImageBitmap(event.getPoster());
+            }
         }
 
         //listener
@@ -123,7 +127,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 //
 //            }
 //        });
-        Log.d("Note", "made it here");
+        //Log.d("Note", "made it here");
     }
 
     @Override

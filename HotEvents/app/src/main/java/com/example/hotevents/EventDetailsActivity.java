@@ -24,6 +24,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -39,6 +40,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -174,7 +177,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void onSignUpButtonClick() {
         // Retrieve the device ID of the user
-
+        Log.d("Sign Up Event", "onSignUpButtonClick() reached");
         // Retrieve the FCM token from Firestore Users collection
         db.collection("Users").document(deviceId).get()
                 .addOnCompleteListener(task -> {
@@ -222,29 +225,73 @@ public class EventDetailsActivity extends AppCompatActivity {
      * Stores the device ID and check-in count in Firestore under the checkins collection for the specified event.
      */
     private void onCheckInButtonClick() {
+        launchScanner();
+
+        //Return from launch scanner is handled in onActivityResult
+
+        Log.d(TAG, "CheckIn Button Working");
+    }
+
+    private void launchScanner(){
+        //Code to open the QR Code scanner
+        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+        intentIntegrator.setPrompt("Scan the Check-In QR Code");
+        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        intentIntegrator.setCameraId(0);
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.initiateScan();
+    }
+
+    //This is what returns once a QR code has been scanned
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        // if the intentResult is null then
+        // toast a message as "cancelled"
+        if (intentResult != null) {
+            if (intentResult.getContents() == null) {
+                Toast.makeText(getBaseContext(), "Scan cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                // if the intentResult is not null we'll handle validating the QR Code
+                //Toast.makeText(getBaseContext(), intentResult.getContents() + ":" + intentResult.getFormatName(), Toast.LENGTH_SHORT).show();
+                if (myEvent.getQrCode().validateQRCode(intentResult.getContents())){
+                    checkInSuccess();
+                }
+                else{
+                    Toast.makeText(getBaseContext(), "Incorrect QR Code", Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    //The QR code was successfully scanned, adding the check in to the DB
+    private void checkInSuccess(){
         DocumentReference docRef = db.collection("Events").document(eventId).collection("checkins")
                 .document(deviceId);
         Map<String, Object> checkinData = new HashMap<>();
         checkinData.put("UID", deviceId);
 
         docRef.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            checkinData.put("count", document.getLong("count").intValue() + 1);
-                        } else {
-                            checkinData.put("count", 1);
-                        }
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    checkinData.put("count", document.getLong("count").intValue() + 1);
+                } else {
+                    checkinData.put("count", 1);
+                }
 
-                        docRef.set(checkinData).addOnSuccessListener(unused -> {
-                            Log.d(TAG, "Checked in successfully");
-                        }).addOnFailureListener(e -> {
-                            Log.d(TAG, "Error checking in", e);
-                        });
-                    }
+                docRef.set(checkinData).addOnSuccessListener(unused -> {
+                    Log.d(TAG, "Checked in successfully");
+                    Toast.makeText(getBaseContext(), "Check-in was successful!", Toast.LENGTH_LONG).show();
+                }).addOnFailureListener(e -> {
+                    Log.d(TAG, "Error checking in", e);
+                    Toast.makeText(getBaseContext(), "Error checking in", Toast.LENGTH_LONG).show();
                 });
-
-        Log.d(TAG, "CheckIn Button Working");
+            }
+        });
     }
 
     /**
@@ -448,6 +495,10 @@ public class EventDetailsActivity extends AppCompatActivity {
             eventLocation.setText(myEvent.getLocation());
         }
 
+        if (myEvent.getPosterStr() != null){
+            myEvent.assignPoster(eventImage);
+        }
+
         if (myEvent.getOrganiserId() != null && !myEvent.getOrganiserId().trim().isEmpty()) {
             db.collection("Users").document(myEvent.getOrganiserId()).get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -477,19 +528,23 @@ public class EventDetailsActivity extends AppCompatActivity {
             menu.findItem(R.id.event_details_option_attendees).setVisible(showItems);
 
             //Setting the editButton and the click event for the newly displayed button
-            editButton.findViewById(R.id.event_details_option_edit);
-            editButton.setOnClickListener(x-> {
+            //Reference: https://stackoverflow.com/questions/19652848/how-to-cast-menuitem-to-button-or-imagebutton
+            MenuItem editButton = menu.findItem(R.id.event_details_option_edit);
+            editButton.setOnMenuItemClickListener(x -> {
                 Intent myIntent = new Intent(EventDetailsActivity.this, CreateEventActivity.class);
                 //Stating that we are entering the activity in the create event state
                 myIntent.putExtra("State", false);
                 myIntent.putExtra("organiser", deviceId);
                 myIntent.putExtra("event", (Parcelable) myEvent);
+                Log.d("Event Details", "Starting update event");
                 startActivity(myIntent);
+                return true;
             });
         }
 
         popupMenu.show();
     }
+
     private class EventPagerAdapter extends FragmentStateAdapter {
         private String eventId;
         public EventPagerAdapter(@NonNull FragmentActivity fragmentActivity,String eventId, String eventTitle) {
@@ -522,17 +577,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
     public void onShareButtonClick() {
-        //Both the following lines are used by the QR code class to get the proper dimensions for the QR code
-        WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
-        // initializing a variable for default display.
-        Display display = manager.getDefaultDisplay();
-
         // Create an instance of QRCodes class
-        QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo"); // Adjust dimensions as needed
+        //QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo"); // Adjust dimensions as needed
 
         // Get the QR code bitmap
-        Bitmap qrBitmap = qrCodes.getBitmap();
+        //Bitmap qrBitmap = qrCodes.getBitmap();
+        Bitmap qrBitmap = myEvent.getQrCodePromo().getBitmap();
 
         // Share the QR code bitmap
         if (qrBitmap != null) {
@@ -615,6 +665,4 @@ public class EventDetailsActivity extends AppCompatActivity {
             Toast.makeText(EventDetailsActivity.this, "Event ID is null", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }

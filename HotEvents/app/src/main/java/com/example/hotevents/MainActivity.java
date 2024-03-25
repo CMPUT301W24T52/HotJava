@@ -165,13 +165,6 @@ public class MainActivity extends AppCompatActivity{
                 //we loop to give the data array enough time to receive every event
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
-
-                ExecutorService es = Executors.newCachedThreadPool();
-                for(int i=0;i<5;i++){
-
-                }
-                es.shutdown();
-                //boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
                 // all tasks have finished or the time has been reached.
 
                 if (value != null){
@@ -188,6 +181,11 @@ public class MainActivity extends AppCompatActivity{
                         String posterStr = doc.getString("Poster");
                         String qrCodeStr = doc.getString("QRCode");
                         String qrCodePromoStr = doc.getString("QRCodePromo");
+                        Long maxAttendeesLong = doc.getLong("Max Attendees");
+                        Integer maxAttendees = null;
+                        if (maxAttendeesLong != null){
+                            maxAttendees = maxAttendeesLong.intValue();
+                        }
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -198,21 +196,21 @@ public class MainActivity extends AppCompatActivity{
                         newEvent.setOrganiserId(organizerId);
                         newEvent.setLocation(location);
                         newEvent.setPosterStr(posterStr);
-                        newEvent.setQRCode(new QRCodes(qrCodeStr));
-                        newEvent.setQRCode(new QRCodes(qrCodePromoStr));
 
-                        //Downloading the poster and waiting for completion before adding event to array
-                        if (posterStr != null){
-                            //Thread thread = downloadAndSetPoster(posterStr, newEvent);
-                            //thread.join();
-                            newEvent.getPoster();
-                            myEventDataArray.add(newEvent);
-                            upcomingEventDataArray.add(newEvent);
+                        if (maxAttendees != null){
+                            newEvent.setMaxAttendees(maxAttendees);
                         }
-                        else{
-                            myEventDataArray.add(newEvent);
-                            upcomingEventDataArray.add(newEvent);
+
+                        if (qrCodeStr != null){
+                            newEvent.setQRCode(new QRCodes(qrCodeStr));
                         }
+                        if (qrCodePromoStr != null){
+                            newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
+                        }
+
+                        myEventDataArray.add(newEvent);
+                        upcomingEventDataArray.add(newEvent);
+
 
                         // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     }

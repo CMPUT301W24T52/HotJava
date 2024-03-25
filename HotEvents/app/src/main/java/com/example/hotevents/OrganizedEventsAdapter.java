@@ -41,6 +41,7 @@ import java.util.ArrayList;
 public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEventsAdapter.OrganizedEventsViewHolder> {
     private ArrayList<Event> organizedEvents;
     private Context context;
+    private Boolean photoDownloaded = false;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
 
@@ -105,10 +106,15 @@ public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEvents
         holder.myEventTitle.setText(event.getTitle());
         holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
-        //Setting the poster bitmap
-        Bitmap img = event.getPoster();
-        if (img != null){
-            holder.myEventImg.setImageBitmap(img);
+
+        if (!photoDownloaded){
+            event.assignPoster(holder.myEventImg);
+            photoDownloaded = true;
+        }
+        else{
+            if (event.getPoster() != null){
+                holder.myEventImg.setImageBitmap(event.getPoster());
+            }
         }
 
     }

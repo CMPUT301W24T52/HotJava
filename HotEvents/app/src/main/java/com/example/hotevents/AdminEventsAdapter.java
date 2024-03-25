@@ -31,6 +31,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
+    private Boolean photoDownloaded = false;
 
     /**
      * View holder for RecyclerView
@@ -95,12 +96,15 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
         holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
-        //Setting the poster bitmap
-        Bitmap img = event.getPoster();
-        if (img != null){
-            holder.myEventImg.setImageBitmap(img);
+        if (!photoDownloaded){
+            event.assignPoster(holder.myEventImg);
+            photoDownloaded = true;
         }
-        Log.d("Note", "made it here");
+        else{
+            if (event.getPoster() != null){
+                holder.myEventImg.setImageBitmap(event.getPoster());
+            }
+        }
     }
 
     @Override

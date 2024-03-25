@@ -21,6 +21,7 @@ import java.util.Locale;
 public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdapter.UpcomingEventViewHolder> {
     private ArrayList<Event> upcomingEvents;
     private Context context;
+    private Boolean photoDownloaded = false;
 
     public UpcomingEventAdapter(ArrayList<Event> upcomingEvents, Context context){
         this.upcomingEvents = upcomingEvents;
@@ -49,10 +50,14 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
         holder.startDate.setText(formattedStartDate);
         holder.upcomingEventTitle.setText(event.getTitle());
 
-
-        Bitmap poster = event.getPoster();
-        if (poster != null){
-            holder.upcomingEventPoster.setImageBitmap(event.getPoster());
+        if (!photoDownloaded){
+            event.assignPoster(holder.upcomingEventPoster);
+            photoDownloaded = true;
+        }
+        else{
+            if (event.getPoster() != null){
+                holder.upcomingEventPoster.setImageBitmap(event.getPoster());
+            }
         }
     }
 
