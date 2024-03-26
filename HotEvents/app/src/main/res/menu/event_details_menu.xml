@@ -9,7 +9,4 @@
     <item
         android:id="@+id/event_details_option_attendees"
         android:title="List of Attendees" />
-    <item
-        android:id="@+id/event_details_option_share"
-        android:title="Share" />
 </menu>

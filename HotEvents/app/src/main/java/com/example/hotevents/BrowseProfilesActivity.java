@@ -81,14 +81,23 @@ public class BrowseProfilesActivity extends AppCompatActivity {
 
                 for (DocumentSnapshot document : task.getResult()) {
                     // Retrieve data from Firestore document
-                    int profileImageRes = R.drawable.img; // Set a default image
                     String userName = document.getString("Name");
                     String uid = document.getString("UID");
-
+                    String profilePicture;
+                    String profilePictureCustom = document.getString("ProfilePictureCustom");
+                    String profilePictureDefault = document.getString("ProfilePictureDefault");
+                    // Check if custom picture or default
+                    if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
+                        profilePicture = profilePictureCustom;
+                    } else if (profilePictureDefault != null && !profilePictureDefault.isEmpty()) {
+                        profilePicture = profilePictureDefault;
+                    } else {
+                        profilePicture = "gs://hotevents-hotjava.appspot.com/ProfilePictures/profilePictureDefault.png";
+                    }
                     // Check if any of the fields is null (handle this based on your app's logic)
-                    if (userName != null && uid != null) {
+                    if (userName != null && uid != null && profilePicture != null) {
                         // Create a UserProfiles object with the retrieved data
-                        UserProfiles user = new UserProfiles(profileImageRes, userName, uid);
+                        UserProfiles user = new UserProfiles(profilePicture, userName, uid);
 
                         // Add the user to the list
                         profilesList.add(user);

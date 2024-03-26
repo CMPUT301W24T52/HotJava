@@ -445,13 +445,13 @@ public class CreateEventActivity extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-                        String monthStr = String.format("%02d", monthOfYear);
+                        String monthStr = String.format("%02d", monthOfYear+1);
                         String dayStr = String.format("%02d", dayOfMonth);
                         dateText.setText(monthStr + "/" + dayStr + "/" + year);
                         openTimeDialog(timeText);
                     }
                 },
-                year, month, day);
+                year, month-1, day);
         datePickerDialog.show();
     }
 
