@@ -1,6 +1,8 @@
 package com.example.hotevents;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -13,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,9 +29,13 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
     private TextView textViewName, textViewEmail, textViewContact, textViewLocation;
     private LinearLayout editProfileButton, deleteProfileButton;
     private ImageButton backButton;
+    private CircleImageView profilePhotoImageView;
+
 
     private ListenerRegistration userListener;
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,12 +47,15 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         textViewEmail = findViewById(R.id.textViewEmail);
         textViewContact = findViewById(R.id.textViewPhoneNumber);
         textViewLocation = findViewById(R.id.textViewLocation);
-        editProfileButton = findViewById(R.id.linearEditProfile);
         deleteProfileButton = findViewById(R.id.linearDeleteProfile);
         backButton = findViewById(R.id.backButton);
+        profilePhotoImageView = findViewById(R.id.imageViewProfilePhoto);
+
 
         // Initialize Firestore instance
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
+
 
         // Retrieve the device ID from the Intent
         String deviceId = getIntent().getStringExtra("deviceId");
@@ -82,6 +93,23 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
                 String email = documentSnapshot.getString("Email ID");
                 String contact = documentSnapshot.getString("Contact");
                 String location = documentSnapshot.getString("Location");
+                if (documentSnapshot.contains("ProfilePictureCustom")) {
+                    String profilePicUrl = documentSnapshot.getString("ProfilePictureCustom");
+
+                    // Check if profilePicUrl is not null or empty
+                    if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
+                        // Download and set profile picture
+                        downloadAndSetProfilePicture(profilePicUrl);
+                    } else {
+                        // Generate default profile photo based on the first letter of the name
+                        String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
+                        downloadAndSetProfilePicture(profilePicUrl1);
+
+                    }
+                } else {
+                    // Handle the case where the ProfilePicture field is not present in the document
+                    Log.d("ProfileActivity", "No ProfilePicture field in the document");
+                }
 
                 // Update UI elements with retrieved data
                 textViewName.setText(name);
@@ -96,6 +124,39 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
             } else {
                 Log.d("ProfileActivity", "No such document");
             }
+        });
+    }
+
+    /**
+     * Downloads the profile picture from the given URL and sets it to the profile photo image view.
+     *
+     * @param profilePictureUrl The URL of the profile picture.
+     */
+    private void downloadAndSetProfilePicture(String profilePictureUrl) {
+        // Create a reference to the Firebase Storage URL
+        StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
+
+        // Download the image into a Bitmap
+        final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+        photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
+            // Check if the byte array is not null
+            if (bytes != null && bytes.length > 0) {
+                // Decode the byte array into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                // Check if the bitmap is not null
+                if (bitmap != null) {
+                    // Set the downloaded profile picture to the image view
+                    profilePhotoImageView.setImageBitmap(bitmap);
+                } else {
+                    Log.e("ProfileActivity", "Failed to decode byte array into Bitmap");
+                }
+            } else {
+                Log.e("ProfileActivity", "Downloaded byte array is null or empty");
+            }
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+            Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
         });
     }
 
