@@ -107,8 +107,10 @@ public class AttendeeList extends AppCompatActivity {
                                             // Check if custom picture or default
                                             if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
                                                 profilePicture = profilePictureCustom;
-                                            } else {
+                                            } else if (profilePictureDefault != null && !profilePictureDefault.isEmpty()) {
                                                 profilePicture = profilePictureDefault;
+                                            } else {
+                                                profilePicture = "gs://hotevents-hotjava.appspot.com/ProfilePictures/profilePictureDefault.png";
                                             }
                                             // Add new Attendee and notify dataset change
                                             attendeesArray.add(new Attendee(name, checkinCount, profilePicture));
