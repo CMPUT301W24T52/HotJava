@@ -115,9 +115,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        optionsButton.setVisibility(View.VISIBLE);
-        optionsButton.setOnClickListener(this::showPopupMenu);
-
         signUpButton = findViewById(R.id.check_in_button);
         if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             // Hide signup button
@@ -127,10 +124,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             optionsButton.setVisibility(View.VISIBLE);
             optionsButton.setOnClickListener(this::showPopupMenu);
 
-            shareButton = findViewById(R.id.share_button);
-            shareButton.setOnClickListener(v -> onShareButtonClick());
-
             deleteButton = findViewById(R.id.delete_button);
+            deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(v -> deleteEvent());
         } else {
             handleButtonBehaviour();
@@ -418,6 +413,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         viewPager2.setAdapter(eventPagerAdapter);
         optionsButton = findViewById(R.id.options_button);
         signUpButton = findViewById(R.id.check_in_button);
+        shareButton = findViewById(R.id.share_button);
+        shareButton.setOnClickListener(v -> onShareButtonClick());
     }
 
     /**
