@@ -1,64 +1,40 @@
+// UserProfiles.java
+
 package com.example.hotevents;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class UserProfiles {
+    private String profileImageUrl; // New field for profile picture URL
+    private String username;
+    private String uid;
 
-import java.io.Serializable;
-
-public class UserProfiles implements Parcelable, Serializable {
-    private final int profileImageRes; // Resource ID for the profile image
-    private final String username;
-    private String uid; // Add UID field
-
-    public UserProfiles(int profileImageRes, String username, String uid) {
-        if (username == null || uid == null) {
-            throw new IllegalArgumentException("Username and deviceId cannot be null");
-        }
-        this.profileImageRes = profileImageRes;
+    public UserProfiles(String profileImageUrl, String username, String uid) {
+        this.profileImageUrl = profileImageUrl;
         this.username = username;
         this.uid = uid;
     }
 
-    protected UserProfiles(Parcel in) {
-        profileImageRes = in.readInt();
-        username = in.readString();
-        uid = in.readString();
+    // Getters and setters for the fields
+    public String getProfileImageUrl() {
+        return profileImageUrl;
     }
 
-    public static final Creator<UserProfiles> CREATOR = new Creator<UserProfiles>() {
-        @Override
-        public UserProfiles createFromParcel(Parcel in) {
-            return new UserProfiles(in);
-        }
-
-        @Override
-        public UserProfiles[] newArray(int size) {
-            return new UserProfiles[size];
-        }
-    };
-
-    public int getProfileImageRes() {
-        return profileImageRes;
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public String getUsername() {
         return username;
     }
 
-    // Getter method for UID
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getUid() {
         return uid;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(profileImageRes);
-        dest.writeString(username);
-        dest.writeString(uid);
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }
