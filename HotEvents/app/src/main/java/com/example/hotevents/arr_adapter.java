@@ -9,18 +9,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
-import androidx.appcompat.app.AlertDialog;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Custom ArrayAdapter to display user profiles in a ListView.
  */
 public class arr_adapter extends ArrayAdapter<UserProfiles> {
-    private final Context context;
-    private final List<UserProfiles> users;
+    Context context;
+    List<UserProfiles> users;
 
     /**
      * Constructor for the ArrayAdapter.
@@ -76,35 +78,14 @@ public class arr_adapter extends ArrayAdapter<UserProfiles> {
         UserProfiles user = users.get(position);
 
         // Set user data to the views
-        holder.profileImage.setImageResource(user.getProfileImageRes());
         holder.username.setText(user.getUsername());
         holder.uid.setText(user.getUid()); // Set UID text
-        // Handle click on profile image
-        holder.profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Show dialog with profile image and name
-                showDialog(user);
-            }
-        });
+        StorageReference storageRef;
+        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.getProfileImageUrl());
+        Glide.with(context)
+                .load(storageRef)
+                .into(holder.profileImage);
 
         return convertView;
-    }
-    private void showDialog(UserProfiles user) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View dialogView = inflater.inflate(R.layout.dialog_user_profile, null);
-        builder.setView(dialogView);
-
-        // Initialize views in the dialog
-        CircleImageView dialogProfileImage = dialogView.findViewById(R.id.dialogProfileImage);
-        TextView dialogUsername = dialogView.findViewById(R.id.dialogUserName);
-
-        // Set profile image and name
-        dialogProfileImage.setImageResource(user.getProfileImageRes());
-        dialogUsername.setText(user.getUsername());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 }
