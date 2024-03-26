@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +36,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_profile);
 
+
         // Initialize UI elements
         textViewName = findViewById(R.id.textViewName);
         textViewEmail = findViewById(R.id.textViewEmail);
@@ -42,6 +45,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         editProfileButton = findViewById(R.id.linearEditProfile);
         deleteProfileButton = findViewById(R.id.linearDeleteProfile);
         backButton = findViewById(R.id.backButton);
+
 
         // Initialize Firestore instance
         db = FirebaseFirestore.getInstance();
@@ -59,6 +63,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
             // Delete profile when the delete button is clicked
             deleteProfile();
         });
+
     }
 
     /**
