@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
@@ -83,6 +84,7 @@ public class NotificationDisplayActivity extends AppCompatActivity {
     private void fetchNotificationsForToken(String userFcmToken) {
         db.collection("Notifications")
                 .whereEqualTo("fcmToken", userFcmToken)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(notificationTask -> {
                     Log.d(TAG, "Fetching Notifications");
