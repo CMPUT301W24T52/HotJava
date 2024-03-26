@@ -52,6 +52,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.12.0")
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
