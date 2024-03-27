@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity{
         upcomingEventView.setHasFixedSize(false);
         upcomingEventView.setLayoutManager(upcomingEventManager);
 
+        upcomingEventList_button = findViewById(R.id.upcomingEventsList_button);
+
 
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -265,6 +267,15 @@ public class MainActivity extends AppCompatActivity{
                 //Sending the user ID to the create event page to be able to save the organizer with their event
                 Intent myIntent = new Intent(MainActivity.this, CreateEventActivity.class);
                 myIntent.putExtra("organiser", deviceId);
+                startActivity(myIntent);
+            }
+        });
+
+        upcomingEventList_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, UpcomingEventsActivity.class);
+                myIntent.putParcelableArrayListExtra("events", upcomingEventDataArray);
                 startActivity(myIntent);
             }
         });

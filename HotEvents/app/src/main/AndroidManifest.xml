@@ -38,6 +38,8 @@
             android:exported="true" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".UpcomingEventsActivity"/>
+        <activity android:name=".SignedUpEventsActivity"/>
         <activity
             android:name=".NavigationMenu"
             android:exported="true" />

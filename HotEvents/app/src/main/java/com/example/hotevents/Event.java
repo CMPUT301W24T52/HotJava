@@ -36,6 +36,7 @@ public class Event implements Serializable, Parcelable {
     private UpcomingEventAdapter upcomingEventAdapter;
     private AdminEventsAdapter adminEventsAdapter;
     private OrganizedEventsAdapter organizedEventsAdapter;
+    private UpcomingEventActivityAdapter upcomingEventActivityAdapter;
     /**
      * Constructor for Event Object
      * @param startDateTime start Date and time of the Event
@@ -107,6 +108,9 @@ public class Event implements Serializable, Parcelable {
     }
     public void setAdapterOrganizedEvents(OrganizedEventsAdapter organizedEventsAdapter) {
         this.organizedEventsAdapter = organizedEventsAdapter;
+    }
+    public void setAdapterUpcomingEventsActivity(UpcomingEventActivityAdapter upcomingEventActivityAdapter) {
+        this.upcomingEventActivityAdapter = upcomingEventActivityAdapter;
     }
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
