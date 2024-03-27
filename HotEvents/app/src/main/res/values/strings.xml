@@ -38,5 +38,6 @@
     <string name="organised_events">Organized Events</string>
     <string name="browse_events">Events</string>
     <string name="admin_options">Admin Options</string>
+    <string name="attendee_textview">List Of Attendees</string>
 
 </resources>

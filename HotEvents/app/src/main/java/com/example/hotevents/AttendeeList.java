@@ -68,7 +68,7 @@ public class AttendeeList extends AppCompatActivity {
 
         setViews();
 
-        backButton = findViewById(R.id.back_button);
+        backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
         // Listen for changes in event checkin data
