@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -30,7 +32,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateQuerySnapshot;
+import com.google.firebase.firestore.AggregateSource;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -177,32 +185,52 @@ public class EventDetailsActivity extends AppCompatActivity {
                             signupData.put("UID", deviceId);
                             signupData.put("fcmToken", fcmToken);
 
-                            Map<String, Object> checkinData = new HashMap<>();
-                            checkinData.put("UID", deviceId);
-                            checkinData.put("count", 0);
 
                             // Add the device ID to the signups collection under the specific event's document
-                            db.collection("Events").document(eventId).collection("signups")
-                                    .document(deviceId)
-                                    .set(signupData)
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Successfully stored the device ID in Firestore
-                                        Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
-                                        // You can add further logic here if needed
-                                        addToMySignupArray(deviceId, eventId);
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // Failed to store the device ID
-                                        Log.e(TAG, "Error storing device ID in Firestore", e);
-                                        // You can handle the failure here
-                                    });
+                            //Reference: https://firebase.google.com/docs/firestore/query-data/aggregation-queries#java
+                            CollectionReference colRef = db.collection("Events").document(eventId).collection("signups");
+                            AggregateQuery countQuery = colRef.count();
+
+                            countQuery.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        // Count fetched successfully
+                                        AggregateQuerySnapshot snapshot = task.getResult();
+                                        //Checking whether the count is smaller than the MaxAttendees field, but only if it's not empty
+                                        Log.d("Aggregate Query Count", "Count: " + snapshot.getCount());
+
+                                        Integer maxAttendees;
+                                        maxAttendees = myEvent.getMaxAttendees();
+                                        boolean attendeeCheckPassed = true;
+                                        if (myEvent.getMaxAttendees() != null){
+                                            if (snapshot.getCount() > maxAttendees){
+                                                Toast.makeText(getBaseContext(), "Unable to Sign-up: Max attendee limit has been reached!", Toast.LENGTH_LONG).show();
+                                                attendeeCheckPassed = false;
+                                            }
+                                        }
+
+                                        if (attendeeCheckPassed){
+                                            colRef.document(deviceId).set(signupData)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        // Successfully stored the device ID in Firestore
+                                                        Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                                                        // You can add further logic here if needed
+                                                        addToMySignupArray(deviceId, eventId);
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        // Failed to store the device ID
+                                                        Log.e(TAG, "Error storing device ID in Firestore", e);
+                                                        // You can handle the failure here
+                                                    });
+                                        }
 
 
-                            db.collection("Events").document(eventId).collection("checkins")
-                                    .document(deviceId)
-                                    .set(checkinData)
-                                    .addOnSuccessListener(unused -> Log.d(TAG, "Checkin data stored"))
-                                    .addOnFailureListener(e -> Log.d(TAG, "Error storing init checkin data", e));
+                                    } else {
+                                        Log.d("Aggregate Query Count", "Count failed: ", task.getException());
+                                    }
+                                }
+                            });
 
                         } else {
                             Log.d(TAG, "No such document");
@@ -602,12 +630,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     public void onShareButtonClick() {
-        // Create an instance of QRCodes class
-        //QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo"); // Adjust dimensions as needed
-
         // Get the QR code bitmap
-        //Bitmap qrBitmap = qrCodes.getBitmap();
-        Bitmap qrBitmap = myEvent.getQrCodePromo().getBitmap();
+        Bitmap qrBitmap = myEvent.getQrCode().getBitmap();
 
         // Share the QR code bitmap
         if (qrBitmap != null) {

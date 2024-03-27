@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -59,6 +61,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -208,10 +211,6 @@ public class CreateEventActivity extends AppCompatActivity {
         //Location input events
         //https://developers.google.com/codelabs/maps-platform/location-places-android#4
         //https://www.geeksforgeeks.org/how-to-implement-google-map-inside-fragment-in-android/
-        mapButton.setOnClickListener(v -> {
-//            Intent i = new Intent(CreateEvent.this,MapsActivity.class);
-//            startActivity(i);
-        });
 
         maxAttendeeSwitch.setOnClickListener(v->{
             maxAttendeeSwitchClick();
@@ -332,7 +331,6 @@ public class CreateEventActivity extends AppCompatActivity {
         startCalButton = findViewById(R.id.start_cal_button);
         endCalButton = findViewById(R.id.end_cal_button);
         addImageButton = findViewById(R.id.add_image_button);
-        mapButton = findViewById(R.id.map_button);
         qrCreateButton = findViewById(R.id.qrcode_create_button);
         qrChooseSpinner = findViewById(R.id.qrcode_choose_spinner);
         createButton = findViewById(R.id.create_event_button);
@@ -519,22 +517,6 @@ public class CreateEventActivity extends AppCompatActivity {
             return new String[]{qrCodeTemp.getEncodedStr(), qrCodePromoTemp.getEncodedStr()};
         }
         return new String[]{null, qrCodePromoTemp.getEncodedStr()};
-    }
-
-    /**
-     * QR choose button click
-     * Enables the user to select from their previously generated QR codes and selected one for the current task
-     * TODO
-     * - Add functionality
-     */
-    protected void qrChooseClick(){
-        //Code to open the QR Code scanner
-//        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
-//        intentIntegrator.setPrompt("Scan a barcode or QR Code");
-//        intentIntegrator.setOrientationLocked(false);
-//        intentIntegrator.initiateScan();
-
-        codeState = QRCodeState.CHOOSE;
     }
 
     /**
@@ -748,6 +730,17 @@ public class CreateEventActivity extends AppCompatActivity {
             return false;
         }
 
+        //Checking whether the location is valid
+        //Testing Geocode stuff
+        Geocoder geocoder = new Geocoder(this);
+
+        try {
+            List<Address> addressList = geocoder.getFromLocationName("Miami", 1);
+        } catch (IOException e) {
+            makeToast("Please ensure the location is valid");
+            return false;
+        }
+
         return true;
     }
 
@@ -757,35 +750,5 @@ public class CreateEventActivity extends AppCompatActivity {
      */
     protected void makeToast(String errStr){
         Toast.makeText(getBaseContext(), errStr, Toast.LENGTH_LONG).show();
-    }
-
-    /**
-     * On return from the Scan QR Code IntentIntegrator after a code has been scanned or the
-     * activity has been cancelled.
-     * Not necessary for this activity, will be implemented on the main page and the check in button
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        // if the intentResult is null then
-        // toast a message as "cancelled"
-        if (intentResult != null) {
-            if (intentResult.getContents() == null) {
-                Toast.makeText(getBaseContext(), "Cancelled", Toast.LENGTH_SHORT).show();
-            } else {
-                // if the intentResult is not null we'll set
-                // the content and format of scan message
-                //messageText.setText(intentResult.getContents());
-                //messageFormat.setText(intentResult.getFormatName());
-                Toast.makeText(getBaseContext(), intentResult.getContents() + ":" + intentResult.getFormatName(), Toast.LENGTH_SHORT).show();
-                //Here is where we would validate the text to check whether the QR code was scanned successfully
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 }

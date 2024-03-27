@@ -21,6 +21,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -110,13 +114,15 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         String formattedDate = sdf.format(event.getStartDateTime());
         holder.myEventDate.setText(formattedDate);
 
-        if (!photoDownloaded){
-            event.assignPoster(holder.myEventImg);
-            photoDownloaded = true;
-        }
-        else{
-            if (event.getPoster() != null){
-                holder.myEventImg.setImageBitmap(event.getPoster());
+        if (event.getPosterStr() != null){
+            try {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
+                Glide.with(context)
+                        .load(storageRef)
+                        .into(holder.myEventImg);
+            }
+            catch (Exception e) {
+                return;
             }
         }
 

@@ -45,6 +45,7 @@
                 android:id="@+id/add_image_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                app:fabCustomSize="40dp"
                 android:clickable="true"
                 app:backgroundTint="#74AE92"
                 app:layout_constraintBottom_toBottomOf="@+id/poster_image"
@@ -211,27 +212,15 @@
                 android:id="@+id/location_input_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
                 android:ems="10"
                 android:hint="@string/address"
                 android:inputType="textPostalAddress"
                 android:maxLength="50"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/location_container"
-                app:layout_constraintEnd_toStartOf="@+id/map_button"
+                app:layout_constraintEnd_toEndOf="@+id/location_container"
                 app:layout_constraintStart_toStartOf="@+id/location_container"
                 app:layout_constraintTop_toTopOf="@+id/location_container" />
-
-            <ImageButton
-                android:id="@+id/map_button"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="5dp"
-                android:backgroundTint="#74AD91"
-                app:layout_constraintBottom_toBottomOf="@+id/location_container"
-                app:layout_constraintEnd_toEndOf="@+id/location_container"
-                app:layout_constraintTop_toTopOf="@+id/location_container"
-                app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
             <View
                 android:id="@+id/location_container"
@@ -374,12 +363,14 @@
 
             <Spinner
                 android:id="@+id/qrcode_choose_spinner"
+                style="@android:style/Widget.DeviceDefault.Spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
-                android:background="@android:drawable/btn_dropdown"
+                android:background="@drawable/rounded_rectangle"
                 android:backgroundTint="#FFFFFF"
+                android:popupElevation="16dp"
                 android:spinnerMode="dropdown"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/qrcode_create_button" />

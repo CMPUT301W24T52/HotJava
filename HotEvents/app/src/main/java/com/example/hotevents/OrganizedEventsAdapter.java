@@ -33,6 +33,10 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 
 /**
@@ -107,13 +111,15 @@ public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEvents
         holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
-        if (!photoDownloaded){
-            event.assignPoster(holder.myEventImg);
-            photoDownloaded = true;
-        }
-        else{
-            if (event.getPoster() != null){
-                holder.myEventImg.setImageBitmap(event.getPoster());
+        if (event.getPosterStr() != null){
+            try {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
+                Glide.with(context)
+                        .load(storageRef)
+                        .into(holder.myEventImg);
+            }
+            catch (Exception e){
+                return;
             }
         }
 
