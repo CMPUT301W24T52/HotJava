@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -84,6 +85,8 @@ public class arr_adapter extends ArrayAdapter<UserProfiles> {
         storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.getProfileImageUrl());
         Glide.with(context)
                 .load(storageRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching
+                .skipMemoryCache(true)
                 .into(holder.profileImage);
 
         return convertView;
