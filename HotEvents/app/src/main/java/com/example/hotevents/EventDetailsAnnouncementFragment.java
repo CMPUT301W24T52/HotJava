@@ -1,39 +1,21 @@
 package com.example.hotevents;
 
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
+import androidx.fragment.app.Fragment;
+
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,9 +24,6 @@ import okhttp3.Response;
  */
 public class EventDetailsAnnouncementFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-
-    // TODO: Rename and change types of parameters
     private String eventId;
     ArrayList<Notification> announcementList;
     Set<String> processednotificationMessage = new HashSet<>();
@@ -58,7 +37,6 @@ public class EventDetailsAnnouncementFragment extends Fragment {
     }
 
 
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -66,7 +44,6 @@ public class EventDetailsAnnouncementFragment extends Fragment {
      * @param eventId ID of event.
      * @return A new instance of fragment EventDetailsAnnouncementFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static EventDetailsAnnouncementFragment newInstance(String eventId) {
         EventDetailsAnnouncementFragment fragment = new EventDetailsAnnouncementFragment();
         Bundle args = new Bundle();
@@ -87,21 +64,28 @@ public class EventDetailsAnnouncementFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Grab the view
         View rootView = inflater.inflate(R.layout.fragment_event_details_announcement, container, false);
 
+        // Get the db
         db = FirebaseFirestore.getInstance();
+
+        // Set the needed variables for announcements
         announcementList = new ArrayList<>();
         announcementAdapter = new NotificationsAdapter(getContext(), announcementList);
         announcementListView = rootView.findViewById(R.id.announcements_listview);
         announcementListView.setAdapter(announcementAdapter);
 
+        // Grab the notifications for this event
         db.collection("Notifications")
                 .whereEqualTo("eventId", eventId)
                 .whereEqualTo("notiType", "Announcement")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        // Clear announcement list
                         announcementList.clear();
+                        // Loop through all notifications
                         processednotificationMessage.clear(); // Clear the set of processed event IDs
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             // Retrieve data from Firestore document

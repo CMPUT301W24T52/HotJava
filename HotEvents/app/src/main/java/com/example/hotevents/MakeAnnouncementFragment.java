@@ -45,6 +45,7 @@ public class MakeAnnouncementFragment extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -53,11 +54,17 @@ public class MakeAnnouncementFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        // Get view
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_make_announcement, null);
+
+        // Set announcement input
         notificationMessageInput = view.findViewById(R.id.edit_text_announcement_text);
-        assert getArguments() != null;
+
+        // Grab the eventId and eventTitle
         eventId = getArguments().getString("eventId");
         eventTitle = getArguments().getString("eventTitle");
+
+        // Make a new dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         return builder
                 .setView(view)
@@ -91,7 +98,7 @@ public class MakeAnnouncementFragment extends DialogFragment {
                         sendPushNotification(fcmToken, notificationMessage, eventId);
                     }
                     Log.d("EventDetailsFragment", "Announcement sent successfully");
-//                    Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
+                    //                    Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("EventDetailsFragment", "Failed to send announcement", e);
@@ -106,18 +113,6 @@ public class MakeAnnouncementFragment extends DialogFragment {
      * @param messageText The message to be sent.
      */
     private void sendPushNotification(String fcmToken, String messageText, String eventId) {
-        // Create a message with the given payload
-//        RemoteMessage notificationMessage = new RemoteMessage.Builder(fcmToken)
-//                .addData("message", "Hello")
-//                .build();
-//
-//        // Send the message to the device corresponding to the provided registration token
-//        FirebaseMessaging.getInstance().send(notificationMessage);
-//
-//        // You can log a success message after sending the notification
-//        Log.d(TAG, "Successfully sent message to device with token: " + fcmToken);
-
-//            }
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
             MediaType mediaType = MediaType.parse("application/json");
@@ -137,7 +132,7 @@ public class MakeAnnouncementFragment extends DialogFragment {
                     .addHeader("Authorization", "key=AAAAlidLyZE:APA91bF1suXeK0OgT_eZIP9uEPOCarD4zMfUyLWvo5-ljaXKQp4wuZhU2Ik2C63QLZKsvKGnOuzNIh_56WCIl1R8-rENZFlPPrwAB8Corgtnba5w8pMpknuhzp7_q1dTyshB37uTu4EN")
                     .addHeader("Content-Type", "application/json").build();
             Log.d(TAG, "think working");
-//            Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
+            //            Toast.makeText(getActivity(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
 
             try {
                 // Execute the request synchronously

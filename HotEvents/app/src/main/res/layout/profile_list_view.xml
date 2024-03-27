@@ -49,7 +49,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- Attendees Tab -->
+        <!-- Users Tab -->
         <TextView
             android:id="@+id/tabAttendees"
             style="@style/TabStyle"
@@ -57,13 +57,13 @@
             android:focusable="true"
             android:text="Users" />
 
-        <!-- Organisers Tab -->
-        <TextView
-            android:id="@+id/tabOrganisers"
-            style="@style/TabStyle"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="Admins" />
+        <!-- Admin Tab -->
+<!--        <TextView-->
+<!--            android:id="@+id/tabOrganisers"-->
+<!--            style="@style/TabStyle"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:text="Admins" />-->
     </LinearLayout>
 
     <!-- Users List (ListView) -->
