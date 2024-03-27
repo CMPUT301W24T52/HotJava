@@ -259,8 +259,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         //Code to open the QR Code scanner
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.setPrompt("Scan the Check-In QR Code");
-        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
-        intentIntegrator.setCameraId(0);
+//        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+//        intentIntegrator.setCameraId(0);
         intentIntegrator.setOrientationLocked(false);
         intentIntegrator.initiateScan();
     }
@@ -571,7 +571,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         Menu menu = popupMenu.getMenu();
         boolean showItems = true;
         // Hide options if not organiser (set boolean to true to see all options for testing)
-        if (!Objects.equals(deviceId, myEvent.getOrganiserId())) {
+        if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             menu.findItem(R.id.event_details_option_announce).setVisible(showItems);
             menu.findItem(R.id.event_details_option_edit).setVisible(showItems);
             menu.findItem(R.id.event_details_option_attendees).setVisible(showItems);
