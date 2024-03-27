@@ -115,6 +115,20 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        // Find the remove poster button
+        ImageButton removePosterButton = findViewById(R.id.remove_poster_button);
+        // Set OnClickListener for the button
+        removePosterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call method to remove the poster
+                db.collection("Events").document(eventId).update("Poster", "")
+                        .addOnSuccessListener(aVoid -> Log.d("Remove Poster", "Remove Poster  updated successfully"))
+                        .addOnFailureListener(e -> Log.e("Remove Poster", "Error updating Remove Poster ", e));
+            }
+        });
+
+
         signUpButton = findViewById(R.id.check_in_button);
         if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             // Hide signup button
@@ -147,6 +161,13 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
         }
     }
+//    // Method to remove the poster and update with a default one
+//    private void removePoster() {
+//        myEvent.setPosterStr(""); // Assuming default_poster is your default image resource
+//        // You may need to update the poster in your Firebase database or storage as well
+//        // For simplicity, I'm assuming you're just updating the ImageView in the UI
+//    }
+
 
     /**
      * Handles the sign-up button click event.
