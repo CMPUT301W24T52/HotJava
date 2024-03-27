@@ -1,0 +1,42 @@
+    <!-- fragment_profile_info.xml -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Toolbar for ActionBar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#5C8971"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme">
+
+            <!-- Profile Name -->
+            <TextView
+                android:id="@+id/dialogBrowseUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:text="User Name"
+                android:textColor="@android:color/white"
+                android:textSize="24sp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- Circular Profile Image -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/dialogBrowseProfileImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img" />
+
+
+
+    </LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.hotevents;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +33,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
     private LinearLayout editProfileButton, deleteProfileButton;
     private ImageButton backButton;
     private CircleImageView profilePhotoImageView;
+    private ImageButton removeProfilePhotoButton;
 
 
     private ListenerRegistration userListener;
@@ -53,6 +55,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         deleteProfileButton = findViewById(R.id.linearDeleteProfile);
         backButton = findViewById(R.id.backButton);
         profilePhotoImageView = findViewById(R.id.imageViewProfilePhoto);
+//        removeProfilePhotoButton = findViewById(R.id.removeProfilePhotoButton);
 
 
 
@@ -73,6 +76,16 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         deleteProfileButton.setOnClickListener(view -> {
             // Delete profile when the delete button is clicked
             deleteProfile();
+        });
+
+//        // Click listener for removing custom profile photo
+//        removeProfilePhotoButton.setOnClickListener(v -> {
+//                    // Remove the custom profile photo URL from Firestore
+//                    updateProfilePictureInDatabase(deviceId, "");
+
+        // Inside onCreate method or wherever suitable
+        profilePhotoImageView.setOnClickListener(v -> {
+            showProfileInfoDialog();
         });
 
     }
@@ -163,6 +176,24 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
             // Handle any errors
             Log.e("ProfileActivity", "Failed to download profile picture: " + exception.getMessage());
         });
+    }
+
+    // Method to show the profile info dialog
+    private void showProfileInfoDialog() {
+        // Create a dialog instance
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_user_profile);
+
+        // Initialize views from the dialog layout
+        ImageView profilePhotoDialog = dialog.findViewById(R.id.dialogProfileImage);
+        TextView profileNameDialog = dialog.findViewById(R.id.dialogUserName);
+
+        // Set profile photo and name
+        profilePhotoDialog.setImageDrawable(profilePhotoImageView.getDrawable());
+        profileNameDialog.setText(textViewName.getText());
+
+        // Show the dialog
+        dialog.show();
     }
 
     /**
