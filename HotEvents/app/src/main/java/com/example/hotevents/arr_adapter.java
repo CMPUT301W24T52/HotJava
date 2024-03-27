@@ -9,16 +9,21 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Custom ArrayAdapter to display user profiles in a ListView.
  */
 public class arr_adapter extends ArrayAdapter<UserProfiles> {
-    private final Context context;
-    private final List<UserProfiles> users;
+    Context context;
+    List<UserProfiles> users;
 
     /**
      * Constructor for the ArrayAdapter.
@@ -74,9 +79,15 @@ public class arr_adapter extends ArrayAdapter<UserProfiles> {
         UserProfiles user = users.get(position);
 
         // Set user data to the views
-        holder.profileImage.setImageResource(user.getProfileImageRes());
         holder.username.setText(user.getUsername());
         holder.uid.setText(user.getUid()); // Set UID text
+        StorageReference storageRef;
+        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.getProfileImageUrl());
+        Glide.with(context)
+                .load(storageRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching
+                .skipMemoryCache(true)
+                .into(holder.profileImage);
 
         return convertView;
     }

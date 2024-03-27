@@ -14,6 +14,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -21,6 +25,7 @@ import java.util.Locale;
 public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdapter.UpcomingEventViewHolder> {
     private ArrayList<Event> upcomingEvents;
     private Context context;
+    private Boolean photoDownloaded = false;
 
     public UpcomingEventAdapter(ArrayList<Event> upcomingEvents, Context context){
         this.upcomingEvents = upcomingEvents;
@@ -48,12 +53,20 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 
         holder.startDate.setText(formattedStartDate);
         holder.upcomingEventTitle.setText(event.getTitle());
+        
+        if (event.getPosterStr() != null){
+            try {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
+                Glide.with(context)
+                        .load(storageRef)
+                        .into(holder.upcomingEventPoster);
+            }
+            catch (Exception e){
+                return;
+            }
 
-
-        Bitmap poster = event.getPoster();
-        if (poster != null){
-            holder.upcomingEventPoster.setImageBitmap(event.getPoster());
         }
+
     }
 
     @Override

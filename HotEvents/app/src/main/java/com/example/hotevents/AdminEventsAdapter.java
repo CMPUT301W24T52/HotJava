@@ -21,6 +21,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 
 /**
@@ -31,6 +35,7 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
+    private Boolean photoDownloaded = false;
 
     /**
      * View holder for RecyclerView
@@ -95,12 +100,19 @@ public class AdminEventsAdapter extends RecyclerView.Adapter<AdminEventsAdapter.
         holder.myEventLocation.setText(event.getLocation());
         holder.myEventDate.setText(event.getStartDateTime().toString());
 
-        //Setting the poster bitmap
-        Bitmap img = event.getPoster();
-        if (img != null){
-            holder.myEventImg.setImageBitmap(img);
+        if (event.getPosterStr() != null){
+            try {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
+                Glide.with(context)
+                        .load(storageRef)
+                        .into(holder.myEventImg);
+            }
+            catch (Exception e){
+                return;
+            }
+
         }
-        Log.d("Note", "made it here");
+
     }
 
     @Override

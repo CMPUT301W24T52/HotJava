@@ -27,6 +27,7 @@
                 android:ems="10"
                 android:hint="@string/title"
                 android:inputType="text"
+                android:maxLength="30"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/poster_image" />
@@ -44,6 +45,7 @@
                 android:id="@+id/add_image_button"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                app:fabCustomSize="40dp"
                 android:clickable="true"
                 app:backgroundTint="#74AE92"
                 app:layout_constraintBottom_toBottomOf="@+id/poster_image"
@@ -210,26 +212,15 @@
                 android:id="@+id/location_input_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
                 android:ems="10"
                 android:hint="@string/address"
                 android:inputType="textPostalAddress"
+                android:maxLength="50"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/location_container"
-                app:layout_constraintEnd_toStartOf="@+id/map_button"
+                app:layout_constraintEnd_toEndOf="@+id/location_container"
                 app:layout_constraintStart_toStartOf="@+id/location_container"
                 app:layout_constraintTop_toTopOf="@+id/location_container" />
-
-            <ImageButton
-                android:id="@+id/map_button"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="5dp"
-                android:backgroundTint="#74AD91"
-                app:layout_constraintBottom_toBottomOf="@+id/location_container"
-                app:layout_constraintEnd_toEndOf="@+id/location_container"
-                app:layout_constraintTop_toTopOf="@+id/location_container"
-                app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
             <View
                 android:id="@+id/location_container"
@@ -269,6 +260,7 @@
                 android:gravity="start|top"
                 android:hint="@string/about_event"
                 android:inputType="textMultiLine"
+                android:maxLength="300"
                 android:textAlignment="textStart"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -292,31 +284,15 @@
                 android:id="@+id/qrcode_create_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
                 android:backgroundTint="#FFFFFF"
                 android:text="@string/create_new"
                 android:textColor="#A3BDAF"
-                android:textSize="8sp"
-                app:layout_constraintEnd_toStartOf="@+id/qrcode_choose_button"
-                app:layout_constraintHorizontal_bias="0.579"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/qrcode_text"
                 app:strokeColor="#3E7757"
-                app:strokeWidth="1dp" />
-
-            <Button
-                android:id="@+id/qrcode_choose_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="60dp"
-                android:backgroundTint="#FFFFFF"
-                android:text="@string/choose_from_existing"
-                android:textColor="#B2C8BC"
-                android:textSize="8sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/qrcode_text"
-                app:strokeColor="#69967D"
                 app:strokeWidth="1dp" />
 
             <Button
@@ -333,7 +309,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/qrcode_choose_button"
+                app:layout_constraintTop_toBottomOf="@+id/qrcode_choose_spinner"
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
@@ -368,6 +344,7 @@
                 android:ems="10"
                 android:hint="Max Attendees"
                 android:inputType="numberSigned"
+                android:maxLength="3"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="@+id/max_attendee_container"
                 app:layout_constraintStart_toStartOf="@+id/max_attendee_container"
@@ -383,6 +360,20 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/max_attendee_text" />
+
+            <Spinner
+                android:id="@+id/qrcode_choose_spinner"
+                style="@android:style/Widget.DeviceDefault.Spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_rectangle"
+                android:backgroundTint="#FFFFFF"
+                android:popupElevation="16dp"
+                android:spinnerMode="dropdown"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/qrcode_create_button" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
