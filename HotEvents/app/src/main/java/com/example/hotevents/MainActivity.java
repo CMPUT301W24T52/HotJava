@@ -1,5 +1,14 @@
 package com.example.hotevents;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -61,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-    ArrayList<Event> myEventDataArray;      // Signed up events
-    ArrayList<Event> upcomingEventDataArray;
-    // ListView eventList;
+    ArrayList<Event> myEventDataArray;      //Signed up events
+    ArrayList<Event> upcomingEventDataArray;    //upcoming events array
     RecyclerView myEventView;
     RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
@@ -73,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private String UserName = "";
     ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
-    ImageView menu, notifications_toolbar;
+    ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
     Switch toggleGeo;
     private static final String TAG = "MainActivity";
@@ -81,11 +89,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewName;
     private CircleImageView profilePhotoImageView;
     private FirebaseStorage storage;
-    private Boolean success = false;
+//    private Boolean success = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -101,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
         upcomingEventView = (RecyclerView) findViewById(R.id.upcoming_events_list);
         upcomingEventView.setHasFixedSize(false);
         upcomingEventView.setLayoutManager(upcomingEventManager);
+
+        upcomingEventList_button = findViewById(R.id.upcomingEventsList_button);
 
 
         db = FirebaseFirestore.getInstance();
@@ -164,14 +175,6 @@ public class MainActivity extends AppCompatActivity {
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
 
-                ExecutorService es = Executors.newCachedThreadPool();
-                for (int i = 0; i < 5; i++) {
-
-                }
-                es.shutdown();
-                // boolean finished = es.awaitTermination(1, TimeUnit.MINUTES);
-                // all tasks have finished or the time has been reached.
-
                 if (value != null) {
                     myEventDataArray.clear();
                     upcomingEventDataArray.clear();
@@ -184,6 +187,13 @@ public class MainActivity extends AppCompatActivity {
                         String organizerId = doc.getString("Organizer Id");
                         String location = doc.getString("Location");
                         String posterStr = doc.getString("Poster");
+                        String qrCodeStr = doc.getString("QRCode");
+                        String qrCodePromoStr = doc.getString("QRCodePromo");
+                        Long maxAttendeesLong = doc.getLong("Max Attendees");
+                        Integer maxAttendees = null;
+                        if (maxAttendeesLong != null){
+                            maxAttendees = maxAttendeesLong.intValue();
+                        }
                         Log.d("Firestore: ", String.format("Event (%s) fetched", title));
 
                         Event newEvent = new Event(title);
@@ -195,18 +205,20 @@ public class MainActivity extends AppCompatActivity {
                         newEvent.setLocation(location);
                         newEvent.setPosterStr(posterStr);
 
-
-                        // Downloading the poster and waiting for completion before adding event to array
-                        if (posterStr != null) {
-                            // Thread thread = downloadAndSetPoster(posterStr, newEvent);
-                            // thread.join();
-                            newEvent.getPoster();
-                            myEventDataArray.add(newEvent);
-                            upcomingEventDataArray.add(newEvent);
-                        } else {
-                            myEventDataArray.add(newEvent);
-                            upcomingEventDataArray.add(newEvent);
+                        if (maxAttendees != null){
+                            newEvent.setMaxAttendees(maxAttendees);
                         }
+
+                        if (qrCodeStr != null){
+                            newEvent.setQRCode(new QRCodes(qrCodeStr));
+                        }
+                        if (qrCodePromoStr != null){
+                            newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
+                        }
+
+                        myEventDataArray.add(newEvent);
+                        upcomingEventDataArray.add(newEvent);
+
 
                         // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     }
@@ -268,7 +280,18 @@ public class MainActivity extends AppCompatActivity {
                 // redirectActivity(MainActivity.this, CreateEventActivity.class);
                 // Sending the user ID to the create event page to be able to save the organizer with their event
                 Intent myIntent = new Intent(MainActivity.this, CreateEventActivity.class);
+                //Stating that we are entering the activity in the create event state
+                myIntent.putExtra("State", true);
                 myIntent.putExtra("organiser", deviceId);
+                startActivity(myIntent);
+            }
+        });
+
+        upcomingEventList_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, UpcomingEventsActivity.class);
+                myIntent.putParcelableArrayListExtra("events", upcomingEventDataArray);
                 startActivity(myIntent);
             }
         });

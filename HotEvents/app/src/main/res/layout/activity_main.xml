@@ -278,6 +278,18 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/searchLayout" />
 
+                    <ImageView
+                        android:id="@+id/signedUpEvents_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/searchLayout"
+                        android:layout_marginEnd="30dp"
+                        android:layout_marginTop="25dp"
+                        android:src="@drawable/baseline_arrow_forward_ios_24"
+                        android:clickable="true"
+                        />
+
                     <RelativeLayout
                         android:id="@+id/horizontalScrollView"
                         android:layout_width="match_parent"
@@ -301,7 +313,8 @@
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:orientation="horizontal"
-                                android:scrollbars="none">
+                                android:scrollbars="none"
+                                android:layout_marginBottom="10dp">
 
                             </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
@@ -317,6 +330,17 @@
                         android:textSize="25sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
+
+                    <ImageView
+                        android:id="@+id/upcomingEventsList_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/horizontalScrollView"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/baseline_arrow_forward_ios_24"/>
+
+
 
                     <LinearLayout
                         android:layout_width="match_parent"

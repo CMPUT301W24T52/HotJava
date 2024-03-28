@@ -21,6 +21,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -33,6 +37,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
     private Context context;
     private View.OnClickListener onClickListener;
 //    private OnItemClickListener onItemClickListener;
+    private Boolean photoDownloaded = false;
 
     /**
      * View holder for RecyclerView
@@ -108,12 +113,17 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd • hh:mm a", Locale.getDefault());
         String formattedDate = sdf.format(event.getStartDateTime());
         holder.myEventDate.setText(formattedDate);
-//        loadImageFromFirestoreStorage(event.getPosterUrl(), holder.eventImage);
 
-        //Setting the poster bitmap
-        Bitmap img = event.getPoster();
-        if (img != null){
-            holder.myEventImg.setImageBitmap(img);
+        if (event.getPosterStr() != null){
+            try {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
+                Glide.with(context)
+                        .load(storageRef)
+                        .into(holder.myEventImg);
+            }
+            catch (Exception e) {
+                return;
+            }
         }
 
         //listener
@@ -123,7 +133,7 @@ public class MyEventsAdapter extends RecyclerView.Adapter<MyEventsAdapter.MyEven
 //
 //            }
 //        });
-        Log.d("Note", "made it here");
+        //Log.d("Note", "made it here");
     }
 
     @Override

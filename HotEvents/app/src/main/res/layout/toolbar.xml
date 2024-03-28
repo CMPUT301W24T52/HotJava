@@ -57,4 +57,5 @@
         android:paddingRight="20dp"
         android:src="@drawable/baseline_notifications_none_24">
     </ImageView>
+
 </LinearLayout>
