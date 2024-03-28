@@ -373,7 +373,8 @@ public class CreateEventActivity extends AppCompatActivity {
             Log.d("Create Event QR Code", "QR Code: " + myEvent.getQrCodePromo().getEncodedStr());
         }
 
-        if (myEvent.getPosterStr() != null){
+        String posterStr = myEvent.getPosterStr();
+        if (posterStr != null){
             //Setting poster
             myEvent.assignPoster(posterImage);
         }
@@ -740,14 +741,17 @@ public class CreateEventActivity extends AppCompatActivity {
 
         //Checking whether the location is valid
         //Testing Geocode stuff
-        Geocoder geocoder = new Geocoder(this);
-
-        try {
-            List<Address> addressList = geocoder.getFromLocationName(locationText.getText().toString(), 1);
-        } catch (IOException e) {
-            makeToast("Please ensure the location is valid");
-            return false;
-        }
+//        Geocoder geocoder = new Geocoder(this);
+//        Log.d("Location Validation", locationText.getText().toString());
+//
+//        try {
+//            List<Address> addressList = geocoder.getFromLocationName(locationText.getText().toString(), 1);
+//            //Log.d("Location Validation", "Location: " + addressList.get(0).getAddressLine(0));
+//        } catch (IOException e) {
+//            Log.e("Location Validation", e.toString());
+//            makeToast("Please ensure the location is valid");
+//            return false;
+//        }
 
         return true;
     }

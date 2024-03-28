@@ -206,7 +206,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                         Integer maxAttendees;
                                         maxAttendees = myEvent.getMaxAttendees();
                                         if (myEvent.getMaxAttendees() != null){
-                                            if (snapshot.getCount() > maxAttendees){
+                                            if (snapshot.getCount() >= maxAttendees){
                                                 Toast.makeText(getBaseContext(), "Unable to Sign-up: Max attendee limit has been reached!", Toast.LENGTH_LONG).show();
                                             }
                                             else{
@@ -657,7 +657,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     public void onShareButtonClick(Boolean checkin) {
         // Get the QR code bitmap
-        Bitmap qrBitmap;
+        Bitmap qrBitmap = null;
         if (checkin){
             qrBitmap = myEvent.getQrCode().getBitmap();
         }

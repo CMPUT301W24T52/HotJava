@@ -224,7 +224,7 @@
 
             <View
                 android:id="@+id/location_container"
-                android:layout_width="382dp"
+                android:layout_width="0dp"
                 android:layout_height="42dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="8dp"
@@ -367,7 +367,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
                 android:background="@drawable/rounded_rectangle"
                 android:backgroundTint="#FFFFFF"
                 android:popupElevation="16dp"
