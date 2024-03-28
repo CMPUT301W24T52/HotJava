@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.osmdroid.api.IMapController;
@@ -49,6 +50,7 @@ public class AttendeeList extends AppCompatActivity {
 
     private List<Marker> attendeeMarkers = new ArrayList<>();
     Drawable attendeeMarkerDrawable;
+    ListenerRegistration eventCheckinListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,6 @@ public class AttendeeList extends AppCompatActivity {
         setViews();
         setupMap();
 
-        // Get event data
         db.collection("Events")
                 .document(eventId)
                 .get()
@@ -95,7 +96,7 @@ public class AttendeeList extends AppCompatActivity {
                 });
 
         // Listen for changes in event checkin data
-        db.collection("Events")
+        eventCheckinListener = db.collection("Events")
                 .document(eventId)
                 .collection("checkins")
                 .addSnapshotListener((value, error) -> {
@@ -204,7 +205,10 @@ public class AttendeeList extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         map = findViewById(R.id.map);
         backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> finish());
+        backButton.setOnClickListener(v -> {
+            eventCheckinListener.remove();
+            finish();
+        });
     }
 
     private void setupMap() {
