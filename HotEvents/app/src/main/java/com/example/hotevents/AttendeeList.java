@@ -203,7 +203,7 @@ public class AttendeeList extends AppCompatActivity {
         recyclerView.setAdapter(attendeeListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         map = findViewById(R.id.map);
-        backButton = findViewById(R.id.back_button);
+        backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
     }
 

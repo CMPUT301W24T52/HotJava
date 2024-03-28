@@ -37,13 +37,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Explore"
-                android:textSize="16sp"></TextView>
+                android:fontFamily="@font/monsterrat_regular"
+                android:textSize="16sp">
+
+            </TextView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hot Events"
-                android:textSize="34sp"></TextView>
+                android:textSize="30dp"
+                android:fontFamily="@font/monsterrat_regular"
+                >
+
+            </TextView>
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -42,6 +42,7 @@
                 android:layout_marginStart="22dp"
                 android:layout_marginTop="10dp"
                 android:text="Alex Jones"
+                android:fontFamily="@font/monsterrat_regular"
                 android:textColor="#000000"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -53,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Check in: 2"
+                android:fontFamily="@font/monsterrat_regular"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/attendee_name"
                 app:layout_constraintTop_toBottomOf="@+id/attendee_name" />

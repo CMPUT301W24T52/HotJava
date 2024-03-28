@@ -107,15 +107,16 @@ public class arr_adapter extends ArrayAdapter<UserProfiles> {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_user_profile, null);
         ImageView profileImageDialog = dialogView.findViewById(R.id.dialogProfileImage);
-        TextView usernameDialog = dialogView.findViewById(R.id.dialogUserName);
 
         // Set profile image and username in the dialog
         StorageReference storageRef;
         storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.getProfileImageUrl());
         Glide.with(context)
                 .load(storageRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching
+                .skipMemoryCache(true)
                 .into(profileImageDialog);
-        usernameDialog.setText(user.getUsername());
+
 
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();

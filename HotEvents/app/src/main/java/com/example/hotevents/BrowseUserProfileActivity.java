@@ -4,6 +4,10 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -13,13 +17,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,6 +41,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
     private CircleImageView profilePhotoImageView;
     private ImageButton removeProfilePhotoButton;
 
+    private StorageReference profilePicturesRef;
 
     private ListenerRegistration userListener;
     private FirebaseFirestore db;
@@ -55,7 +62,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         deleteProfileButton = findViewById(R.id.linearDeleteProfile);
         backButton = findViewById(R.id.backButton);
         profilePhotoImageView = findViewById(R.id.imageViewProfilePhoto);
-//        removeProfilePhotoButton = findViewById(R.id.removeProfilePhotoButton);
+        removeProfilePhotoButton = findViewById(R.id.removeProfilePhotoButton);
 
 
 
@@ -73,6 +80,12 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         // Set click listeners
         backButton.setOnClickListener(v -> onBackPressed());
 
+        removeProfilePhotoButton.setOnClickListener(v -> {
+            // Remove the custom profile photo URL from Firestore
+            updateProfilePictureInDatabase(deviceId, "");
+        });
+
+        // Click listener for deleting profile
         deleteProfileButton.setOnClickListener(view -> {
             // Delete profile when the delete button is clicked
             deleteProfile();
@@ -87,8 +100,8 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         profilePhotoImageView.setOnClickListener(v -> {
             showProfileInfoDialog();
         });
-
     }
+
 
     /**
      * Fetches user profile data from Firestore and updates the UI.
@@ -121,12 +134,10 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
                     } else {
                         // Generate default profile photo based on the first letter of the name
                         String profilePicUrl1 = documentSnapshot.getString("ProfilePictureDefault");
-                        downloadAndSetProfilePicture(profilePicUrl1);
-
+                        if (profilePicUrl1 != null && !profilePicUrl1.isEmpty()) {
+                            downloadAndSetProfilePicture(profilePicUrl1);
+                        }
                     }
-                } else {
-                    // Handle the case where the ProfilePicture field is not present in the document
-                    Log.d("ProfileActivity", "No ProfilePicture field in the document");
                 }
 
                 // Update UI elements with retrieved data
@@ -144,6 +155,7 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * Downloads the profile picture from the given URL and sets it to the profile photo image view.
@@ -186,11 +198,9 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
 
         // Initialize views from the dialog layout
         ImageView profilePhotoDialog = dialog.findViewById(R.id.dialogProfileImage);
-        TextView profileNameDialog = dialog.findViewById(R.id.dialogUserName);
 
         // Set profile photo and name
         profilePhotoDialog.setImageDrawable(profilePhotoImageView.getDrawable());
-        profileNameDialog.setText(textViewName.getText());
 
         // Show the dialog
         dialog.show();
@@ -227,4 +237,12 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
             userListener.remove();
         }
     }
-}
+
+
+    private void updateProfilePictureInDatabase(String userId, String imageUrl) {
+        // Update the 'ProfilePicture' field in the database collection with the image URL
+        db.collection("Users").document(userId).update("ProfilePictureCustom", imageUrl)
+                .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
+                .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
+    }
+    }

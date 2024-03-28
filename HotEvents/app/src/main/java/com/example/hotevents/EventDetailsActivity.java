@@ -70,6 +70,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     String orgfcmToken;
     ImageButton optionsButton;
     ImageButton shareButton;
+
+
     ImageButton deleteButton;
     private FirebaseFirestore db;
     private static final String TAG = "EventDetailsActivity";
@@ -147,6 +149,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             deleteButton = findViewById(R.id.delete_button);
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(v -> deleteEvent());
+            removePosterButton.setVisibility(View.VISIBLE);
         } else {
             handleButtonBehaviour();
             signUpButton.setOnClickListener(v -> {

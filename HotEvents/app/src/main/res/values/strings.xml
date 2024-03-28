@@ -39,5 +39,6 @@
     <string name="browse_events">Events</string>
     <string name="admin_options">Admin Options</string>
     <string name="attendee_textview">List Of Attendees</string>
+    <string name="notification">Notifications</string>
 
 </resources>

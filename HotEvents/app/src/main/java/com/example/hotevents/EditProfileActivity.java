@@ -145,7 +145,7 @@ public class    EditProfileActivity extends AppCompatActivity {
     }
     private void uploadPhoto(Uri photoUri) {
         // Generating unique name for the image
-        String imageName = deviceId + ".png";
+        String imageName = deviceId + "EDITED.png";
 
         // Getting reference to Firebase Storage
         StorageReference storageRef = FirebaseStorage.getInstance().getReference()
