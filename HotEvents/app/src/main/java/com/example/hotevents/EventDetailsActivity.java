@@ -291,12 +291,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         DocumentReference docRef = colRef.document(deviceId);
         Map<String, Object> checkinData = new HashMap<>();
         checkinData.put("UID", deviceId);
-        if (latitude != null) {
-            checkinData.put("latitude", latitude);
-        }
-        if (longitude != null) {
-            checkinData.put("longitude", longitude);
-        }
+        checkinData.put("latitude", latitude);
+        checkinData.put("longitude", longitude);
 
 
         docRef.get().addOnCompleteListener(task -> {
