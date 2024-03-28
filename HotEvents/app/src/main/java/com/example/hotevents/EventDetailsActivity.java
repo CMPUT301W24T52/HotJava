@@ -94,8 +94,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     String notiType = "Milestone";
     Button checkInGenerateButton;
     private FusedLocationProviderClient fusedLocationClient;
-    double latitude = null;
-    double longitude = null;
+    Double latitude = null;
+    Double longitude = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,6 +280,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 return;
             }
         }
+        //updateCheckinData();
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
                 .addOnSuccessListener(location -> {
@@ -698,7 +699,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocation();
                 } else {
-                    updateCheckinData(null, null);
+                    updateCheckinData();
                 }
             }
 
