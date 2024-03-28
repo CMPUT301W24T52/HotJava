@@ -121,10 +121,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        // Set optionButton to open popup menu
-        optionsButton.setVisibility(View.VISIBLE);
-        optionsButton.setOnClickListener(this::showPopupMenu);
-
         signUpButton = findViewById(R.id.check_in_button);
         if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             // Hide signup button
