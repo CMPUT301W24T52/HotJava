@@ -231,6 +231,10 @@ public class CreateEventActivity extends AppCompatActivity {
                     codeState = QRCodeState.CHOOSE;
                     makeToast("QR Code Chosen: " + chooseQrStr);
                 }
+                else{
+                    qrCode = null;
+                    codeState = QRCodeState.CREATE;
+                }
             }
 
             @Override
@@ -260,6 +264,7 @@ public class CreateEventActivity extends AppCompatActivity {
             //Returning different events depending on whether we pressed the back button or completed the event update
             if (newEvent == null){
                 myIntent.putExtra("event", (Parcelable) updateEvent);
+                myIntent.putExtra("Update", true);
             }
             else{
                 myIntent.putExtra("event", (Parcelable) newEvent);
@@ -273,7 +278,7 @@ public class CreateEventActivity extends AppCompatActivity {
     //The QR codes that can be retrieved
     //Reference: https://stackoverflow.com/questions/13377361/how-to-create-a-drop-down-list
     protected void settingUpSpinner(@Nullable ArrayList<String> createdEvents){
-        qrCodeArray.add("Choose QR Code:");
+        qrCodeArray.add("Select:");
         qrCodeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, qrCodeArray);
         qrChooseSpinner.setAdapter(qrCodeAdapter);
         qrCodeAdapter.notifyDataSetChanged();
@@ -284,8 +289,11 @@ public class CreateEventActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                qrCodeArray.add(documentSnapshot.getString("QRCode"));
-                                qrCodeAdapter.notifyDataSetChanged();
+                                String chooseQrStr = documentSnapshot.getString("QRCode");
+                                if (!qrCodeArray.contains(chooseQrStr)){
+                                    qrCodeArray.add(documentSnapshot.getString("QRCode"));
+                                    qrCodeAdapter.notifyDataSetChanged();
+                                }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -735,7 +743,7 @@ public class CreateEventActivity extends AppCompatActivity {
         Geocoder geocoder = new Geocoder(this);
 
         try {
-            List<Address> addressList = geocoder.getFromLocationName("Miami", 1);
+            List<Address> addressList = geocoder.getFromLocationName(locationText.getText().toString(), 1);
         } catch (IOException e) {
             makeToast("Please ensure the location is valid");
             return false;

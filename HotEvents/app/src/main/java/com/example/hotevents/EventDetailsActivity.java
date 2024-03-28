@@ -88,6 +88,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     String deviceId;
     Button signUpButton;
     String notiType = "Milestone";
+    Button checkInGenerateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +143,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             deleteButton = findViewById(R.id.delete_button);
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(v -> deleteEvent());
+
+            checkInGenerateButton.setVisibility(View.VISIBLE);
         } else {
             handleButtonBehaviour();
             signUpButton.setOnClickListener(v -> {
@@ -202,15 +205,26 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                                         Integer maxAttendees;
                                         maxAttendees = myEvent.getMaxAttendees();
-                                        boolean attendeeCheckPassed = true;
                                         if (myEvent.getMaxAttendees() != null){
                                             if (snapshot.getCount() > maxAttendees){
                                                 Toast.makeText(getBaseContext(), "Unable to Sign-up: Max attendee limit has been reached!", Toast.LENGTH_LONG).show();
-                                                attendeeCheckPassed = false;
+                                            }
+                                            else{
+                                                colRef.document(deviceId).set(signupData)
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            // Successfully stored the device ID in Firestore
+                                                            Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                                                            // You can add further logic here if needed
+                                                            addToMySignupArray(deviceId, eventId);
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            // Failed to store the device ID
+                                                            Log.e(TAG, "Error storing device ID in Firestore", e);
+                                                            // You can handle the failure here
+                                                        });
                                             }
                                         }
-
-                                        if (attendeeCheckPassed){
+                                        else{
                                             colRef.document(deviceId).set(signupData)
                                                     .addOnSuccessListener(aVoid -> {
                                                         // Successfully stored the device ID in Firestore
@@ -224,7 +238,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                         // You can handle the failure here
                                                     });
                                         }
-
 
                                     } else {
                                         Log.d("Aggregate Query Count", "Count failed: ", task.getException());
@@ -292,8 +305,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     //The QR code was successfully scanned, adding the check in to the DB
     private void checkInSuccess(){
-        DocumentReference docRef = db.collection("Events").document(eventId).collection("checkins")
-                .document(deviceId);
+        CollectionReference colRef = db.collection("Events").document(eventId).collection("checkins");
+        DocumentReference docRef = colRef.document(deviceId);
         Map<String, Object> checkinData = new HashMap<>();
         checkinData.put("UID", deviceId);
 
@@ -481,7 +494,18 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void setViews() {
         backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        //Making sure that if the event is updated we don't go back to the create event page
+        //We will return back to the home activity in this case
+        backButton.setOnClickListener(v -> {
+            Boolean updateEvent = getIntent().getBooleanExtra("Update", false);
+            if (updateEvent){
+                Intent myIntent = new Intent(EventDetailsActivity.this, MainActivity.class);
+                startActivity(myIntent);
+            }
+            else{
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
         eventImage = findViewById(R.id.eventImage);
@@ -495,7 +519,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         optionsButton = findViewById(R.id.options_button);
         signUpButton = findViewById(R.id.check_in_button);
         shareButton = findViewById(R.id.share_button);
-        shareButton.setOnClickListener(v -> onShareButtonClick());
+        shareButton.setOnClickListener(v -> onShareButtonClick(false));
+        checkInGenerateButton = findViewById(R.id.checkin_generate_button);
+        checkInGenerateButton.setOnClickListener(v -> onShareButtonClick(true));
     }
 
     /**
@@ -629,9 +655,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void onShareButtonClick() {
+    public void onShareButtonClick(Boolean checkin) {
         // Get the QR code bitmap
-        Bitmap qrBitmap = myEvent.getQrCode().getBitmap();
+        Bitmap qrBitmap;
+        if (checkin){
+            qrBitmap = myEvent.getQrCode().getBitmap();
+        }
+        else{
+            qrBitmap = myEvent.getQrCodePromo().getBitmap();
+        }
+
 
         // Share the QR code bitmap
         if (qrBitmap != null) {
