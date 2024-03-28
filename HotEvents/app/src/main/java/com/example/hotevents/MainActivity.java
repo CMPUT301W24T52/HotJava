@@ -1,5 +1,14 @@
 package com.example.hotevents;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -61,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-    ArrayList<Event> myEventDataArray;      // Signed up events
-    ArrayList<Event> upcomingEventDataArray;
-    // ListView eventList;
+    ArrayList<Event> myEventDataArray;      //Signed up events
+    ArrayList<Event> upcomingEventDataArray;    //upcoming events array
     RecyclerView myEventView;
     RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
@@ -73,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private String UserName = "";
     ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
     DrawerLayout drawerLayout;
-    ImageView menu, notifications_toolbar;
+    ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
     Switch toggleGeo;
     private static final String TAG = "MainActivity";
@@ -81,11 +89,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewName;
     private CircleImageView profilePhotoImageView;
     private FirebaseStorage storage;
-    private Boolean success = false;
+//    private Boolean success = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -101,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
         upcomingEventView = (RecyclerView) findViewById(R.id.upcoming_events_list);
         upcomingEventView.setHasFixedSize(false);
         upcomingEventView.setLayoutManager(upcomingEventManager);
+
+        upcomingEventList_button = findViewById(R.id.upcomingEventsList_button);
 
 
         db = FirebaseFirestore.getInstance();
@@ -163,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
                 // we loop to give the data array enough time to receive every event
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
-                // all tasks have finished or the time has been reached.
 
                 if (value != null) {
                     myEventDataArray.clear();
@@ -273,6 +283,15 @@ public class MainActivity extends AppCompatActivity {
                 //Stating that we are entering the activity in the create event state
                 myIntent.putExtra("State", true);
                 myIntent.putExtra("organiser", deviceId);
+                startActivity(myIntent);
+            }
+        });
+
+        upcomingEventList_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, UpcomingEventsActivity.class);
+                myIntent.putParcelableArrayListExtra("events", upcomingEventDataArray);
                 startActivity(myIntent);
             }
         });
