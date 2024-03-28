@@ -34,6 +34,10 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
@@ -89,6 +93,9 @@ public class EventDetailsActivity extends AppCompatActivity {
     Button signUpButton;
     String notiType = "Milestone";
     Button checkInGenerateButton;
+    private FusedLocationProviderClient fusedLocationClient;
+    double latitude = null;
+    double longitude = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +106,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         myEvent = getIntent().getParcelableExtra("event");
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Set the views and event details
         setViews();
@@ -165,6 +173,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
         }
     }
+
 
     /**
      * Handles the sign-up button click event.
@@ -261,6 +270,30 @@ public class EventDetailsActivity extends AppCompatActivity {
      * Stores the device ID and check-in count in Firestore under the checkins collection for the specified event.
      */
     private void onCheckInButtonClick() {
+        getLocation();
+    }
+
+    private void getLocation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                return;
+            }
+        }
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        updateCheckinData();
+                    } else {
+                        updateCheckinData();
+                    }
+                });
+    }
+
+    private void updateCheckinData() {
         launchScanner();
 
         //Return from launch scanner is handled in onActivityResult
@@ -309,6 +342,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         DocumentReference docRef = colRef.document(deviceId);
         Map<String, Object> checkinData = new HashMap<>();
         checkinData.put("UID", deviceId);
+        if (latitude != null){
+            checkinData.put("latitude", latitude);
+        }
+        if (longitude != null){
+            checkinData.put("longitude", longitude);
+        }
 
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -329,6 +368,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
 
     /**
      * Handles the sign-up/check-in button behaviour
@@ -643,15 +683,25 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
+            if (Objects.equals(permissions[0], Manifest.permission.POST_NOTIFICATIONS)) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Notifications enabled", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
+                }
+            } else if (Objects.equals(permissions[0], Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLocation();
+                } else {
+                    updateCheckinData(null, null);
+                }
             }
+
         }
     }
 
