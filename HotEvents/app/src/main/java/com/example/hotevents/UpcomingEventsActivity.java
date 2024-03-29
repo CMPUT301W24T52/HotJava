@@ -55,8 +55,8 @@ public class UpcomingEventsActivity extends AppCompatActivity {
         uEventAdapter = new UpcomingEventActivityAdapter(eventArray, this);
 
 
-        db = FirebaseFirestore.getInstance();
-        eventsRef = db.collection("Events");
+//        db = FirebaseFirestore.getInstance();
+//        eventsRef = db.collection("Events");
 
         upcomingEventView.setAdapter(uEventAdapter);
 
@@ -70,38 +70,5 @@ public class UpcomingEventsActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-    public void displayEvents(){
-        if (eventArray.isEmpty()){
-            Log.d(TAG, "Array is Empty");
-            return;
-        }
-        eventsRef
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        for (QueryDocumentSnapshot eventDoc : task.getResult()){
-                            String eventId = eventDoc.getId();
-                            String title = eventDoc.getString("Title");
-                            Date startDate = eventDoc.getDate("StartDateTime");
-                            Date endDate = eventDoc.getDate("EndDateTime");
-                            String description = eventDoc.getString("Description");
-                            String organizerId = eventDoc.getString("Organizer Id");
-                            String posterStr = eventDoc.getString("Poster");
-                            String location = eventDoc.getString("Location");
-
-                            Event newEvent = new Event(title);
-                            newEvent.setEventId(eventId);
-                            newEvent.setStartDateTime(startDate);
-                            newEvent.setEndDateTime(endDate);
-                            newEvent.setDescription(description);
-                            newEvent.setOrganiserId(organizerId);
-                            newEvent.setPosterStr(posterStr);
-                            newEvent.setLocation(location);
-                            eventArray.add(newEvent);
-                        }
-                    }
-                    uEventAdapter.notifyDataSetChanged();
-                });
     }
 }

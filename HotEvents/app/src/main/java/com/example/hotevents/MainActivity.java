@@ -71,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     ArrayList<Event> myEventDataArray;      //Signed up events
+    ArrayList<String> signedUpUIDs;
     ArrayList<Event> upcomingEventDataArray;    //upcoming events array
+
     RecyclerView myEventView;
     RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
@@ -89,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewName;
     private CircleImageView profilePhotoImageView;
     private FirebaseStorage storage;
-//    private Boolean success = false;
 
 
     @Override
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     // Document exists, user "logged in"
                     //                    UserName = task.getResult().getString(("Name"));
                     UserName.setText(document.getString("Name"));
+                    signedUpUIDs = (ArrayList<String>) document.get("mysignup");
                 } else {
                     // No such document, user not "logged in"
                     // Retrieve the FCM registration token
@@ -174,12 +176,15 @@ public class MainActivity extends AppCompatActivity {
                 // we loop to give the data array enough time to receive every event
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
-
                 if (value != null) {
                     myEventDataArray.clear();
                     upcomingEventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         String eventId = doc.getId();
+//                        Log.d(TAG, doc.getReference().collection("signups").document().get().toString());
+//                        doc.getReference().collection("signups")
+//                        ArrayList<String> signedUpUID = (ArrayList<String>) doc.getData();
+//                        doc.getReference().collection("signups").document();
                         String title = doc.getString("Title");
                         Date startDate = doc.getDate("StartDateTime");
                         Date endDate = doc.getDate("EndDateTime");
@@ -216,7 +221,11 @@ public class MainActivity extends AppCompatActivity {
                             newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
                         }
 
-                        myEventDataArray.add(newEvent);
+                        if (signedUpUIDs != null && signedUpUIDs.contains(eventId)){
+                            myEventDataArray.add(newEvent);
+                        }
+//
+//                        myEventDataArray.add(newEvent);
                         upcomingEventDataArray.add(newEvent);
 
 
@@ -228,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
 
 
         drawerLayout = findViewById(R.id.drawerLayout);
@@ -286,6 +297,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(myIntent);
             }
         });
+
+//        signedUpEventList_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent myIntent = new Intent(MainActivity.this, SignedUpEventsActivity.class);
+//                myIntent.putParcelableArrayListExtra("events", myEventDataArray);
+//                startActivity(myIntent);
+//            }
+//        });
 
         upcomingEventList_button.setOnClickListener(new View.OnClickListener() {
             @Override
