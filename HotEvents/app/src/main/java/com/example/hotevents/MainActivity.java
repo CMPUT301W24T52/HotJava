@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -221,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
                             newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
                         }
 
-                        if (signedUpUIDs != null && signedUpUIDs.contains(eventId)){
-                            myEventDataArray.add(newEvent);
-                        }
+//                        if (signedUpUIDs != null && signedUpUIDs.contains(eventId)){
+//                            myEventDataArray.add(newEvent);
+//                        }
 //
 //                        myEventDataArray.add(newEvent);
                         upcomingEventDataArray.add(newEvent);
@@ -231,6 +232,27 @@ public class MainActivity extends AppCompatActivity {
 
                         // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     }
+
+                    db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // Document exists, user "logged in"
+                                //                    UserName = task.getResult().getString(("Name"));
+                                UserName.setText(document.getString("Name"));
+                                signedUpUIDs = (ArrayList<String>) document.get("mysignup");
+                                for (Event event : upcomingEventDataArray) {
+                                    if (signedUpUIDs.contains(event.getEventId())) {
+                                        myEventDataArray.add(event);
+                                    }
+                                }
+
+                                myEventsAdapter = new MyEventsAdapter(myEventDataArray, MainActivity.this);
+                                myEventView.setAdapter(myEventsAdapter);
+                            }
+
+                        }
+                    });
 
                     myEventsAdapter.notifyDataSetChanged();
                     upcomingEventsAdapter.notifyDataSetChanged();
