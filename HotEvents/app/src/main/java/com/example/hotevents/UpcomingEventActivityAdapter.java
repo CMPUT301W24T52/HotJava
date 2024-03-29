@@ -13,6 +13,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import org.checkerframework.checker.units.qual.N;
 
 import java.util.ArrayList;
@@ -78,5 +82,16 @@ public class UpcomingEventActivityAdapter extends RecyclerView.Adapter<UpcomingE
         holder.upcomingLocation.setText(event.getLocation());
         holder.startDate.setText(event.getStartDateTime().toString());
 
+        if (event.getPosterStr() != null){
+            try {
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
+                Glide.with(context)
+                        .load(storageRef)
+                        .into(holder.upcomingEventPoster);
+            }
+            catch (Exception e) {
+                return;
+            }
+        }
     }
 }
