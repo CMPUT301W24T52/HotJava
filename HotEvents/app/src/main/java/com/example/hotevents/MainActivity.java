@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         upcomingEventView.setLayoutManager(upcomingEventManager);
 
         upcomingEventList_button = findViewById(R.id.upcomingEventsList_button);
+        signedUpEventList_button = findViewById(R.id.signedUpEvents_button);
 
 
         db = FirebaseFirestore.getInstance();
@@ -222,17 +223,11 @@ public class MainActivity extends AppCompatActivity {
                             newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
                         }
 
-//                        if (signedUpUIDs != null && signedUpUIDs.contains(eventId)){
-//                            myEventDataArray.add(newEvent);
-//                        }
-//
-//                        myEventDataArray.add(newEvent);
+                        //add event to upcoming event data array
                         upcomingEventDataArray.add(newEvent);
-
-
-                        // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     }
 
+                    // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
@@ -320,14 +315,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        signedUpEventList_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent myIntent = new Intent(MainActivity.this, SignedUpEventsActivity.class);
-//                myIntent.putParcelableArrayListExtra("events", myEventDataArray);
-//                startActivity(myIntent);
-//            }
-//        });
+        signedUpEventList_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, SignedUpEventsActivity.class);
+                myIntent.putParcelableArrayListExtra("events", myEventDataArray);
+                startActivity(myIntent);
+            }
+        });
 
         upcomingEventList_button.setOnClickListener(new View.OnClickListener() {
             @Override
