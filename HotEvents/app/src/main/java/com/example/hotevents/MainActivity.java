@@ -183,10 +183,6 @@ public class MainActivity extends AppCompatActivity {
                     upcomingEventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         String eventId = doc.getId();
-//                        Log.d(TAG, doc.getReference().collection("signups").document().get().toString());
-//                        doc.getReference().collection("signups")
-//                        ArrayList<String> signedUpUID = (ArrayList<String>) doc.getData();
-//                        doc.getReference().collection("signups").document();
                         String title = doc.getString("Title");
                         Date startDate = doc.getDate("StartDateTime");
                         Date endDate = doc.getDate("EndDateTime");
@@ -245,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                                 myEventsAdapter = new MyEventsAdapter(myEventDataArray, MainActivity.this);
                                 myEventView.setAdapter(myEventsAdapter);
                             }
-
+                            myEventsAdapter.notifyDataSetChanged();
                         }
                     });
 
