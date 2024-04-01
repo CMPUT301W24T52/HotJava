@@ -7,9 +7,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -30,11 +34,19 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateQuerySnapshot;
+import com.google.firebase.firestore.AggregateSource;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,8 +82,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     String orgfcmToken;
     ImageButton optionsButton;
     ImageButton shareButton;
-
-
     ImageButton deleteButton;
     private FirebaseFirestore db;
     private static final String TAG = "EventDetailsActivity";
@@ -79,6 +89,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     String deviceId;
     Button signUpButton;
     String notiType = "Milestone";
+    Button checkInGenerateButton;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -123,20 +134,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        // Find the remove poster button
-        ImageButton removePosterButton = findViewById(R.id.remove_poster_button);
-        // Set OnClickListener for the button
-        removePosterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Call method to remove the poster
-                db.collection("Events").document(eventId).update("Poster", "")
-                        .addOnSuccessListener(aVoid -> Log.d("Remove Poster", "Remove Poster  updated successfully"))
-                        .addOnFailureListener(e -> Log.e("Remove Poster", "Error updating Remove Poster ", e));
-            }
-        });
-
-
         signUpButton = findViewById(R.id.check_in_button);
         if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             // Hide signup button
@@ -149,7 +146,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             deleteButton = findViewById(R.id.delete_button);
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(v -> deleteEvent());
-            removePosterButton.setVisibility(View.VISIBLE);
+
+            checkInGenerateButton.setVisibility(View.VISIBLE);
         } else {
             handleButtonBehaviour();
             signUpButton.setOnClickListener(v -> {
@@ -170,13 +168,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
         }
     }
-//    // Method to remove the poster and update with a default one
-//    private void removePoster() {
-//        myEvent.setPosterStr(""); // Assuming default_poster is your default image resource
-//        // You may need to update the poster in your Firebase database or storage as well
-//        // For simplicity, I'm assuming you're just updating the ImageView in the UI
-//    }
-
 
 
     /**
@@ -201,32 +192,60 @@ public class EventDetailsActivity extends AppCompatActivity {
                             signupData.put("UID", deviceId);
                             signupData.put("fcmToken", fcmToken);
 
-                            Map<String, Object> checkinData = new HashMap<>();
-                            checkinData.put("UID", deviceId);
-                            checkinData.put("count", 0);
 
                             // Add the device ID to the signups collection under the specific event's document
-                            db.collection("Events").document(eventId).collection("signups")
-                                    .document(deviceId)
-                                    .set(signupData)
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Successfully stored the device ID in Firestore
-                                        Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
-                                        // You can add further logic here if needed
-                                        addToMySignupArray(deviceId, eventId);
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // Failed to store the device ID
-                                        Log.e(TAG, "Error storing device ID in Firestore", e);
-                                        // You can handle the failure here
-                                    });
+                            // Reference: https://firebase.google.com/docs/firestore/query-data/aggregation-queries#java
+                            CollectionReference colRef = db.collection("Events").document(eventId).collection("signups");
+                            AggregateQuery countQuery = colRef.count();
 
+                            countQuery.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        // Count fetched successfully
+                                        AggregateQuerySnapshot snapshot = task.getResult();
+                                        // Checking whether the count is smaller than the MaxAttendees field, but only if it's not empty
+                                        Log.d("Aggregate Query Count", "Count: " + snapshot.getCount());
 
-                            db.collection("Events").document(eventId).collection("checkins")
-                                    .document(deviceId)
-                                    .set(checkinData)
-                                    .addOnSuccessListener(unused -> Log.d(TAG, "Checkin data stored"))
-                                    .addOnFailureListener(e -> Log.d(TAG, "Error storing init checkin data", e));
+                                        Integer maxAttendees;
+                                        maxAttendees = myEvent.getMaxAttendees();
+                                        if (myEvent.getMaxAttendees() != null) {
+                                            if (snapshot.getCount() >= maxAttendees) {
+                                                Toast.makeText(getBaseContext(), "Unable to Sign-up: Max attendee limit has been reached!", Toast.LENGTH_LONG).show();
+                                            } else {
+                                                colRef.document(deviceId).set(signupData)
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            // Successfully stored the device ID in Firestore
+                                                            Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                                                            // You can add further logic here if needed
+                                                            addToMySignupArray(deviceId, eventId);
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            // Failed to store the device ID
+                                                            Log.e(TAG, "Error storing device ID in Firestore", e);
+                                                            // You can handle the failure here
+                                                        });
+                                            }
+                                        } else {
+                                            colRef.document(deviceId).set(signupData)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        // Successfully stored the device ID in Firestore
+                                                        Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                                                        // You can add further logic here if needed
+                                                        addToMySignupArray(deviceId, eventId);
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        // Failed to store the device ID
+                                                        Log.e(TAG, "Error storing device ID in Firestore", e);
+                                                        // You can handle the failure here
+                                                    });
+                                        }
+
+                                    } else {
+                                        Log.d("Aggregate Query Count", "Count failed: ", task.getException());
+                                    }
+                                }
+                            });
 
                         } else {
                             Log.d(TAG, "No such document");
@@ -244,7 +263,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * Stores the device ID and check-in count in Firestore under the checkins collection for the specified event.
      */
     private void onCheckInButtonClick() {
-        getLocation();
+        launchScanner();
     }
 
     private void getLocation() {
@@ -258,8 +277,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
                 .addOnSuccessListener(location -> {
                     if (location != null) {
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
+                        Double latitude = location.getLatitude();
+                        Double longitude = location.getLongitude();
                         updateCheckinData(latitude, longitude);
                     } else {
                         updateCheckinData(null, null);
@@ -268,12 +287,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void updateCheckinData(Double latitude, Double longitude) {
-        DocumentReference docRef = db.collection("Events").document(eventId).collection("checkins")
-                .document(deviceId);
+        CollectionReference colRef = db.collection("Events").document(eventId).collection("checkins");
+        DocumentReference docRef = colRef.document(deviceId);
         Map<String, Object> checkinData = new HashMap<>();
         checkinData.put("UID", deviceId);
         checkinData.put("latitude", latitude);
         checkinData.put("longitude", longitude);
+
 
         docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -284,13 +304,54 @@ public class EventDetailsActivity extends AppCompatActivity {
                     checkinData.put("count", 1);
                 }
 
-                docRef.set(checkinData)
-                        .addOnSuccessListener(unused -> Log.d(TAG, "Checked in successfully"))
-                        .addOnFailureListener(e -> Log.d(TAG, "Error checking in", e));
+                docRef.set(checkinData).addOnSuccessListener(unused -> {
+                    signUpButton.setEnabled(true);
+                    Log.d(TAG, "Checked in successfully");
+                    Toast.makeText(getBaseContext(), "Check-in was successful!", Toast.LENGTH_LONG).show();
+                }).addOnFailureListener(e -> {
+                    signUpButton.setEnabled(true);
+                    Log.d(TAG, "Error checking in", e);
+                    Toast.makeText(getBaseContext(), "Error checking in", Toast.LENGTH_LONG).show();
+                });
             }
         });
-
         Log.d(TAG, "CheckIn Button Working");
+    }
+
+    private void launchScanner() {
+        // Code to open the QR Code scanner
+        IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+        intentIntegrator.setPrompt("Scan the Check-In QR Code");
+        //        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        //        intentIntegrator.setCameraId(0);
+        intentIntegrator.setOrientationLocked(false);
+        intentIntegrator.initiateScan();
+    }
+
+    // This is what returns once a QR code has been scanned
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        // if the intentResult is null then
+        // toast a message as "cancelled"
+        if (intentResult != null) {
+            if (intentResult.getContents() == null) {
+                Toast.makeText(getBaseContext(), "Scan cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                // if the intentResult is not null we'll handle validating the QR Code
+                // Toast.makeText(getBaseContext(), intentResult.getContents() + ":" + intentResult.getFormatName(), Toast.LENGTH_SHORT).show();
+                if (myEvent.getQrCode().validateQRCode(intentResult.getContents())) {
+                    // QR Code successfully scanned
+                    signUpButton.setEnabled(false);
+                    getLocation();
+                } else {
+                    Toast.makeText(getBaseContext(), "Incorrect QR Code", Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 
@@ -458,7 +519,17 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void setViews() {
         backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        // Making sure that if the event is updated we don't go back to the create event page
+        // We will return back to the home activity in this case
+        backButton.setOnClickListener(v -> {
+            Boolean updateEvent = getIntent().getBooleanExtra("Update", false);
+            if (updateEvent) {
+                Intent myIntent = new Intent(EventDetailsActivity.this, MainActivity.class);
+                startActivity(myIntent);
+            } else {
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
         eventImage = findViewById(R.id.eventImage);
@@ -472,7 +543,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         optionsButton = findViewById(R.id.options_button);
         signUpButton = findViewById(R.id.check_in_button);
         shareButton = findViewById(R.id.share_button);
-        shareButton.setOnClickListener(v -> onShareButtonClick());
+        shareButton.setOnClickListener(v -> onShareButtonClick(false));
+        checkInGenerateButton = findViewById(R.id.checkin_generate_button);
+        checkInGenerateButton.setOnClickListener(v -> onShareButtonClick(true));
     }
 
     /**
@@ -503,6 +576,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Set location
         if (myEvent.getLocation() != null) {
             eventLocation.setText(myEvent.getLocation());
+        }
+
+        if (myEvent.getPosterStr() != null) {
+            myEvent.assignPoster(eventImage);
         }
 
         // Set organiser name if organiserId exists
@@ -541,13 +618,32 @@ public class EventDetailsActivity extends AppCompatActivity {
             return false;
         });
 
-        // Show popupMenu
+        Menu menu = popupMenu.getMenu();
+        boolean showItems = true;
+        // Hide options if not organiser (set boolean to true to see all options for testing)
+        if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
+            menu.findItem(R.id.event_details_option_announce).setVisible(showItems);
+            menu.findItem(R.id.event_details_option_edit).setVisible(showItems);
+            menu.findItem(R.id.event_details_option_attendees).setVisible(showItems);
+
+            // Setting the editButton and the click event for the newly displayed button
+            // Reference: https://stackoverflow.com/questions/19652848/how-to-cast-menuitem-to-button-or-imagebutton
+            MenuItem editButton = menu.findItem(R.id.event_details_option_edit);
+            editButton.setOnMenuItemClickListener(x -> {
+                Intent myIntent = new Intent(EventDetailsActivity.this, CreateEventActivity.class);
+                // Stating that we are entering the activity in the create event state
+                myIntent.putExtra("State", false);
+                myIntent.putExtra("organiser", deviceId);
+                myIntent.putExtra("event", (Parcelable) myEvent);
+                Log.d("Event Details", "Starting update event");
+                startActivity(myIntent);
+                return true;
+            });
+        }
+
         popupMenu.show();
     }
 
-    /**
-     * Adapter for About/Announcement section
-     */
     private class EventPagerAdapter extends FragmentStateAdapter {
         private final String eventId;
 
@@ -593,12 +689,15 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void onShareButtonClick() {
-        // Create an instance of QRCodes class
-        QRCodes qrCodes = new QRCodes(myEvent.getEventId(), "promo", 512); // Adjust dimensions as needed
-
+    public void onShareButtonClick(Boolean checkin) {
         // Get the QR code bitmap
-        Bitmap qrBitmap = qrCodes.getBitmap();
+        Bitmap qrBitmap = null;
+        if (checkin) {
+            qrBitmap = myEvent.getQrCode().getBitmap();
+        } else {
+            qrBitmap = myEvent.getQrCodePromo().getBitmap();
+        }
+
 
         // Share the QR code bitmap
         if (qrBitmap != null) {
@@ -681,6 +780,4 @@ public class EventDetailsActivity extends AppCompatActivity {
             Toast.makeText(EventDetailsActivity.this, "Event ID is null", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }

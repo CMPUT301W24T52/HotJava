@@ -5,16 +5,25 @@ import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StreamDownloadTask;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Represents an Event object. Contains attributes and methods regarding Event data
@@ -29,6 +38,7 @@ public class Event implements Serializable, Parcelable {
     private Bitmap poster;
     private String posterStr;
     private QRCodes qrCode;
+    private QRCodes qrCodePromo;
     private String description;
     private String title;
     private String eventId;
@@ -36,6 +46,7 @@ public class Event implements Serializable, Parcelable {
     private UpcomingEventAdapter upcomingEventAdapter;
     private AdminEventsAdapter adminEventsAdapter;
     private OrganizedEventsAdapter organizedEventsAdapter;
+    private UpcomingEventActivityAdapter upcomingEventActivityAdapter;
     /**
      * Constructor for Event Object
      * @param startDateTime start Date and time of the Event
@@ -81,20 +92,12 @@ public class Event implements Serializable, Parcelable {
         maxAttendees = (Integer) in.readValue(Integer.class.getClassLoader());
         organiserId = (String) in.readValue(String.class.getClassLoader());
         qrCode = (QRCodes) in.readSerializable();
+        qrCodePromo = (QRCodes) in.readSerializable();
         description = (String) in.readValue(String.class.getClassLoader());
         title = in.readString();
         eventId = (String) in.readValue(String.class.getClassLoader());
         location = in.readString();
         posterStr = in.readString();
-
-        if (posterStr != null){
-            try {
-                Thread thread = downloadAndSetPoster(FirebaseStorage.getInstance());
-                thread.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
     public void setAdapter(MyEventsAdapter adapter) {
         this.myEventsAdapter = adapter;
@@ -108,6 +111,9 @@ public class Event implements Serializable, Parcelable {
     public void setAdapterOrganizedEvents(OrganizedEventsAdapter organizedEventsAdapter) {
         this.organizedEventsAdapter = organizedEventsAdapter;
     }
+    public void setAdapterUpcomingEventsActivity(UpcomingEventActivityAdapter upcomingEventActivityAdapter) {
+        this.upcomingEventActivityAdapter = upcomingEventActivityAdapter;
+    }
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeSerializable(startDateTime);
@@ -115,6 +121,7 @@ public class Event implements Serializable, Parcelable {
         parcel.writeValue(maxAttendees);
         parcel.writeValue(organiserId);
         parcel.writeSerializable(qrCode);
+        parcel.writeSerializable(qrCodePromo);
         parcel.writeValue(description);
         parcel.writeString(title);
         parcel.writeValue(eventId);
@@ -176,9 +183,10 @@ public class Event implements Serializable, Parcelable {
         this.description = description;
     }
 
-    public void setQrCode(QRCodes qrCode) {
+    public void setQRCode(QRCodes qrCode) {
         this.qrCode = qrCode;
     }
+    public void setQRCodePromo(QRCodes qrCode) {this.qrCodePromo = qrCode;}
 
     public void setPoster(Bitmap poster) {
         this.poster = poster;
@@ -190,6 +198,31 @@ public class Event implements Serializable, Parcelable {
     public Date getEndDateTime(){
         return this.endDateTime;
     }
+
+    //Reference: https://stackoverflow.com/questions/5683728/convert-java-util-date-to-string
+    public String getStartDateStr() {
+        String pattern = "MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
+
+    public String getEndDateStr(){
+        String pattern = "MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
+
+    public String getStartTimeStr(){
+        String pattern = "HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
+
+    public String getEndTimeStr(){
+        String pattern = "HH:mm";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(startDateTime);
+    }
     public Integer getMaxAttendees(){
         return this.maxAttendees;
     }
@@ -199,20 +232,27 @@ public class Event implements Serializable, Parcelable {
 
     //Used to download the poster from the posterStr and returns it
     public Bitmap getPoster() {
-        if (posterStr == null){
-            Log.e("Event", "Poster bitmap is null");
+        if (posterStr == null) {
             return null;
         }
-        else if (poster == null){
-            try {
-                Thread thread = downloadAndSetPoster(FirebaseStorage.getInstance());
-                thread.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        if (poster == null){
+            downloadAndSetPoster(FirebaseStorage.getInstance(), null);
         }
         return poster;
 
+    }
+
+    public void assignPoster(ImageView imageView){
+        //Once the poster download is complete, it's going to set the bitmap
+        //of the image view to the recently downloaded bitmap, making asynchronicity a non-issue
+        if (posterStr != null){
+            if (poster != null){
+                imageView.setImageBitmap(this.poster);
+            }
+            else{
+                downloadAndSetPoster(FirebaseStorage.getInstance(), imageView);
+            }
+        }
     }
 
     public String getPosterStr(){
@@ -229,55 +269,63 @@ public class Event implements Serializable, Parcelable {
     public QRCodes getQrCode() {
         return qrCode;
     }
+    public QRCodes getQrCodePromo() {return qrCodePromo; }
     public String getEventId(){return eventId;}
 
-    private Thread downloadAndSetPoster(FirebaseStorage storage) throws InterruptedException {
+    private void downloadAndSetPoster(FirebaseStorage storage, @Nullable ImageView imageView){
         try{
             StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
         }
         catch (Exception e){
-            return new Thread();
+            return;
         }
-        Thread thread = new Thread(() -> {
-            Log.d("Event", "PosterStr: " + posterStr);
-            StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
-            final long FIVE_MEGABYTE = 5 * 1024 * 1024;
-            photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
-                // Check if the byte array is not null
-                if (bytes != null && bytes.length > 0) {
-                    // Decode the byte array into a Bitmap
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
-                    // Check if the bitmap is not null
-                    if (bitmap != null) {
-                        // Set the downloaded profile picture to the image view
-                        Log.e("Event", "Setting poster bitmap");
-                        //Setting poster to the event
-                        this.setPoster(bitmap);
-                        if (myEventsAdapter != null) {
-                            myEventsAdapter.notifyDataSetChanged();
-                        }
-                        if (upcomingEventAdapter != null) {
-                            upcomingEventAdapter.notifyDataSetChanged();
-                        }
-                        if (adminEventsAdapter != null) {
-                            adminEventsAdapter.notifyDataSetChanged();
-                        }
-                        if (organizedEventsAdapter != null) {
-                            organizedEventsAdapter.notifyDataSetChanged();
-                        }
-                    } else {
-                        Log.e("Event", "Failed to decode byte array into Bitmap");
+        //Log.d("Event", "PosterStr: " + posterStr);
+        StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
+        final long FIVE_MEGABYTE = 5 * 1024 * 1024;
+
+        Task<byte[]> downloadTask = photoRef.getBytes(FIVE_MEGABYTE);
+
+        downloadTask.addOnSuccessListener(bytes -> {
+            // Check if the byte array is not null
+            if (bytes != null && bytes.length > 0) {
+                // Decode the byte array into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                // Check if the bitmap is not null
+                if (bitmap != null) {
+                    // Set the downloaded profile picture to the image view
+                    //Log.d("Event", "Setting poster bitmap");
+                    //Setting poster to the event
+                    this.setPoster(bitmap);
+                    if (imageView != null){
+                        imageView.setImageBitmap(bitmap);
+                    }
+                    if (myEventsAdapter != null) {
+                        myEventsAdapter.notifyDataSetChanged();
+                        //Log.d("Poster Set", "myEventsAdapter was notified");
+                    }
+                    if (upcomingEventAdapter != null) {
+                        upcomingEventAdapter.notifyDataSetChanged();
+                        //Log.d("Poster Set", "myEventsAdapter was notified");
+                    }
+                    if (adminEventsAdapter != null) {
+                        adminEventsAdapter.notifyDataSetChanged();
+                        //Log.d("Poster Set", "myEventsAdapter was notified");
+                    }
+                    if (organizedEventsAdapter != null) {
+                        organizedEventsAdapter.notifyDataSetChanged();
+                        //Log.d("Poster Set", "myEventsAdapter was notified");
                     }
                 } else {
-                    Log.e("Event", "Downloaded byte array is null or empty");
+                    Log.e("Event", "Failed to decode byte array into Bitmap");
                 }
-            }).addOnFailureListener(exception -> {
-                // Handle any errors
-                Log.e("Event", "Failed to download profile picture: " + exception.getMessage());
-            });
+            } else {
+                Log.e("Event", "Downloaded byte array is null or empty");
+            }
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+            Log.e("Event", "Failed to download profile picture: " + exception.getMessage());
         });
-        thread.start();
-        return thread;
     }
 }

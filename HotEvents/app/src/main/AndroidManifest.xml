@@ -45,6 +45,8 @@
             android:exported="true" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".UpcomingEventsActivity" />
+        <activity android:name=".SignedUpEventsActivity" />
         <activity
             android:name=".NavigationMenu"
             android:exported="true" />
@@ -53,7 +55,8 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.Hotevents.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -61,6 +64,11 @@
             </intent-filter>
 
         </activity>
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            tools:replace="android:screenOrientation"
+            android:stateNotNeeded="true" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
