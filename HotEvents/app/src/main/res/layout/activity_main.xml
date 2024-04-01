@@ -302,7 +302,6 @@
                             android:id="@+id/myevent_list"
                             android:layout_width="match_parent"
                             android:layout_height="260dp"
-                            android:layout_marginLeft="10dp"
                             android:orientation="vertical">
 
                             <androidx.recyclerview.widget.RecyclerView
