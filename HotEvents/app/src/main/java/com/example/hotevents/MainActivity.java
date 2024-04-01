@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     MyEventsAdapter myEventsAdapter;
     UpcomingEventAdapter upcomingEventsAdapter;
     private String UserName = "";
-    ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
+    ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
     ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
         menu = findViewById(R.id.menu);
         profile = findViewById(R.id.profile);
-        //        signedUpEvents = findViewById(R.id.signedUpEvents);
+        signedUpEvents = findViewById(R.id.signedUpEvents);
         organizedEvents = findViewById(R.id.publishedEvents);
         notifications = findViewById(R.id.notifications);
         notifications_toolbar = findViewById(R.id.notifications_toolbar);
@@ -282,6 +282,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 redirectActivity(MainActivity.this, OrganizedEventsActivity.class);
+            }
+        });
+        signedUpEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                redirectActivity(MainActivity.this, SignedUpEventsActivity.class);
+                Intent intent = new Intent(MainActivity.this, SignedUpEventsActivity.class);
+                intent.putExtra("events", myEventDataArray);
+                startActivity(intent);
             }
         });
         notifications.setOnClickListener(new View.OnClickListener() {
