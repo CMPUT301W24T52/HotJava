@@ -1,0 +1,7 @@
+<!-- res/drawable/tab_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+
+        android:type="linear"/>
+    <corners android:radius="8dp"/>   <!-- Rounded corners -->
+</shape>

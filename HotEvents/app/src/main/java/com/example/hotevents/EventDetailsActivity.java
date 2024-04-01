@@ -134,6 +134,9 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
+        // Find the remove poster button
+        ImageButton removePosterButton = findViewById(R.id.remove_poster_button);
+        // Set OnClickListener for the button
         signUpButton = findViewById(R.id.check_in_button);
         if (Objects.equals(deviceId, myEvent.getOrganiserId())) {
             // Hide signup button
@@ -146,7 +149,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             deleteButton = findViewById(R.id.delete_button);
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(v -> deleteEvent());
-
             checkInGenerateButton.setVisibility(View.VISIBLE);
         } else {
             handleButtonBehaviour();
@@ -615,6 +617,18 @@ public class EventDetailsActivity extends AppCompatActivity {
                 intent.putExtra("eventId", eventId);
                 this.startActivity(intent);
             }
+            if (itemID == R.id.remove_poster_button) {
+                // Call method to remove the poster
+                db.collection("Events").document(eventId).update("Poster", "")
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Remove Poster", "Remove Poster updated successfully");
+                            // Handle success, if needed
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Remove Poster", "Error updating Remove Poster ", e);
+                            // Handle failure, if needed
+                        });
+            }
             return false;
         });
 
@@ -625,6 +639,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             menu.findItem(R.id.event_details_option_announce).setVisible(showItems);
             menu.findItem(R.id.event_details_option_edit).setVisible(showItems);
             menu.findItem(R.id.event_details_option_attendees).setVisible(showItems);
+            menu.findItem(R.id.remove_poster_button).setVisible(showItems);
 
             // Setting the editButton and the click event for the newly displayed button
             // Reference: https://stackoverflow.com/questions/19652848/how-to-cast-menuitem-to-button-or-imagebutton

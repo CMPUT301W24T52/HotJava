@@ -15,7 +15,7 @@
         android:layout_height="80dp"
         android:layout_weight="1"
         android:padding="8dp"
-        android:src="@drawable/thumbnail"
+        android:src="@drawable/hot_night_poster"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="ANNOUNCEMENT"
+        android:fontFamily="@font/monsterrat_regular"
         android:textAlignment="textStart"
         android:textSize="18dp"
         android:textStyle="bold"
@@ -41,11 +42,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Date Time"
+        android:fontFamily="@font/monsterrat_regular"
         android:textAlignment="textStart"
         android:textColor="@color/GreenButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView"></TextView>
+        app:layout_constraintTop_toTopOf="@+id/imageView">
+
+    </TextView>
 
     <TextView
         android:id="@+id/notification_message"
@@ -54,10 +58,13 @@
         android:layout_marginStart="8dp"
         android:drawableTint="#A1A1A1"
         android:text="Description"
+        android:fontFamily="@font/monsterrat_regular"
         android:textAlignment="textStart"
         android:textColor="#A1A1A1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/event_title_text"></TextView>
+        app:layout_constraintTop_toBottomOf="@+id/event_title_text">
+
+    </TextView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
