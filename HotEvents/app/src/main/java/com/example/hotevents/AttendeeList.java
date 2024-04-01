@@ -1,16 +1,21 @@
 package com.example.hotevents;
 
+import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.osmdroid.api.IMapController;
@@ -21,6 +26,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -29,37 +35,33 @@ import java.util.ArrayList;
 public class AttendeeList extends AppCompatActivity {
     ImageButton backButton;
     private FirebaseFirestore db;
-    String eventId;
+    private String eventId;
     private static final String TAG = "AttendeeList";
     TextView signups_number;
     TextView checkins_number;
 
-    ArrayList<Attendee> attendeesArray = new ArrayList<>();
+    private ArrayList<Attendee> attendeesArray = new ArrayList<>();
     AttendeeListAdapter attendeeListAdapter;
 
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    private MapView map = null;
+    MapView map;
+    private IMapController mapController;
+    private GeoPoint startPoint;
+
+    private List<Marker> attendeeMarkers = new ArrayList<>();
+    Drawable attendeeMarkerDrawable;
+    ListenerRegistration eventCheckinListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_attendee_list);
 
-        map = findViewById(R.id.map);
-
-        Configuration.getInstance().setUserAgentValue(BuildConfig.LIBRARY_PACKAGE_NAME);
-
-        IMapController mapController = map.getController();
-        mapController.setZoom(18.0);
-        GeoPoint startPoint = new GeoPoint(53.521331248, -113.521331248);
-        mapController.setCenter(startPoint);
-
-        Marker startMarker = new Marker(map);
-        startMarker.setPosition(startPoint);
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-
-        map.getOverlays().add(startMarker);
+        // Marker startMarker = new Marker(map);
+        // startMarker.setPosition(startPoint);
+        // startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+        //
+        // map.getOverlays().add(startMarker);
 
 
         // Get DB and eventId
@@ -67,12 +69,34 @@ public class AttendeeList extends AppCompatActivity {
         eventId = getIntent().getExtras().getString("eventId");
 
         setViews();
+        setupMap();
 
-        backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v -> finish());
+        db.collection("Events")
+                .document(eventId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            try {
+                                Geocoder geocoder = new Geocoder(this);
+                                List<Address> addressList = geocoder.getFromLocationName(document.getString("Location"), 1);
+                                startPoint = new GeoPoint(addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
+                            } catch (Exception e) {
+                                startPoint = new GeoPoint(53.521331248, -113.521331248);
+                            }
+
+                            mapController.setCenter(startPoint);
+                        } else {
+                            Log.d(TAG, "event does not exist");
+                        }
+                    } else {
+                        Log.e(TAG, "failed to grab event data", task.getException());
+                    }
+                });
 
         // Listen for changes in event checkin data
-        db.collection("Events")
+        eventCheckinListener = db.collection("Events")
                 .document(eventId)
                 .collection("checkins")
                 .addSnapshotListener((value, error) -> {
@@ -80,16 +104,25 @@ public class AttendeeList extends AppCompatActivity {
                         Log.e("AttendeeList", "Listen failed", error);
                         return;
                     }
+
                     // Clear attendee list
                     attendeesArray.clear();
+
+                    // Clear existing markers
+                    map.getOverlays().removeAll(attendeeMarkers);
+                    attendeeMarkers.clear();
+
                     // Init signup and checkin counts
                     int signups = 0;
                     int checkins = 0;
+
                     for (QueryDocumentSnapshot doc : value) {
                         // Add to signup count for every attendee
                         signups++;
+
                         // Check if attendee has checked in at least once
                         if (doc.getLong("count") > 0) checkins++;
+
                         // Grab attendee's user document
                         db.collection("Users")
                                 .document(doc.getString("UID"))
@@ -104,6 +137,7 @@ public class AttendeeList extends AppCompatActivity {
                                             String profilePicture;
                                             String profilePictureCustom = userDoc.getString("ProfilePictureCustom");
                                             String profilePictureDefault = userDoc.getString("ProfilePictureDefault");
+
                                             // Check if custom picture or default
                                             if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
                                                 profilePicture = profilePictureCustom;
@@ -112,9 +146,25 @@ public class AttendeeList extends AppCompatActivity {
                                             } else {
                                                 profilePicture = "gs://hotevents-hotjava.appspot.com/ProfilePictures/profilePictureDefault.png";
                                             }
+
                                             // Add new Attendee and notify dataset change
                                             attendeesArray.add(new Attendee(name, checkinCount, profilePicture));
                                             attendeeListAdapter.notifyDataSetChanged();
+
+                                            // Add markers if available
+                                            if (doc.get("latitude") != null && doc.get("latitude") != null) {
+                                                double latitude = doc.getDouble("latitude");
+                                                double longitude = doc.getDouble("longitude");
+                                                Log.d(TAG, String.valueOf(latitude));
+                                                Log.d(TAG, String.valueOf(longitude));
+                                                GeoPoint location = new GeoPoint(latitude, longitude);
+                                                Marker marker = new Marker(map);
+                                                marker.setPosition(location);
+                                                marker.setIcon(attendeeMarkerDrawable);
+                                                map.getOverlays().add(marker);
+                                                attendeeMarkers.add(marker);
+                                                Log.d(TAG, "marker added");
+                                            }
                                             Log.d(TAG, "user added");
                                         } else {
                                             Log.d(TAG, "User doesn't exist");
@@ -124,6 +174,9 @@ public class AttendeeList extends AppCompatActivity {
                                     }
                                 });
                     }
+
+                    // Refresh map
+                    map.invalidate();
 
                     // Set the text to the counts
                     signups_number.setText(String.valueOf(signups));
@@ -150,5 +203,19 @@ public class AttendeeList extends AppCompatActivity {
         attendeeListAdapter = new AttendeeListAdapter(this, attendeesArray);
         recyclerView.setAdapter(attendeeListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        map = findViewById(R.id.map);
+        backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> {
+            eventCheckinListener.remove();
+            finish();
+        });
+    }
+
+    private void setupMap() {
+        Configuration.getInstance().setUserAgentValue(BuildConfig.LIBRARY_PACKAGE_NAME);
+        mapController = map.getController();
+        mapController.setZoom(18.0);
+
+        attendeeMarkerDrawable = AppCompatResources.getDrawable(this, R.drawable.attendeemarker);
     }
 }
