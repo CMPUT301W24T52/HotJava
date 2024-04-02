@@ -11,4 +11,12 @@
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/monsterrat_regular</item>
     </style>
+    <style name="CustomTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="tabIndicatorColor">#474E44</item>
+        <item name="tabSelectedTextColor">#56786C</item>
+        <item name="tabTextColor">#747688</item>
+        <item name="tabUnboundedRipple">false</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+    </style>
 </resources>

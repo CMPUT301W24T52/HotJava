@@ -12,6 +12,7 @@
         android:layout_marginEnd="10dp"
         android:layout_centerVertical="true"
         android:src="@drawable/img"
+        android:clickable="true"
         />
 
     <!-- User Name -->
@@ -23,6 +24,7 @@
         android:layout_marginStart="5dp"
         android:layout_toEndOf="@id/profileImage"
         android:text="@string/user_name"
+        android:fontFamily="@font/monsterrat_regular"
         android:textSize="20sp" />
 
     <TextView
@@ -34,5 +36,6 @@
         android:layout_marginTop="4dp"
         android:layout_toEndOf="@id/profileImage"
         android:text="@string/user_uid"
+        android:fontFamily="@font/monsterrat_regular"
         android:textSize="14sp" />
 </RelativeLayout>

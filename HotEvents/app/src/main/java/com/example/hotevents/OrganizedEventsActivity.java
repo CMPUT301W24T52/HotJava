@@ -49,7 +49,6 @@ public class OrganizedEventsActivity extends Activity {
     LinearLayoutManager organizedEventHorizantleManager;
     OrganizedEventsAdapter organizedEventsAdapter;
     private ImageView backButton;
-    private TextView backButton2;
     private static final String TAG = "OrganizedBrowseActivity";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,13 +129,6 @@ public class OrganizedEventsActivity extends Activity {
 
         backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        backButton2 = findViewById(R.id.backButton2);
-        backButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();

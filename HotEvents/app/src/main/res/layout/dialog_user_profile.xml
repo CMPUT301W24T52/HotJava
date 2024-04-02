@@ -1,0 +1,18 @@
+<!-- res/layout/dialog_user_profile.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- Circular Profile Image -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/dialogProfileImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/img"
+        android:clickable="true"
+        />
+
+</RelativeLayout>

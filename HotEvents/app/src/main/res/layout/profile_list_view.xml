@@ -34,44 +34,20 @@
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
             android:fontFamily="@font/monsterrat_regular"
-            android:text="All Existing Users"
+            android:text="Users"
             android:textColor="@android:color/white"
             android:textSize="24sp" />
 
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Tabs Layout (LinearLayout) -->
-    <LinearLayout
-        android:id="@+id/tabsLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
-        android:gravity="center"
-        android:orientation="horizontal">
 
-        <!-- Users Tab -->
-        <TextView
-            android:id="@+id/tabAttendees"
-            style="@style/TabStyle"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="Users" />
-
-        <!-- Admin Tab -->
-<!--        <TextView-->
-<!--            android:id="@+id/tabOrganisers"-->
-<!--            style="@style/TabStyle"-->
-<!--            android:clickable="true"-->
-<!--            android:focusable="true"-->
-<!--            android:text="Admins" />-->
-    </LinearLayout>
 
     <!-- Users List (ListView) -->
     <ListView
         android:id="@+id/usersList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tabsLayout"
+        android:layout_below="@id/toolbar"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
