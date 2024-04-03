@@ -63,7 +63,6 @@ public class OrganizedEventsActivity extends Activity {
 
         db = FirebaseFirestore.getInstance();
         organizedEventsRef = db.collection("Events");
-        organizedEventsRef = db.collection("Events");
 
         organizedEventsAdapter = new OrganizedEventsAdapter(organizedEventDataArray, this);
 
