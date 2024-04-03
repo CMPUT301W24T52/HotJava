@@ -1,6 +1,7 @@
 package com.example.hotevents;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -45,6 +47,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -56,6 +60,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -76,6 +81,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     ViewPager2 viewPager2;
     EventPagerAdapter eventPagerAdapter;
     TextView organiserName;
+    CircleImageView organiserImage;
+
     TextView eventLocation;
     String eventId;
     String myeventTitle;
@@ -105,7 +112,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         // Set the views and event details
         setViews();
-        setEventDetails();
+        setEventDetails(this);
 
         // Tab layout listeners
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -539,6 +546,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventImage = findViewById(R.id.eventImage);
         endDate = findViewById(R.id.event_end_date);
         organiserName = findViewById(R.id.organiser_name);
+        organiserImage = findViewById(R.id.organiser_image);
         eventLocation = findViewById(R.id.event_location);
         tabLayout = findViewById(R.id.tabLayout);
         viewPager2 = findViewById(R.id.view_pager);
@@ -555,7 +563,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     /**
      * Sets all the event details based on myEvent
      */
-    private void setEventDetails() {
+    private void setEventDetails(Context context) {
         // Set title
         if (myEvent.getTitle() != null) {
             myeventTitle = myEvent.getTitle();
@@ -592,6 +600,23 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     organiserName.setText(document.getString("Name"));
+                    String profilePicture;
+                    String profilePictureCustom = document.getString("ProfilePictureCustom");
+                    String profilePictureDefault = document.getString("ProfilePictureDefault");
+
+                    // Check if custom picture or default
+                    if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
+                        profilePicture = profilePictureCustom;
+                    } else if (profilePictureDefault != null && !profilePictureDefault.isEmpty()) {
+                        profilePicture = profilePictureDefault;
+                    } else {
+                        profilePicture = "gs://hotevents-hotjava.appspot.com/ProfilePictures/profilePictureDefault.png";
+                    }
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profilePicture);
+                    Glide.with(context)
+                            .load(storageRef)
+                            .skipMemoryCache(true)
+                            .into(organiserImage);
                 }
             });
         }
