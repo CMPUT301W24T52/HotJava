@@ -586,7 +586,7 @@ public class CreateEventActivity extends AppCompatActivity {
         // Creating the map to set the data to the event
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("StartDateTime", event.getStartDateTime());
-        eventMap.put("EndDateTime", event.getStartDateTime());
+        eventMap.put("EndDateTime", event.getEndDateTime());
         eventMap.put("Description", event.getDescription());
         eventMap.put("Poster", storageUri);
         eventMap.put("Max Attendees", event.getMaxAttendees());
