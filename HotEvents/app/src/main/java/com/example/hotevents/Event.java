@@ -47,6 +47,8 @@ public class Event implements Serializable, Parcelable {
     private AdminEventsAdapter adminEventsAdapter;
     private OrganizedEventsAdapter organizedEventsAdapter;
     private UpcomingEventActivityAdapter upcomingEventActivityAdapter;
+    private SignedUpEventsActivityAdapter signedUpEventActivityAdapter;
+
     /**
      * Constructor for Event Object
      * Optional parameters are nullable and can be set by a Setter later

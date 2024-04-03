@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -44,6 +46,7 @@ public class SignedUpEventsActivity extends AppCompatActivity {
     //Events
     ArrayList<Event> eventArray;
 //    UpcomingEventActivityAdapter eventAdapter;
+    SignedUpEventsActivityAdapter signedUpEventsActivityAdapter;
 
 
     //User
@@ -52,6 +55,7 @@ public class SignedUpEventsActivity extends AppCompatActivity {
     //Views and Components
     RecyclerView signedUpEventView;
     LinearLayoutManager signedUpEventLayoutManager;
+    ImageView backButton;
 
 
     @Override
@@ -59,108 +63,25 @@ public class SignedUpEventsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signed_up_events);
 
-        eventArray = new ArrayList<Event>();
+        Intent intent = getIntent();
+        eventArray = intent.getParcelableArrayListExtra("events");
 
-        db = FirebaseFirestore.getInstance();
-        Intent myIntent =  getIntent();
-        user = (LoggedInUser) myIntent.getSerializableExtra("user");
+        signedUpEventView = findViewById(R.id.signedupevent_list);
+        signedUpEventLayoutManager = new LinearLayoutManager(this);
+        signedUpEventLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        signedUpEventView.setHasFixedSize(false);
+        signedUpEventView.setLayoutManager(signedUpEventLayoutManager);
 
-        eventsRef = db.collection("Events");
+        signedUpEventsActivityAdapter = new SignedUpEventsActivityAdapter(eventArray, this);
+        signedUpEventView.setAdapter(signedUpEventsActivityAdapter);
 
-        userRef = db.collection("Users").document(user.getuID());
-
-
-        //check if user has signed up events, populate view
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    DocumentSnapshot doc = task.getResult();
-                    ArrayList<String> eventUIDList = (ArrayList<String>) doc.get("SignedUpEvent");
-                    if (eventUIDList != null && eventUIDList.isEmpty()){
-                        Log.d(TAG, "No Events to display");
-                        //make toast notification, return to main activity
-
-                        return;
-                    } else {
-                        Log.d(TAG, "User contains " + eventUIDList.size() + " Signed up events!");
-                        eventsRef.whereIn(FieldPath.documentId(), eventUIDList)
-                                .get()
-                                .addOnCompleteListener(eventTask -> {
-                                    if (eventTask.isSuccessful()){
-                                        for (QueryDocumentSnapshot eventDoc: eventTask.getResult()) {
-                                            String eventId = eventDoc.getId();
-                                            String title = eventDoc.getString("Title");
-                                            Date startDate = eventDoc.getDate("StartDateTime");
-                                            Date endDate = eventDoc.getDate("EndDateTime");
-                                            String description = eventDoc.getString("Description");
-                                            String organizerId = eventDoc.getString("Organizer Id");
-                                            String posterStr = eventDoc.getString("Poster");
-                                            String location = eventDoc.getString("Location");
-
-                                            Event newEvent = new Event(title);
-                                            newEvent.setEventId(eventId);
-                                            newEvent.setStartDateTime(startDate);
-                                            newEvent.setEndDateTime(endDate);
-                                            newEvent.setDescription(description);
-                                            newEvent.setOrganiserId(organizerId);
-                                            newEvent.setPosterStr(posterStr);
-                                            newEvent.setLocation(location);
-                                            eventArray.add(newEvent);
-
-                                        }
-                                        //add to adapter
-                                        //someAdapter.notify...()
-                                    }
-                                });
-                    }
-                }
+            public void onClick(View v) {
+                finish();
             }
         });
-//        userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-//                if (error != null){
-//                    Log.e(TAG, error.toString());
-//                    return;
-//                }
-//
-//            }
-//        });
-    }
-
-    public void displayEvents(){
-
-    }
-    public void setEventArray(ArrayList<String> eventUIDArray){
-        eventsRef.whereIn(FieldPath.documentId(), eventUIDArray)
-                .get()
-                .addOnCompleteListener(task -> {
-                    for (QueryDocumentSnapshot eventDoc: task.getResult()){
-                        String eventId = eventDoc.getId();
-                        String title = eventDoc.getString("Title");
-                        Date startDate = eventDoc.getDate("StartDateTime");
-                        Date endDate = eventDoc.getDate("EndDateTime");
-                        String description = eventDoc.getString("Description");
-                        String organizerId = eventDoc.getString("Organizer Id");
-                        String posterStr = eventDoc.getString("Poster");
-                        String location = eventDoc.getString("Location");
-
-                        Event newEvent = new Event(title);
-                        newEvent.setEventId(eventId);
-                        newEvent.setStartDateTime(startDate);
-                        newEvent.setEndDateTime(endDate);
-                        newEvent.setDescription(description);
-                        newEvent.setOrganiserId(organizerId);
-                        newEvent.setPosterStr(posterStr);
-                        newEvent.setLocation(location);
-
-                        //add to adapter
-                        //someAdapter.notify...()
-                };
-        });
-    }
-    public void getEventSet(){
 
     }
 

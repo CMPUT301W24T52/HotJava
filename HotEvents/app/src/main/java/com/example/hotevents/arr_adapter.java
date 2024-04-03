@@ -2,11 +2,13 @@
 
 package com.example.hotevents;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -89,6 +91,35 @@ public class arr_adapter extends ArrayAdapter<UserProfiles> {
                 .skipMemoryCache(true)
                 .into(holder.profileImage);
 
+        // Set OnClickListener on profileImage
+        holder.profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(user);
+            }
+        });
+
         return convertView;
+    }
+    // Method to show dialog
+    private void showDialog(UserProfiles user) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_user_profile, null);
+        ImageView profileImageDialog = dialogView.findViewById(R.id.dialogProfileImage);
+
+        // Set profile image and username in the dialog
+        StorageReference storageRef;
+        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.getProfileImageUrl());
+        Glide.with(context)
+                .load(storageRef)
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching
+                .skipMemoryCache(true)
+                .into(profileImageDialog);
+
+
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

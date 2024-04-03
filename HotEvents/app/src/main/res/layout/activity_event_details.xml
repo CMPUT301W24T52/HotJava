@@ -15,8 +15,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/default_poster"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        app:srcCompat="@drawable/def_web_pos"
+        />
 
     <ImageButton
         android:id="@+id/options_button"
@@ -24,7 +24,7 @@
         android:layout_height="36dp"
         android:layout_marginTop="22dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/rounded_rectangle"
+        android:background="@color/zxing_transparent"
         android:backgroundTint="#74AF93"
         android:src="@drawable/elipses"
         android:visibility="gone"
@@ -38,8 +38,7 @@
         android:layout_height="36dp"
         android:layout_marginTop="22dp"
         android:layout_marginEnd="50dp"
-        android:background="@drawable/rounded_rectangle"
-        android:backgroundTint="#74AF93"
+        android:background="@color/zxing_transparent"
         android:src="@drawable/baseline_share_24"
         app:tint="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +50,7 @@
         android:layout_height="36dp"
         android:layout_marginTop="22dp"
         android:layout_marginEnd="100dp"
-        android:background="@drawable/rounded_rectangle"
+        android:background="@color/zxing_transparent"
         android:backgroundTint="#74AF93"
         android:src="@drawable/baseline_delete_16"
         android:visibility="gone"
@@ -79,11 +78,22 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:text="SAT, MAY 1 (2:00 PM)"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#5C8971"
         android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/remove_poster_button"
         app:layout_constraintStart_toEndOf="@+id/start_title"
+        app:layout_constraintTop_toBottomOf="@+id/eventImage" />
+
+    <ImageButton
+        android:id="@+id/remove_poster_button"
+        android:layout_width="56dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_remove_poster"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/eventImage" />
 
     <TextView
@@ -92,13 +102,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="7dp"
         android:text="SAT, MAY 1 (3:00 PM)"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#5C8971"
         android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/event_title"
+        app:layout_constraintEnd_toStartOf="@+id/remove_poster_button"
         app:layout_constraintStart_toEndOf="@+id/end_title"
-        app:layout_constraintTop_toBottomOf="@id/event_start_date" />
+        app:layout_constraintTop_toBottomOf="@+id/event_start_date" />
 
     <TextView
         android:id="@+id/event_title"
@@ -109,6 +121,7 @@
         android:layout_marginEnd="8dp"
         android:includeFontPadding="false"
         android:text="International Band Music Concert"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#120D26"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -123,6 +136,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="Lot 13, Oakland, CA"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#747688"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -137,30 +151,42 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:text="Event Details"
+        android:fontFamily="@font/monsterrat_regular"
         android:textAlignment="textStart"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/back_button"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/organiser_image"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:src="@drawable/img"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_location"
-        app:srcCompat="@drawable/img"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        />
+    <!--    <ImageView-->
+    <!--        android:id="@+id/organiser_image"-->
+    <!--        android:layout_width="44dp"-->
+    <!--        android:layout_height="44dp"-->
+    <!--        android:layout_marginStart="8dp"-->
+    <!--        android:layout_marginTop="24dp"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/event_location"-->
+    <!--        app:srcCompat="@drawable/img"-->
+    <!--         />-->
 
     <TextView
         android:id="@+id/organiser_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:fontFamily="sans-serif"
         android:text="Deep Patel"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#0D0C26"
         android:textStyle="italic"
         app:layout_constraintStart_toEndOf="@+id/organiser_image"
@@ -171,7 +197,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="@font/monsterrat_regular"
         android:text="Organiser"
         android:textColor="#706E8F"
         android:textStyle="italic"
@@ -185,6 +211,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="Start:"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#5C8971"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -196,6 +223,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="End:"
+        android:fontFamily="@font/monsterrat_regular"
         android:textAlignment="viewStart"
         android:textColor="#5C8971"
         android:textSize="16sp"
@@ -204,8 +232,10 @@
         app:layout_constraintStart_toStartOf="@+id/start_title"
         app:layout_constraintTop_toBottomOf="@id/start_title" />
 
+    <!-- TabLayout -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
+        style="@style/CustomTabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -214,22 +244,21 @@
         android:background="#00FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkin_generate_button"
-        app:tabIndicatorColor="#474E44"
-        app:tabSelectedTextColor="#56786C"
-        app:tabTextColor="#747688"
-        app:tabUnboundedRipple="false">
+        app:layout_constraintTop_toBottomOf="@+id/checkin_generate_button">
 
+        <!-- TabItem 1 -->
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="About" />
+            android:text="About"
+            />
 
+
+        <!-- TabItem 2 -->
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Announcements" />
-
+            android:text="Announcements"/>
     </com.google.android.material.tabs.TabLayout>
 
     <Button
@@ -241,6 +270,7 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="#74AF93"
         android:text="Sign Up"
+        android:fontFamily="@font/monsterrat_regular"
         android:textAllCaps="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -266,6 +296,7 @@
         android:layout_marginTop="5dp"
         android:backgroundTint="#FFFFFF"
         android:text="Generate Check-in QR Code"
+        android:fontFamily="@font/monsterrat_regular"
         android:textColor="#A3BDAF"
         android:textSize="10sp"
         android:visibility="gone"

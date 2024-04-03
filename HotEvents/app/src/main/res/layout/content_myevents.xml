@@ -51,6 +51,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="7dp"
             android:text="This is Event Titlejqyf"
+            android:fontFamily="@font/monsterrat_regular"
             android:textAlignment="textStart"
             android:textSize="18dp"
             android:maxLines="1"
@@ -61,6 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Date Time"
+            android:fontFamily="@font/monsterrat_regular"
             android:paddingTop="2dp"
             android:textColor="@color/GreenButton">
         </TextView>
@@ -70,6 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Location"
+            android:fontFamily="@font/monsterrat_regular"
             android:textColor="#A1A1A1"
             android:drawableLeft="@drawable/baseline_room_16"
             android:drawableTint="#A1A1A1"

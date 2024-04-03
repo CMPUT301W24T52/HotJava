@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -71,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
     ArrayList<Event> myEventDataArray;      //Signed up events
+    ArrayList<String> signedUpUIDs;
     ArrayList<Event> upcomingEventDataArray;    //upcoming events array
+
     RecyclerView myEventView;
     RecyclerView upcomingEventView;
     LinearLayoutManager myEventHorizantleManager;
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     MyEventsAdapter myEventsAdapter;
     UpcomingEventAdapter upcomingEventsAdapter;
     private String UserName = "";
-    ArrayList<String> SignedUpEvent; // <----- This does not need to be here, move elsewhere
+    ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
     ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
@@ -89,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewName;
     private CircleImageView profilePhotoImageView;
     private FirebaseStorage storage;
-//    private Boolean success = false;
 
 
     @Override
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         upcomingEventView.setLayoutManager(upcomingEventManager);
 
         upcomingEventList_button = findViewById(R.id.upcomingEventsList_button);
+        signedUpEventList_button = findViewById(R.id.signedUpEvents_button);
 
 
         db = FirebaseFirestore.getInstance();
@@ -137,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     // Document exists, user "logged in"
                     //                    UserName = task.getResult().getString(("Name"));
                     UserName.setText(document.getString("Name"));
+                    signedUpUIDs = (ArrayList<String>) document.get("mysignup");
                 } else {
                     // No such document, user not "logged in"
                     // Retrieve the FCM registration token
@@ -174,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
                 // we loop to give the data array enough time to receive every event
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
-
                 if (value != null) {
                     myEventDataArray.clear();
                     upcomingEventDataArray.clear();
@@ -216,12 +219,31 @@ public class MainActivity extends AppCompatActivity {
                             newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
                         }
 
-                        myEventDataArray.add(newEvent);
+                        //add event to upcoming event data array
                         upcomingEventDataArray.add(newEvent);
-
-
-                        // if user.id is in signed up events --> myEventDataArray.add(newEvent);
                     }
+
+                    // if user.id is in signed up events --> myEventDataArray.add(newEvent);
+                    db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // Document exists, user "logged in"
+                                //                    UserName = task.getResult().getString(("Name"));
+                                UserName.setText(document.getString("Name"));
+                                signedUpUIDs = (ArrayList<String>) document.get("mysignup");
+                                for (Event event : upcomingEventDataArray) {
+                                    if (signedUpUIDs.contains(event.getEventId())) {
+                                        myEventDataArray.add(event);
+                                    }
+                                }
+
+                                myEventsAdapter = new MyEventsAdapter(myEventDataArray, MainActivity.this);
+                                myEventView.setAdapter(myEventsAdapter);
+                            }
+                            myEventsAdapter.notifyDataSetChanged();
+                        }
+                    });
 
                     myEventsAdapter.notifyDataSetChanged();
                     upcomingEventsAdapter.notifyDataSetChanged();
@@ -230,10 +252,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
         drawerLayout = findViewById(R.id.drawerLayout);
         menu = findViewById(R.id.menu);
         profile = findViewById(R.id.profile);
-        //        signedUpEvents = findViewById(R.id.signedUpEvents);
+        signedUpEvents = findViewById(R.id.signedUpEvents);
         organizedEvents = findViewById(R.id.publishedEvents);
         notifications = findViewById(R.id.notifications);
         notifications_toolbar = findViewById(R.id.notifications_toolbar);
@@ -260,6 +284,15 @@ public class MainActivity extends AppCompatActivity {
                 redirectActivity(MainActivity.this, OrganizedEventsActivity.class);
             }
         });
+        signedUpEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                redirectActivity(MainActivity.this, SignedUpEventsActivity.class);
+                Intent intent = new Intent(MainActivity.this, SignedUpEventsActivity.class);
+                intent.putExtra("events", myEventDataArray);
+                startActivity(intent);
+            }
+        });
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -283,6 +316,15 @@ public class MainActivity extends AppCompatActivity {
                 //Stating that we are entering the activity in the create event state
                 myIntent.putExtra("State", true);
                 myIntent.putExtra("organiser", deviceId);
+                startActivity(myIntent);
+            }
+        });
+
+        signedUpEventList_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MainActivity.this, SignedUpEventsActivity.class);
+                myIntent.putParcelableArrayListExtra("events", myEventDataArray);
                 startActivity(myIntent);
             }
         });
