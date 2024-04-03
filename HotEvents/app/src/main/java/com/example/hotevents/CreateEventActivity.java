@@ -66,11 +66,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- *Page for creating and updating an event
- * TODO:
- * - Set up choose QR button
- * - Fix location picker from the map
- * - Set up the update event components
+ * Class that handles the activity for creating and updating the events
  */
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -220,6 +216,7 @@ public class CreateEventActivity extends AppCompatActivity {
             qrCreateClick();
         });
 
+        //Querying the user's QR codes from previously created events and adding them to the
         qrChooseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

@@ -21,6 +21,10 @@ import java.io.Serializable;
 import androidmads.library.qrgenearator.QRGContents.Type;
 import androidmads.library.qrgenearator.QRGEncoder;
 
+/**
+ * Stores information related to a QR code and associated methods
+ */
+
 public class QRCodes implements Serializable {
     private String eventId;
     private String type;
@@ -29,11 +33,11 @@ public class QRCodes implements Serializable {
     private QRGEncoder qrgEncoder;
 
     /**
-     * Constructor for the QR Codes class
-     * Also runs the method to generate the QR Code
-     * @param eventId Unique event ID
-     * @param type Either [checkin] or [promotional], will define how the system handles the QR Code
-     * @param dimensions dimensions of the screen to determine the Bitmap size of the QR Code
+     * Constructor for the QR Code class
+     * This constructor takes the event that it belongs to and the type of the QR code,
+     * converting it into the encoded string that will be used to generate the QR code.
+     * @param eventId ID representing the ID in which the code is associated with
+     * @param type Type is either checkin or promotional
      */
 
     QRCodes(String eventId, String type){
@@ -41,6 +45,13 @@ public class QRCodes implements Serializable {
         this.type = type;
         this.encodedStr = app + ":" + type + ":" + eventId;
     }
+
+    /**
+     * Used to generate the QR Code class when the encoded string has already been created.
+     * This method is used when pulling an existing QR code string from the database.
+     * Also sets the eventId and type variables based on the string
+     * @param qrCodeStr The string used to encode the QR code
+     */
 
     QRCodes(String qrCodeStr){
         this.encodedStr = qrCodeStr;
@@ -52,8 +63,7 @@ public class QRCodes implements Serializable {
 
 
     /**
-     * Creates an instance of the QRGEncoded class based on the string to be encoded and the dimensions
-     * of the device
+     * Generates the QR code and returns the associated bitmap
      * @param data Full string to be encoded
      * @param dimensions Dimensions of the device to determine size of the bitmap
      */
@@ -64,7 +74,7 @@ public class QRCodes implements Serializable {
         // getting our qrcode in the form of bitmap.
         qrgEncoder.setColorWhite(0xFFFFFFFF);
         qrgEncoder.setColorBlack(0xFF000000);
-        return qrgEncoder.getBitmap();
+        return qrgEncoder.getBitmap(3);
     }
 
     /**
@@ -76,18 +86,34 @@ public class QRCodes implements Serializable {
         return encodedStr.equals(output);
     }
 
+    /**
+     * Public method to access the QR Code bitmap. Calls the private method that encodes the QR code
+     * @return QR code bitmap
+     */
     public Bitmap getBitmap(){
         return generateQRCode(encodedStr, 512);
     }
 
+    /**
+     * Getter for the eventId variable
+     * @return eventId
+     */
     public String getEventId(){
         return eventId;
     }
 
+    /**
+     * Getter for the type variable
+     * @return type
+     */
     public String getType(){
         return type;
     }
 
+    /**
+     * Getter for the encodedStr
+     * @return encodedStr
+     */
     public String getEncodedStr(){
         return encodedStr;
     }

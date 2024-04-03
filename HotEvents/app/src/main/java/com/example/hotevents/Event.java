@@ -49,6 +49,7 @@ public class Event implements Serializable, Parcelable {
     private UpcomingEventActivityAdapter upcomingEventActivityAdapter;
     /**
      * Constructor for Event Object
+     * Optional parameters are nullable and can be set by a Setter later
      * @param startDateTime start Date and time of the Event
      * @param endDateTime end Date and time of the Event
      * @param maxAttendees Maximum number of Event Attendees [null if no max]?
@@ -78,12 +79,17 @@ public class Event implements Serializable, Parcelable {
 
     /**
      * Optional Constructor
+     * Utilized when pulling data from the database
      * @param title Event Title
      */
     Event(String title){
         this.title = title;
-    }       // Unsure whether necessary or if theres a better way
+    }
 
+    /**
+     * Parcelable interface to pass between activities
+     * @param in Parcel
+     */
     //https://www.geeksforgeeks.org/android-pass-parcelable-object-from-one-activity-to-another-using-putextra/
     //Implementing parcelable interface
     protected Event(Parcel in){
@@ -99,21 +105,53 @@ public class Event implements Serializable, Parcelable {
         location = in.readString();
         posterStr = in.readString();
     }
+
+    /**
+     * Setting the MyEventsAdapter to be updated once the poster finishes downloading
+     * @param adapter MyEventsAdapter
+     */
     public void setAdapter(MyEventsAdapter adapter) {
         this.myEventsAdapter = adapter;
     }
+
+    /**
+     * Setting the UpcomingEventAdapter to be updated once the poster finishes downloading
+     * @param upcomingEventAdapter UpcomingEventAdapter
+     */
     public void setAdapterUpComingEvents(UpcomingEventAdapter upcomingEventAdapter) {
         this.upcomingEventAdapter = upcomingEventAdapter;
     }
+
+    /**
+     * Setting the AdminEventsAdapter to be updated once the poster finishes downloading
+     * @param adminEventsAdapter AdminEventAdapter
+     */
     public void setAdapterAdminEvents(AdminEventsAdapter adminEventsAdapter) {
         this.adminEventsAdapter = adminEventsAdapter;
     }
+
+    /**
+     * Setting the OrganizedEventsAdapter to be updated once the poster finishes downloading
+     * @param organizedEventsAdapter OrganizedEventAdapter
+     */
     public void setAdapterOrganizedEvents(OrganizedEventsAdapter organizedEventsAdapter) {
         this.organizedEventsAdapter = organizedEventsAdapter;
     }
+
+    /**
+     * Setting the UpcomingEventActivityAdapter to be updated once the poster finishes downloading
+     * @param upcomingEventActivityAdapter UpcomingEventActivityAdapter
+     */
     public void setAdapterUpcomingEventsActivity(UpcomingEventActivityAdapter upcomingEventActivityAdapter) {
         this.upcomingEventActivityAdapter = upcomingEventActivityAdapter;
     }
+
+    /**
+     * Part of the parcelable interface
+     * Parcel is written to while getting ready to pass the event between activities
+     * @param parcel Parcel
+     * @param i
+     */
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeSerializable(startDateTime);
@@ -130,11 +168,18 @@ public class Event implements Serializable, Parcelable {
         poster = null;
     }
 
+    /**
+     * Part of the parcelable interface
+     * @return Hardcoded 0
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Part of the parcelable interface
+     */
     public static final Creator<Event> CREATOR = new Creator<Event>(){
         @Override
         public Event createFromParcel(Parcel parcel) {
@@ -147,58 +192,126 @@ public class Event implements Serializable, Parcelable {
         }
     };
 
+    /**
+     * Setter for location
+     * @param location
+     */
     public void setLocation(String location) {
         this.location = location;
     }
 
+    /**
+     * Getter for location
+     * @return location
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     * Setter for title
+     * @param title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Getter for title
+     * @return title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Setter for the start date & time for the event
+     * @param startDateTime
+     */
     public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
+
+    /**
+     * Setter for the start date & time for the event
+     * @param endDateTime
+     */
     public void setEndDateTime(Date endDateTime) {
         this.endDateTime = endDateTime;
     }
 
+    /**
+     * Setter for the max attendees
+     * @param maxAttendees
+     */
     public void setMaxAttendees(Integer maxAttendees) {
         this.maxAttendees = maxAttendees;
     }
+
+    /**
+     * Setter for the eventId
+     * @param eventId
+     */
     public void setEventId(String eventId){this.eventId = eventId;}
 
+    /**
+     * Setter for the organiserId
+     * @param organiserId
+     */
     public void setOrganiserId(String organiserId) {
         this.organiserId = organiserId;
     }
 
+    /**
+     * Setter for the description
+     * @param description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Setter for the QR code
+     * @param qrCode
+     */
     public void setQRCode(QRCodes qrCode) {
         this.qrCode = qrCode;
     }
+
+    /**
+     * Setter for the promotional QR code
+     * @param qrCode
+     */
     public void setQRCodePromo(QRCodes qrCode) {this.qrCodePromo = qrCode;}
 
+    /**
+     * Setter for the poster
+     * @param poster
+     */
     public void setPoster(Bitmap poster) {
         this.poster = poster;
     }
 
+    /**
+     * Getter for the start date & time of the event
+     * @return startDateTime
+     */
     public Date getStartDateTime(){
         return this.startDateTime;
     }
+
+    /**
+     * Getter for the end date & time of the event
+     * @return
+     */
     public Date getEndDateTime(){
         return this.endDateTime;
     }
 
+    /**
+     * Converts the start date into a usable string for display in the UI
+     * @return Start date string
+     */
     //Reference: https://stackoverflow.com/questions/5683728/convert-java-util-date-to-string
     public String getStartDateStr() {
         String pattern = "MM/dd/yyyy";
@@ -206,30 +319,58 @@ public class Event implements Serializable, Parcelable {
         return df.format(startDateTime);
     }
 
+    /**
+     * Converts the end date into a usable string for display in the UI
+     * @return end date string
+     */
     public String getEndDateStr(){
         String pattern = "MM/dd/yyyy";
         DateFormat df = new SimpleDateFormat(pattern);
         return df.format(startDateTime);
     }
 
+    /**
+     * Converts the start time into a usable string for display in the UI
+     * @return start time string
+     */
     public String getStartTimeStr(){
         String pattern = "HH:mm";
         DateFormat df = new SimpleDateFormat(pattern);
         return df.format(startDateTime);
     }
 
+    /**
+     * Converts the end time into a usable string for display in the UI
+     * @return end time string
+     */
     public String getEndTimeStr(){
         String pattern = "HH:mm";
         DateFormat df = new SimpleDateFormat(pattern);
         return df.format(startDateTime);
     }
+
+    /**
+     * Getter for the max attendees
+     * @return maxAttendees
+     */
     public Integer getMaxAttendees(){
         return this.maxAttendees;
     }
+
+    /**
+     * Getter for the organiser Id
+     * @return organiserId
+     */
     public String getOrganiserId(){
         return this.organiserId;
     }
 
+    /**
+     * If the poster database URL exists, start the asynchronous poster download and returns the bitmap once complete
+     * Otherwise, returns null
+     * If the poster has already been set earlier, returns the bitmap associated with the poster
+     * @return
+     */
     //Used to download the poster from the posterStr and returns it
     public Bitmap getPoster() {
         if (posterStr == null) {
@@ -242,6 +383,11 @@ public class Event implements Serializable, Parcelable {
 
     }
 
+    /**
+     * Used to assign the poster to a passed ImageView
+     * Handles the asynchronous download before the image is set
+     * @param imageView UI ImageView displaying the poster
+     */
     public void assignPoster(ImageView imageView){
         //Once the poster download is complete, it's going to set the bitmap
         //of the image view to the recently downloaded bitmap, making asynchronicity a non-issue
@@ -255,23 +401,56 @@ public class Event implements Serializable, Parcelable {
         }
     }
 
+    /**
+     * Getter for the poster database URL
+     * @return posterStr
+     */
     public String getPosterStr(){
         return posterStr;
     }
+
+    /**
+     * Setter for the poster database URL
+     * @param posterStr
+     */
     public void setPosterStr(String posterStr){
         this.posterStr = posterStr;
     }
 
+    /**
+     * Getter for the description
+     * @return description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Getter for the QR code
+     * @return qrCode
+     */
     public QRCodes getQrCode() {
         return qrCode;
     }
+
+    /**
+     * Getter for the promotional QR Code
+     * @return qrCodePromo
+     */
     public QRCodes getQrCodePromo() {return qrCodePromo; }
+
+    /**
+     * Getter for the eventId
+     * @return eventId
+     */
     public String getEventId(){return eventId;}
 
+    /**
+     * Starts the asynchronous poster download process
+     * Once completes, notifies the adapter that the dataset has changed to ensure the poster is displayed correctly
+     * @param storage FirebaseStorage reference
+     * @param imageView ImageView displaying the poster
+     */
     private void downloadAndSetPoster(FirebaseStorage storage, @Nullable ImageView imageView){
         try{
             StorageReference photoRef = storage.getReferenceFromUrl(posterStr);
