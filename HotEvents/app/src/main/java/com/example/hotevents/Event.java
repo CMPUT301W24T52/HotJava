@@ -148,6 +148,10 @@ public class Event implements Serializable, Parcelable {
         this.upcomingEventActivityAdapter = upcomingEventActivityAdapter;
     }
 
+    public void setAdapterSignedUpEventsActivity(SignedUpEventsActivityAdapter signedUpEventActivityAdapter){
+        this.signedUpEventActivityAdapter = signedUpEventActivityAdapter;
+    }
+
     /**
      * Part of the parcelable interface
      * Parcel is written to while getting ready to pass the event between activities

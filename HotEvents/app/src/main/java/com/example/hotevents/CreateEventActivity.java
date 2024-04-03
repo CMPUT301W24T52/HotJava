@@ -216,11 +216,7 @@ public class CreateEventActivity extends AppCompatActivity {
             qrCreateClick();
         });
 
-<<<<<<< HEAD
         //Querying the user's QR codes from previously created events and adding them to the
-=======
-
->>>>>>> 2e97d72611d5f9e35f6d15c9a30deaadb91426c3
         qrChooseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -594,7 +590,7 @@ public class CreateEventActivity extends AppCompatActivity {
         // Creating the map to set the data to the event
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("StartDateTime", event.getStartDateTime());
-        eventMap.put("EndDateTime", event.getStartDateTime());
+        eventMap.put("EndDateTime", event.getEndDateTime());
         eventMap.put("Description", event.getDescription());
         eventMap.put("Poster", storageUri);
         eventMap.put("Max Attendees", event.getMaxAttendees());
