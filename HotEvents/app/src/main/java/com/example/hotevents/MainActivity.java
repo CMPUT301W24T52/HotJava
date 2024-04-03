@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                                 UserName.setText(document.getString("Name"));
                                 signedUpUIDs = (ArrayList<String>) document.get("mysignup");
                                 for (Event event : upcomingEventDataArray) {
-                                    if (signedUpUIDs.contains(event.getEventId())) {
+                                    if (signedUpUIDs != null && signedUpUIDs.contains(event.getEventId())) {
                                         myEventDataArray.add(event);
                                     }
                                 }
