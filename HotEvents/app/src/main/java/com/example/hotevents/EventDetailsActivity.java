@@ -226,6 +226,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                         .addOnSuccessListener(aVoid -> {
                                                             // Successfully stored the device ID in Firestore
                                                             Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                                                            handleButtonBehaviour();
                                                             // You can add further logic here if needed
                                                             addToMySignupArray(deviceId, eventId);
                                                         })
@@ -241,6 +242,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                         // Successfully stored the device ID in Firestore
                                                         Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
                                                         // You can add further logic here if needed
+                                                        handleButtonBehaviour();
                                                         addToMySignupArray(deviceId, eventId);
                                                     })
                                                     .addOnFailureListener(e -> {
