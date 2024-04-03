@@ -63,7 +63,6 @@ public class OrganizedEventsActivity extends Activity {
 
         db = FirebaseFirestore.getInstance();
         organizedEventsRef = db.collection("Events");
-        organizedEventsRef = db.collection("Events");
 
         organizedEventsAdapter = new OrganizedEventsAdapter(organizedEventDataArray, this);
 
@@ -97,6 +96,13 @@ public class OrganizedEventsActivity extends Activity {
                                                     String organizerId = eventDoc.getString("Organizer Id");
                                                     String posterStr = eventDoc.getString("Poster");
                                                     String location = eventDoc.getString("Location");
+                                                    String qrCodeStr = eventDoc.getString("QRCode");
+                                                    String qrCodePromoStr = eventDoc.getString("QRCodePromo");
+                                                    Long maxAttendeesLong = eventDoc.getLong("Max Attendees");
+                                                    Integer maxAttendees = null;
+                                                    if (maxAttendeesLong != null){
+                                                        maxAttendees = maxAttendeesLong.intValue();
+                                                    }
 
                                                     Event newEvent = new Event(title);
                                                     newEvent.setEventId(eventId);
@@ -106,6 +112,18 @@ public class OrganizedEventsActivity extends Activity {
                                                     newEvent.setOrganiserId(organizerId);
                                                     newEvent.setPosterStr(posterStr);
                                                     newEvent.setLocation(location);
+
+                                                    if (maxAttendees != null){
+                                                        newEvent.setMaxAttendees(maxAttendees);
+                                                    }
+
+                                                    if (qrCodeStr != null){
+                                                        newEvent.setQRCode(new QRCodes(qrCodeStr));
+                                                    }
+                                                    if (qrCodePromoStr != null){
+                                                        newEvent.setQRCodePromo(new QRCodes(qrCodePromoStr));
+                                                    }
+
                                                     organizedEventDataArray.add(newEvent);
                                                 // Notify the adapter after adding events
                                                 organizedEventsAdapter.notifyDataSetChanged();

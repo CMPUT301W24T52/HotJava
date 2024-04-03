@@ -243,6 +243,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                         Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
                                                         handleButtonBehaviour();
                                                         // You can add further logic here if needed
+                                                        handleButtonBehaviour();
                                                         addToMySignupArray(deviceId, eventId);
                                                     })
                                                     .addOnFailureListener(e -> {
@@ -735,6 +736,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         // Get the QR code bitmap
         Bitmap qrBitmap = null;
         if (checkin) {
+            Log.d(TAG, myEvent.getTitle());
+            Log.d(TAG, myEvent.getQrCode().getEncodedStr());
             qrBitmap = myEvent.getQrCode().getBitmap();
         } else {
             qrBitmap = myEvent.getQrCodePromo().getBitmap();
