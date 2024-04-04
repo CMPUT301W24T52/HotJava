@@ -32,6 +32,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -615,6 +616,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profilePicture);
                     Glide.with(context)
                             .load(storageRef)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching
                             .skipMemoryCache(true)
                             .into(organiserImage);
                 }
