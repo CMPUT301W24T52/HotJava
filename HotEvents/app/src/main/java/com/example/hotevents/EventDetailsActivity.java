@@ -1,6 +1,7 @@
 package com.example.hotevents;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -385,6 +386,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "Incorrect QR Code", Toast.LENGTH_LONG).show();
                 }
             }
+        } else if (requestCode == 1234) {
+            if (resultCode == Activity.RESULT_OK) {
+                Event updatedEvent = data.getParcelableExtra("event");
+                myEvent = updatedEvent;
+                setEventDetails(this);
+            }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -555,17 +562,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void setViews() {
         backButton = findViewById(R.id.back_button);
-        // Making sure that if the event is updated we don't go back to the create event page
-        // We will return back to the home activity in this case
-        backButton.setOnClickListener(v -> {
-            Boolean updateEvent = getIntent().getBooleanExtra("Update", false);
-            if (updateEvent) {
-                Intent myIntent = new Intent(EventDetailsActivity.this, MainActivity.class);
-                startActivity(myIntent);
-            } else {
-                getOnBackPressedDispatcher().onBackPressed();
-            }
-        });
+        backButton.setOnClickListener(v -> finish());
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
         eventImage = findViewById(R.id.eventImage);
@@ -704,7 +701,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 myIntent.putExtra("organiser", deviceId);
                 myIntent.putExtra("event", (Parcelable) myEvent);
                 Log.d("Event Details", "Starting update event");
-                startActivity(myIntent);
+                startActivityForResult(myIntent, 1234);
+                // startActivity(myIntent);
                 return true;
             });
         }
