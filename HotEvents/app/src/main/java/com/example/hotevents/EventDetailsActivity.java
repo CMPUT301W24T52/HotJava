@@ -199,13 +199,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                             String eventId = myEvent.getEventId();
                             String eventName = myEvent.getTitle();
                             Map<String, Object> signupData = new HashMap<>();
+                            Map<String, Object> checkinData = new HashMap<>();
                             signupData.put("UID", deviceId);
                             signupData.put("fcmToken", fcmToken);
+                            checkinData.put("UID", deviceId);
+                            checkinData.put("count", 0);
+                            checkinData.put("latitude", null);
+                            checkinData.put("longitude", null);
 
 
                             // Add the device ID to the signups collection under the specific event's document
                             // Reference: https://firebase.google.com/docs/firestore/query-data/aggregation-queries#java
                             CollectionReference colRef = db.collection("Events").document(eventId).collection("signups");
+                            CollectionReference checkinColRef = db.collection("Events").document(eventId).collection("checkins");
                             AggregateQuery countQuery = colRef.count();
 
                             countQuery.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
@@ -236,6 +242,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                             Log.e(TAG, "Error storing device ID in Firestore", e);
                                                             // You can handle the failure here
                                                         });
+                                                checkinColRef.document(deviceId).set(checkinData)
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            // Initial check-in data set
+                                                            Log.d(TAG, "Check-in data stored successfully");
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            // Failed to store the device ID
+                                                            Log.e(TAG, "Error storing check-in data in Firestore", e);
+                                                        });
                                             }
                                         } else {
                                             colRef.document(deviceId).set(signupData)
@@ -250,6 +265,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                         // Failed to store the device ID
                                                         Log.e(TAG, "Error storing device ID in Firestore", e);
                                                         // You can handle the failure here
+                                                    });
+                                            checkinColRef.document(deviceId).set(checkinData)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        // Initial check-in data set
+                                                        Log.d(TAG, "Check-in data stored successfully");
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        // Failed to store the device ID
+                                                        Log.e(TAG, "Error storing check-in data in Firestore", e);
                                                     });
                                         }
 
