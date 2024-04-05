@@ -101,7 +101,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Integer maxAttendees = null;
     Uri posterUri = null;
     String storageUri = null;
-    String organiserId;
+    String organiserId = "4a2d37f1b5970890"; //Default user for espresso testing
     Event updateEvent = null;
     Event newEvent = null;
 
@@ -164,7 +164,10 @@ public class CreateEventActivity extends AppCompatActivity {
 
         // Getting the arguments from the Intent
         Intent myIntent = getIntent();
-        organiserId = myIntent.getStringExtra("organiser");
+        String temp = myIntent.getStringExtra("organiser");
+        if (temp != null){
+            organiserId = temp;
+        }
 
         // Querying the current user and using their info to set up the QR Choose string array
         getUserData();
@@ -314,6 +317,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        Log.e("Getting User Data", e.toString());
                         settingUpSpinner(null);
                     }
                 });

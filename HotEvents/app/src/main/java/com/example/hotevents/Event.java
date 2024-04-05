@@ -332,7 +332,7 @@ public class Event implements Serializable, Parcelable {
     public String getEndDateStr(){
         String pattern = "MM/dd/yyyy";
         DateFormat df = new SimpleDateFormat(pattern);
-        return df.format(startDateTime);
+        return df.format(endDateTime);
     }
 
     /**
