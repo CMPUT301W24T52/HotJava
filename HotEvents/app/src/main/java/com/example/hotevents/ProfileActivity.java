@@ -18,7 +18,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
@@ -153,7 +152,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Downloads the profile picture from the given URL and sets it to the profile photo image view.
      *
@@ -162,7 +160,6 @@ public class ProfileActivity extends AppCompatActivity {
     private void downloadAndSetProfilePicture(String profilePictureUrl) {
         // Create a reference to the Firebase Storage URL
         StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
-
         // Download the image into a Bitmap
         final long FIVE_MEGABYTE = 5 * 1024 * 1024;
         photoRef.getBytes(FIVE_MEGABYTE).addOnSuccessListener(bytes -> {
@@ -188,7 +185,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Generates a default profile photo with the initial character of the name, uploads it to Firebase Storage,
      * and updates the 'ProfilePicture' field in the Firestore database.
@@ -204,6 +200,7 @@ public class ProfileActivity extends AppCompatActivity {
         uploadProfilePhotoToStorage(userId, defaultProfilePhoto, () -> {
             // Upload successful, update the 'ProfilePicture' field in the database with the image URL
             String imageUrl = "gs://hotevents-hotjava.appspot.com/ProfilePictures/" + userId + ".png";
+            downloadAndSetProfilePicture(imageUrl);
             updateProfilePictureInDatabase(userId, imageUrl);
         });
     }
@@ -239,8 +236,8 @@ public class ProfileActivity extends AppCompatActivity {
     /**
      * Uploads the profile photo to Firebase Storage.
      *
-     * @param userId The user's unique ID.
-     * @param bitmap The profile photo bitmap to upload.
+     * @param userId             The user's unique ID.
+     * @param bitmap             The profile photo bitmap to upload.
      * @param onCompleteCallback Callback to execute after the upload is complete.
      */
     private void uploadProfilePhotoToStorage(String userId, Bitmap bitmap, OnUploadCompleteListener onCompleteCallback) {
@@ -282,7 +279,8 @@ public class ProfileActivity extends AppCompatActivity {
     private void updateProfilePictureInDatabase(String userId, String imageUrl) {
         // Update the 'ProfilePicture' field in the database collection with the image URL
         db.collection("Users").document(userId).update("ProfilePictureDefault", imageUrl)
-                .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully"))
+                .addOnSuccessListener(aVoid -> Log.d("ProfileActivity", "Profile picture updated successfully")
+                )
                 .addOnFailureListener(e -> Log.e("ProfileActivity", "Error updating profile picture", e));
     }
 
