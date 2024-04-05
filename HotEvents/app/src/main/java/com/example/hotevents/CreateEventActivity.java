@@ -249,22 +249,18 @@ public class CreateEventActivity extends AppCompatActivity {
      * or MainActivity
      */
     protected void returnPreviousActivity() {
-        if (activityState == ActivityState.CREATE) {
-            Intent myIntent = new Intent(CreateEventActivity.this, MainActivity.class);
-            startActivity(myIntent);
-        } else if (activityState == ActivityState.UPDATE) {
-            Intent myIntent = new Intent(CreateEventActivity.this, EventDetailsActivity.class);
+        if (activityState == ActivityState.UPDATE) {
+            Intent myIntent = new Intent();
 
             // Returning different events depending on whether we pressed the back button or completed the event update
             if (newEvent == null) {
                 myIntent.putExtra("event", (Parcelable) updateEvent);
-                myIntent.putExtra("Update", true);
             } else {
                 myIntent.putExtra("event", (Parcelable) newEvent);
             }
-            startActivity(myIntent);
+            setResult(Activity.RESULT_OK, myIntent);
         }
-
+        finish();
     }
 
     /**

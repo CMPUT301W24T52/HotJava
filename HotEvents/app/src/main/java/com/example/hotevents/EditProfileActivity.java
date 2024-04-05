@@ -27,7 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * EditProfileActivity allows users to edit their profile information and profile photo.
  */
-public class    EditProfileActivity extends AppCompatActivity {
+public class EditProfileActivity extends AppCompatActivity {
     private static final int IMAGE_PICK_REQUEST_CODE = 1;
 
     // UI elements
@@ -41,6 +41,7 @@ public class    EditProfileActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String deviceId;
     private FirebaseStorage storage;
+    ImageButton backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,9 @@ public class    EditProfileActivity extends AppCompatActivity {
         profilePhotoImageView = findViewById(R.id.edit_image_profile_photo);
         editProfilePhotoButton = findViewById(R.id.editProfilePhotoButton);
         removeProfilePhotoButton = findViewById(R.id.removeProfilePhotoButton);
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> finish());
 
 
         // Click listener for selecting profile photo from gallery
@@ -72,8 +76,8 @@ public class    EditProfileActivity extends AppCompatActivity {
 
             // Set the default profile photo
             // Assuming "ProfilePictureDefault" is the field containing the default profile photo URL
-//            String defaultProfilePhotoUrl = documentSnapshot.getString("ProfilePictureDefault");
-//            downloadAndSetProfilePicture(defaultProfilePhotoUrl);
+            //            String defaultProfilePhotoUrl = documentSnapshot.getString("ProfilePictureDefault");
+            //            downloadAndSetProfilePicture(defaultProfilePhotoUrl);
         });
 
         // Initialize EditText fields and save button
@@ -143,6 +147,7 @@ public class    EditProfileActivity extends AppCompatActivity {
 
 
     }
+
     private void uploadPhoto(Uri photoUri) {
         // Generating unique name for the image
         String imageName = deviceId + "EDITED.png";
