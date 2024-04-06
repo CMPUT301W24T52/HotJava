@@ -1,6 +1,7 @@
 package com.example.hotevents;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -199,13 +200,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                             String eventId = myEvent.getEventId();
                             String eventName = myEvent.getTitle();
                             Map<String, Object> signupData = new HashMap<>();
+                            Map<String, Object> checkinData = new HashMap<>();
                             signupData.put("UID", deviceId);
                             signupData.put("fcmToken", fcmToken);
+                            checkinData.put("UID", deviceId);
+                            checkinData.put("count", 0);
+                            checkinData.put("latitude", null);
+                            checkinData.put("longitude", null);
 
 
                             // Add the device ID to the signups collection under the specific event's document
                             // Reference: https://firebase.google.com/docs/firestore/query-data/aggregation-queries#java
                             CollectionReference colRef = db.collection("Events").document(eventId).collection("signups");
+                            CollectionReference checkinColRef = db.collection("Events").document(eventId).collection("checkins");
                             AggregateQuery countQuery = colRef.count();
 
                             countQuery.get(AggregateSource.SERVER).addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
@@ -236,6 +243,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                             Log.e(TAG, "Error storing device ID in Firestore", e);
                                                             // You can handle the failure here
                                                         });
+                                                checkinColRef.document(deviceId).set(checkinData)
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            // Initial check-in data set
+                                                            Log.d(TAG, "Check-in data stored successfully");
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            // Failed to store the device ID
+                                                            Log.e(TAG, "Error storing check-in data in Firestore", e);
+                                                        });
                                             }
                                         } else {
                                             colRef.document(deviceId).set(signupData)
@@ -250,6 +266,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                         // Failed to store the device ID
                                                         Log.e(TAG, "Error storing device ID in Firestore", e);
                                                         // You can handle the failure here
+                                                    });
+                                            checkinColRef.document(deviceId).set(checkinData)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        // Initial check-in data set
+                                                        Log.d(TAG, "Check-in data stored successfully");
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        // Failed to store the device ID
+                                                        Log.e(TAG, "Error storing check-in data in Firestore", e);
                                                     });
                                         }
 
@@ -360,6 +385,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(getBaseContext(), "Incorrect QR Code", Toast.LENGTH_LONG).show();
                 }
+            }
+        } else if (requestCode == 1234) {
+            if (resultCode == Activity.RESULT_OK) {
+                Event updatedEvent = data.getParcelableExtra("event");
+                myEvent = updatedEvent;
+                setEventDetails(this);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -531,17 +562,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void setViews() {
         backButton = findViewById(R.id.back_button);
-        // Making sure that if the event is updated we don't go back to the create event page
-        // We will return back to the home activity in this case
-        backButton.setOnClickListener(v -> {
-            Boolean updateEvent = getIntent().getBooleanExtra("Update", false);
-            if (updateEvent) {
-                Intent myIntent = new Intent(EventDetailsActivity.this, MainActivity.class);
-                startActivity(myIntent);
-            } else {
-                getOnBackPressedDispatcher().onBackPressed();
-            }
-        });
+        backButton.setOnClickListener(v -> finish());
         eventTitle = findViewById(R.id.event_title);
         startDate = findViewById(R.id.event_start_date);
         eventImage = findViewById(R.id.eventImage);
@@ -680,7 +701,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 myIntent.putExtra("organiser", deviceId);
                 myIntent.putExtra("event", (Parcelable) myEvent);
                 Log.d("Event Details", "Starting update event");
-                startActivity(myIntent);
+                startActivityForResult(myIntent, 1234);
+                // startActivity(myIntent);
                 return true;
             });
         }
