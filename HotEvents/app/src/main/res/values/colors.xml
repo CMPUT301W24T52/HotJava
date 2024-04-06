@@ -4,4 +4,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="GreenButton">#5C8971</color>
     <color name="LightGreen">#DAE1C9</color>
+    <color name="primaryDarkColor">#74AE92</color>
+    <color name="secondaryColor">#dae1c9</color>
+    <color name="primaryLightColor">#dae1c9</color>
+
+
 </resources>
