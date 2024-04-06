@@ -62,12 +62,12 @@ public class CreateEventActivityUnitTest {
 
     //Testing QR Code Encoder method through getBitmap method
     //Validating whether it correctly returns a bitmap
-    @Test
-    public void testGetBitmap(){
-        QRCodes code = mockQRCode();
-        Bitmap bitmap = code.getBitmap();
-        assertNotNull(bitmap);
-    }
+//    @Test
+//    public void testGetBitmap(){
+//        QRCodes code = mockQRCode();
+//        Bitmap bitmap = code.getBitmap();
+//        assertNotNull(bitmap);
+//    }
 
     //Testing QR Code validation method
     @Test

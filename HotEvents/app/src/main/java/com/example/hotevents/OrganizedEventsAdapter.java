@@ -34,6 +34,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -116,6 +117,7 @@ public class OrganizedEventsAdapter extends RecyclerView.Adapter<OrganizedEvents
                 StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(event.getPosterStr());
                 Glide.with(context)
                         .load(storageRef)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(holder.myEventImg);
             }
             catch (Exception e){

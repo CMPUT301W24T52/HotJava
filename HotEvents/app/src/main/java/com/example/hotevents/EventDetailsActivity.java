@@ -26,7 +26,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -57,6 +59,7 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -782,7 +785,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         shareIntent.setType("image/png");
 
         // Save the QR code bitmap to external storage
-        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QR Code", null);
+        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QRCode_" + System.currentTimeMillis(), null);
         Uri bitmapUri = Uri.parse(bitmapPath);
 
         // Set the bitmap URI as the intent extra
