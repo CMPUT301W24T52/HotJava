@@ -18,20 +18,9 @@ import java.util.ArrayList;
 
 public class SignedUpEventsActivity extends AppCompatActivity {
     private static final String TAG = "SignedUpActivity";
-    //Firebase
-    FirebaseFirestore db;
-    FirebaseStorage sRef;
-    CollectionReference eventsRef;
-    DocumentReference userRef;
-
     //Events
     ArrayList<Event> eventArray;
-//    UpcomingEventActivityAdapter eventAdapter;
     SignedUpEventsActivityAdapter signedUpEventsActivityAdapter;
-
-
-    //User
-    LoggedInUser user;
 
     //Views and Components
     RecyclerView signedUpEventView;
