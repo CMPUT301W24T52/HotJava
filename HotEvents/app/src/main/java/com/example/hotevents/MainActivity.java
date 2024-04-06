@@ -1,16 +1,6 @@
 package com.example.hotevents;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,6 +35,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -54,8 +46,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -141,6 +131,16 @@ public class MainActivity extends AppCompatActivity {
                     //                    UserName = task.getResult().getString(("Name"));
                     UserName.setText(document.getString("Name"));
                     signedUpUIDs = (ArrayList<String>) document.get("mysignup");
+
+                    // constructs initial signedup events
+                    myEventDataArray.clear();
+                    for (Event event: upcomingEventDataArray){
+                        if (signedUpUIDs != null && signedUpUIDs.contains(event.getEventId())){
+                            myEventDataArray.add(event);
+                        }
+                    }
+                    myEventsAdapter.notifyDataSetChanged();
+
                 } else {
                     // No such document, user not "logged in"
                     // Retrieve the FCM registration token
@@ -164,8 +164,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // listener for signedup events, repopulate signedup array when user doc updates
+        db.collection("Users").document(deviceId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.e("FireStore", error.toString());
+                    return;
+                }
+                Log.d("signupListener", "listener called");
+                signedUpUIDs = (ArrayList<String>) value.get("mysignup");
+                myEventDataArray.clear();
+                for (Event event: upcomingEventDataArray){
+                    if (signedUpUIDs != null && signedUpUIDs.contains(event.getEventId())){
+                        myEventDataArray.add(event);
+                    }
+                }
+                myEventsAdapter.notifyDataSetChanged();
+            }
+        });
+
         // Adds listener to event reference. Populates upcoming Event Array with Event data from DB
-        eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        eventsRef.orderBy("StartDateTime", Query.Direction.ASCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
@@ -179,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
                 Integer count = value.size();
                 Log.e("Event", "Query size: " + count);
                 if (value != null) {
-                    myEventDataArray.clear();
                     upcomingEventDataArray.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         String eventId = doc.getId();
@@ -222,30 +242,6 @@ public class MainActivity extends AppCompatActivity {
                         //add event to upcoming event data array
                         upcomingEventDataArray.add(newEvent);
                     }
-
-                    // if user.id is in signed up events --> myEventDataArray.add(newEvent);
-                    db.collection("Users").document(deviceId).get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                // Document exists, user "logged in"
-                                //                    UserName = task.getResult().getString(("Name"));
-                                UserName.setText(document.getString("Name"));
-                                signedUpUIDs = (ArrayList<String>) document.get("mysignup");
-                                for (Event event : upcomingEventDataArray) {
-                                    if (signedUpUIDs != null && signedUpUIDs.contains(event.getEventId())) {
-                                        myEventDataArray.add(event);
-                                    }
-                                }
-
-                                myEventsAdapter = new MyEventsAdapter(myEventDataArray, MainActivity.this);
-                                myEventView.setAdapter(myEventsAdapter);
-                            }
-                            myEventsAdapter.notifyDataSetChanged();
-                        }
-                    });
-
-                    myEventsAdapter.notifyDataSetChanged();
                     upcomingEventsAdapter.notifyDataSetChanged();
                 }
             }

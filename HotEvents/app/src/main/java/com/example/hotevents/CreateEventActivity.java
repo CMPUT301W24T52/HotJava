@@ -3,8 +3,6 @@ package com.example.hotevents;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,14 +15,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,7 +32,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -49,12 +48,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class that handles the activity for creating and updating the events
@@ -86,7 +85,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Spinner qrChooseSpinner;
     Button createButton;
     Switch maxAttendeeSwitch;
-    View maxAttendeeContainer;
+    LinearLayout maxAttendeeContainer;
 
     // Defining variables used in creating the event
     String title;
@@ -139,15 +138,41 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_event);
+        setContentView(R.layout.activity_create_event_new);
 
         // Setting firebase instance
         db = FirebaseFirestore.getInstance();
         sref = FirebaseStorage.getInstance();
         eventsRef = db.collection("Events");
 
-        // Calling a function that sets the UI elements to variables
-        setViews();
+        // Initialize UI elements
+        titleText = findViewById(R.id.title_text);
+        startDateText = findViewById(R.id.start_date_text);
+        startTimeText = findViewById(R.id.start_time_text);
+        endDateText = findViewById(R.id.end_date_text);
+        endTimeText = findViewById(R.id.end_time_text);
+        locationText = findViewById(R.id.location_input_text);
+        descriptionText = findViewById(R.id.description_input_text);
+        posterImage = findViewById(R.id.poster_image);
+        qrChooseSpinner = findViewById(R.id.qrcode_choose_spinner);
+        createButton = findViewById(R.id.create_event_button);
+        maxAttendeeSwitch = findViewById(R.id.max_attendee_switch);
+        maxAttendeeContainer = findViewById(R.id.max_attendee_container);
+        backButton = findViewById(R.id.backButton);
+        addImageButton = findViewById(R.id.add_image_button);
+        maxAttendeeText = findViewById(R.id.max_attendee_input_text);
+        qrCreateButton = findViewById(R.id.qrcode_create_button);
+
+
+        startDateText.setFocusable(false);
+        startTimeText.setFocusable(false);
+        endDateText.setFocusable(false);
+        endTimeText.setFocusable(false);
+        // Set listeners
+        startDateText.setOnClickListener(v -> openDateTimeDialog(startDateText, startTimeText));
+        endDateText.setOnClickListener(v -> openDateTimeDialog(endDateText, endTimeText));
+        createButton.setOnClickListener(v -> createButtonClick());
+        maxAttendeeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> maxAttendeeSwitchClick());
 
         // Getting the event. Might be null or on edit it will populate the fields
         // Pass a boolean inside instead, will make it a lot easier to implement
@@ -189,23 +214,15 @@ public class CreateEventActivity extends AppCompatActivity {
         // https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html
         // https://developer.android.com/reference/android/app/DatePickerDialog
         // https://developer.android.com/reference/android/app/TimePickerDialog
-        startCalButton.setOnClickListener(v -> {
-            // Opening the date picker and time picker dialogs and saving them to the start texts
-            openDateTimeDialog(startDateText, startTimeText);
-        });
 
-        endCalButton.setOnClickListener(v -> {
-            // Opening the date picker and time picker dialogs and saving them to the end texts
-            openDateTimeDialog(endDateText, endTimeText);
-        });
+
+
 
         // Location input events
         // https://developers.google.com/codelabs/maps-platform/location-places-android#4
         // https://www.geeksforgeeks.org/how-to-implement-google-map-inside-fragment-in-android/
 
-        maxAttendeeSwitch.setOnClickListener(v -> {
-            maxAttendeeSwitchClick();
-        });
+
 
         qrCreateButton.setOnClickListener(v -> {
             qrCreateClick();
@@ -235,9 +252,7 @@ public class CreateEventActivity extends AppCompatActivity {
         });
 
 
-        createButton.setOnClickListener(v -> {
-            createButtonClick();
-        });
+
 
         Log.d(TAG, "made it here");
 
@@ -333,7 +348,7 @@ public class CreateEventActivity extends AppCompatActivity {
         descriptionText = findViewById(R.id.description_input_text);
         maxAttendeeText = findViewById(R.id.max_attendee_input_text);
         maxAttendeeContainer = findViewById(R.id.max_attendee_container);
-        backButton = findViewById(R.id.back_button);
+        backButton = findViewById(R.id.backButton);
         startCalButton = findViewById(R.id.start_cal_button);
         endCalButton = findViewById(R.id.end_cal_button);
         addImageButton = findViewById(R.id.add_image_button);
@@ -436,58 +451,53 @@ public class CreateEventActivity extends AppCompatActivity {
                 }
             });
 
+
     /**
      * Starts the process of setting the date and time of either the start or end fields.
      * Once the date dialog picker is closed, this function opens the time dialog picker
      * and the date selected is assigned to the textview
-     *
      * @param dateText Reference to the textview which will contain the date returned
      * @param timeText Reference to the textview that will contain the time returned
      */
     protected void openDateTimeDialog(TextView dateText, TextView timeText) {
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-        int day = LocalDate.now().getDayOfMonth();
+        // Create a MaterialDatePicker for date selection
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTitleText("Select Date");
+        MaterialDatePicker<Long> datePicker = builder.build();
 
-        // Opening the date picker dialog
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-                        String monthStr = String.format("%02d", monthOfYear + 1);
-                        String dayStr = String.format("%02d", dayOfMonth);
-                        dateText.setText(monthStr + "/" + dayStr + "/" + year);
-                        openTimeDialog(timeText);
-                    }
-                },
-                year, month - 1, day);
-        datePickerDialog.show();
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            // Convert the selected date to a formatted string
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            String selectedDate = sdf.format(new Date(selection + TimeUnit.DAYS.toMillis(1)));
+            dateText.setText(selectedDate);
+            openTimeDialog(timeText);
+        });
+
+        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
     }
+
 
     /**
      * Opens a time dialog picker and sets the text of the associated TextView after selection of time was made
-     *
      * @param timeText Reference to the textview that will contain the time returned
      */
     protected void openTimeDialog(TextView timeText) {
-        int hour = LocalDateTime.now().getHour();
-        int minute = LocalDateTime.now().getMinute();
+        // Create a MaterialTimePicker for time selection
+        MaterialTimePicker.Builder builder = new MaterialTimePicker.Builder();
+        builder.setTitleText("Select Time");
+        builder.setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK);
+        MaterialTimePicker timePicker = builder.build();
 
-        // Opening the time picker dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(
-                this,
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        String hourStr = String.format("%02d", hour);
-                        String minuteStr = String.format("%02d", minute);
-                        timeText.setText(hourStr + ":" + minuteStr);
-                    }
-                },
-                hour, minute, false);
-        timePickerDialog.show();
+        timePicker.addOnPositiveButtonClickListener(view -> {
+            // Convert the selected time to a formatted string
+            String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", timePicker.getHour(), timePicker.getMinute());
+            timeText.setText(selectedTime);
+        });
+
+        timePicker.show(getSupportFragmentManager(), "TIME_PICKER");
     }
+
+
 
     /**
      * Handles the click of the switch button that enables the max attendee field to appear/disappear
@@ -495,9 +505,9 @@ public class CreateEventActivity extends AppCompatActivity {
     protected void maxAttendeeSwitchClick() {
         boolean on = maxAttendeeSwitch.isChecked();
         if (on) {
-            maxAttendeeContainer.setVisibility(View.VISIBLE);
+            maxAttendeeText.setVisibility(View.VISIBLE);
         } else {
-            maxAttendeeContainer.setVisibility(View.GONE);
+            maxAttendeeText.setVisibility(View.GONE);
         }
     }
 
