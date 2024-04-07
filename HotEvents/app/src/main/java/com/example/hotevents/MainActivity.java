@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
     ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
-    LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
+    LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin, contact;
     Switch toggleGeo;
     ImageView scannerButton;
     private static final String TAG = "MainActivity";
@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
         notifications_toolbar = findViewById(R.id.notifications_toolbar);
         organizeEvent = findViewById(R.id.organizeEvent);
         admin = findViewById(R.id.admin);
+        contact = findViewById(R.id.contact);
         profilePhotoImageView = findViewById(R.id.CImageView);
 
 
@@ -380,6 +381,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 redirectActivity(MainActivity.this, AdminOptionsActivity.class);
+            }
+        });
+
+        contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, ContactUsActivity.class);
             }
         });
 
