@@ -72,6 +72,8 @@ public class CreateEventActivity extends AppCompatActivity {
     // Defining UI objects
     EditText titleText;
     TextView startDateText;
+    TextView startText;
+    TextView endText;
     TextView startTimeText;
     TextView endDateText;
     TextView endTimeText;
@@ -166,13 +168,19 @@ public class CreateEventActivity extends AppCompatActivity {
         addImageButton = findViewById(R.id.add_image_button);
         maxAttendeeText = findViewById(R.id.max_attendee_input_text);
         qrCreateButton = findViewById(R.id.qrcode_create_button);
+        startText = findViewById(R.id.start_text);
+        endText = findViewById(R.id.end_text);
 
 
+        startText.setFocusable(false);
+        endText.setFocusable(false);
         startDateText.setFocusable(false);
         startTimeText.setFocusable(false);
         endDateText.setFocusable(false);
         endTimeText.setFocusable(false);
         // Set listeners
+        startText.setOnClickListener(v -> openDateTimeDialog(startDateText, startTimeText));
+        endText.setOnClickListener(v -> openDateTimeDialog(endDateText, endTimeText));
         startDateText.setOnClickListener(v -> openDateTimeDialog(startDateText, startTimeText));
         endDateText.setOnClickListener(v -> openDateTimeDialog(endDateText, endTimeText));
         createButton.setOnClickListener(v -> createButtonClick());
