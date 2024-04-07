@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import androidmads.library.qrgenearator.QRGEncoder;
+
 public class CreateEventActivityUnitTest {
     FirebaseFirestore db;
     FirebaseStorage sref;
@@ -59,15 +61,6 @@ public class CreateEventActivityUnitTest {
         assertEquals("checkin", code.getType());
         assertEquals("AdJdkjsdSDJKDSG", code.getEventId());
     }
-
-    //Testing QR Code Encoder method through getBitmap method
-    //Validating whether it correctly returns a bitmap
-//    @Test
-//    public void testGetBitmap(){
-//        QRCodes code = mockQRCode();
-//        Bitmap bitmap = code.getBitmap();
-//        assertNotNull(bitmap);
-//    }
 
     //Testing QR Code validation method
     @Test
@@ -102,12 +95,6 @@ public class CreateEventActivityUnitTest {
         assertEquals("this is the description", event.getDescription());
         assertEquals("sdSDGJKSDsdjsjdk", event.getEventId());
     }
-
-//    //Test downloading a poster from firebase
-//    @Test
-//    public void testDownloadPoster(){
-//
-//    }
 
     //Testing start & end date & time string returns
     @Test

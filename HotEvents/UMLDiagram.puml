@@ -1,0 +1,766 @@
+@startuml
+class com.example.hotevents.UpcomingEventAdapter {
+- ArrayList<Event> upcomingEvents
+- Context context
+- Boolean photoDownloaded
++ UpcomingEventViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(UpcomingEventViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.UpcomingEventAdapter$UpcomingEventViewHolder {
++ TextView upcomingEventTitle
++ TextView upcomingEventDescription
++ TextView startDate
++ ImageView upcomingEventPoster
++ TextView upcomingLocation
++ void onClick(View)
+}
+
+
+class com.example.hotevents.AttendeeListAdapter {
+~ Context context
+~ ArrayList<Attendee> attendeesArray
++ AttendeeListAdapter.MyViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(AttendeeListAdapter.MyViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.AttendeeListAdapter$MyViewHolder {
+~ CircleImageView attendeePhoto
+~ TextView attendeeName
+~ ImageView checkinCheckmark
+}
+
+class com.example.hotevents.QRCodes {
+- String eventId
+- String type
+- String app
+- String encodedStr
+- QRGEncoder qrgEncoder
+- Bitmap generateQRCode(String,int)
++ Boolean validateQRCode(String)
++ Bitmap getBitmap()
++ String getEventId()
++ String getType()
++ String getEncodedStr()
++ void shareQRCodeAndURL(Context)
+- void uploadQRCodeToFirebase(Context)
+- void shareUrl(Context,String)
+}
+
+
+class com.example.hotevents.UserProfiles {
+- String profileImageUrl
+- String username
+- String uid
++ String getProfileImageUrl()
++ void setProfileImageUrl(String)
++ String getUsername()
++ void setUsername(String)
++ String getUid()
++ void setUid(String)
+}
+
+
+class com.example.hotevents.MyFirebaseMessagingService {
+- {static} String TAG
++ void onMessageReceived(RemoteMessage)
++ void onNewToken(String)
+- void scheduleJob()
+- void handleNow()
+- void sendRegistrationToServer(String)
+- void sendNotification(String)
+}
+
+
+class com.example.hotevents.MyFirebaseMessagingService$MyWorker {
++ Result doWork()
+}
+
+class com.example.hotevents.AdminOptionsActivity {
+- Button browseProfiles
+- Button browseEvents
+- Button browsePictures
+- ImageView backButton
+# void onCreate(Bundle)
+}
+
+
+class com.example.hotevents.AttendeeList {
+~ ImageButton backButton
+- FirebaseFirestore db
+- String eventId
+- {static} String TAG
+~ TextView signups_number
+~ TextView checkins_number
+- ArrayList<Attendee> attendeesArray
+~ AttendeeListAdapter attendeeListAdapter
+- int REQUEST_PERMISSIONS_REQUEST_CODE
+~ MapView map
+- IMapController mapController
+- GeoPoint startPoint
+- List<Marker> attendeeMarkers
+~ Drawable attendeeMarkerDrawable
+~ ListenerRegistration eventCheckinListener
+# void onCreate(Bundle)
+# void onResume()
+# void onPause()
+- void setViews()
+- void setupMap()
+}
+
+
+class com.example.hotevents.UpcomingEventsActivity {
+- {static} String TAG
+~ FirebaseFirestore db
+~ CollectionReference eventsRef
+~ ArrayList<Event> eventArray
+~ UpcomingEventActivityAdapter uEventAdapter
+~ RecyclerView upcomingEventView
+~ LinearLayoutManager upcomingEventLayoutManager
+~ ImageView backButton
+# void onCreate(Bundle)
+}
+
+
+class com.example.hotevents.Attendee {
+- String name
+- int checkinCount
+- String profileImageUrl
++ String getName()
++ int getCheckinCount()
++ String getProfileImageUrl()
+}
+
+
+class com.example.hotevents.MyGlideModule {
++ void registerComponents(Context,Glide,Registry)
+}
+
+class com.example.hotevents.AdminEventsAdapter {
+- ArrayList<Event> adminEvents
+- Context context
+- View.OnClickListener onClickListener
+- Boolean photoDownloaded
++ AdminEventsViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(AdminEventsViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.AdminEventsAdapter$AdminEventsViewHolder {
++ TextView myEventTitle
++ TextView myEventLocation
++ TextView myEventDate
++ ImageView myEventImg
++ void onClick(View)
+}
+
+
+class com.example.hotevents.MyEventsAdapter {
+- ArrayList<Event> myEvents
+- Context context
+- View.OnClickListener onClickListener
+- Boolean photoDownloaded
++ MyEventViewHolder onCreateViewHolder(ViewGroup,int)
++ int getItemViewType(int)
++ void onBindViewHolder(MyEventViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.MyEventsAdapter$MyEventViewHolder {
++ TextView myEventTitle
++ TextView myEventLocation
++ TextView myEventDate
++ ImageView myEventImg
++ ImageView eventImage
++ void onClick(View)
+}
+
+
+class com.example.hotevents.EditProfileActivity {
+- {static} int IMAGE_PICK_REQUEST_CODE
+- CircleImageView profilePhotoImageView
+- ImageButton editProfilePhotoButton
+- ImageButton removeProfilePhotoButton
+- Uri newPhotoUri
+- FirebaseFirestore db
+- String deviceId
+- FirebaseStorage storage
+~ ImageButton backButton
+# void onCreate(Bundle)
+- void uploadPhoto(Uri)
+- void updateProfilePictureInDatabase(String,String)
+- void downloadAndSetProfilePicture(String)
+# void onActivityResult(int,int,Intent)
+}
+
+
+class com.example.hotevents.OrganizedEventsAdapter {
+- ArrayList<Event> organizedEvents
+- Context context
+- Boolean photoDownloaded
+- View.OnClickListener onClickListener
++ OrganizedEventsViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(OrganizedEventsViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.OrganizedEventsAdapter$OrganizedEventsViewHolder {
++ TextView myEventTitle
++ TextView myEventLocation
++ TextView myEventDate
++ ImageView myEventImg
++ void onClick(View)
+}
+
+
+class com.example.hotevents.NavigationMenu {
+- Button profileButton
+- ImageView backArrow
+# void onCreate(Bundle)
+}
+
+
+class com.example.hotevents.EventDetailsAnnouncementFragment {
+- String eventId
+~ ArrayList<Notification> announcementList
+~ Set<String> processednotificationMessage
+~ NotificationsAdapter announcementAdapter
+~ ListView announcementListView
+~ FirebaseFirestore db
+- {static} String TAG
++ {static} EventDetailsAnnouncementFragment newInstance(String)
++ void onCreate(Bundle)
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
+}
+
+
+class com.example.hotevents.NotificationsAdapter {
+- Context mContext
+- ArrayList<Notification> mNotifications
++ int getCount()
++ Object getItem(int)
++ long getItemId(int)
+- String formatTimestamp(Date)
++ View getView(int,View,ViewGroup)
+}
+
+
+class com.example.hotevents.NotificationsAdapter$ViewHolder {
+~ TextView messageTextView
+~ TextView timestampTextView
+}
+
+class com.example.hotevents.ProfileActivity {
+- {static} int EDIT_PROFILE_REQUEST_CODE
+- TextView textViewName
+- CircleImageView profilePhotoImageView
+- ImageButton backButton
+- LinearLayout editProfileButton
+- FirebaseFirestore db
+- ListenerRegistration userListener
+- FirebaseStorage storage
+- StorageReference profilePicturesRef
+# void onCreate(Bundle)
+# void onActivityResult(int,int,Intent)
+- void fetchUserDataFromFirestore()
+- void downloadAndSetProfilePicture(String)
+- void generateDefaultProfilePhotoAndUpload(String,char)
+- Bitmap generateDefaultProfilePhoto(char)
+- void uploadProfilePhotoToStorage(String,Bitmap,OnUploadCompleteListener)
+- void updateProfilePictureInDatabase(String,String)
+# void onStop()
+}
+
+
+interface com.example.hotevents.ProfileActivity$OnUploadCompleteListener {
+~ void onUploadComplete()
+}
+
+class com.example.hotevents.arr_adapter {
+~ Context context
+~ List<UserProfiles> users
++ View getView(int,View,ViewGroup)
+- void showDialog(UserProfiles)
+}
+
+
+class com.example.hotevents.arr_adapter$ViewHolder {
+~ CircleImageView profileImage
+~ TextView username
+~ TextView uid
+}
+
+class com.example.hotevents.AdminBrowseEventsActivity {
+- FirebaseFirestore db
+- CollectionReference adminEventsRef
+~ ArrayList<Event> adminEventDataArray
+~ RecyclerView adminEventView
+~ LinearLayoutManager adminEventHorizantleManager
+~ AdminEventsAdapter adminEventsAdapter
+- ImageView backButton
+- {static} String TAG
+# void onCreate(Bundle)
+}
+
+
+class com.example.hotevents.Notification {
+- String fcmToken
+- String eventId
+- String notificationMessage
+- Date timestamp
++ String getFcmToken()
++ void setFcmToken(String)
++ String getEventId()
++ void setEventId(String)
++ String getNotificationMessage()
++ void setNotificationMessage(String)
++ Date getTimestamp()
++ void setTimestamp(Date)
+}
+
+
+class com.example.hotevents.EventDetailsActivity {
+- {static} int SCAN_QR_CODE_REQUEST_CODE
+~ Event myEvent
+~ ImageButton backButton
+~ Button editButton
+~ ImageView eventImage
+~ TextView eventTitle
+~ TextView startDate
+~ TextView endDate
+~ TabLayout tabLayout
+~ ViewPager2 viewPager2
+~ EventPagerAdapter eventPagerAdapter
+~ TextView organiserName
+~ CircleImageView organiserImage
+~ TextView eventLocation
+~ String eventId
+~ String myeventTitle
+~ String orgfcmToken
+~ ImageButton optionsButton
+~ ImageButton shareButton
+~ ImageButton deleteButton
+- FirebaseFirestore db
+- {static} String TAG
+~ String deviceId
+~ Button signUpButton
+~ String notiType
+~ Button checkInGenerateButton
+- FusedLocationProviderClient fusedLocationClient
+# void onCreate(Bundle)
+- void onSignUpButtonClick()
+- void onCheckInButtonClick()
+- void getLocation()
+- void updateCheckinData(Double,Double)
+- void launchScanner()
+# void onActivityResult(int,int,Intent)
+- void handleButtonBehaviour()
+- void addToMySignupArray(String,String)
++ void fetchFCMTokenForOrganizer(String)
+~ void sendMilestoneIfConditionMet()
+- void sendPushNotification(String,String,String)
+- void setViews()
+- void setEventDetails(Context)
+- void showPopupMenu(View)
++ void onRequestPermissionsResult(int,String[],int[])
++ void onShareButtonClick(Boolean)
+- void shareBitmap(Bitmap)
+- void deleteEvent()
+}
+
+
+class com.example.hotevents.EventDetailsActivity$EventPagerAdapter {
+- String eventId
++ Fragment createFragment(int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.BrowseProfilesActivity {
+- ListView profilesListView
+- List<UserProfiles> profilesList
+- arr_adapter profilesAdapter
+- FirebaseFirestore db
+- ImageButton backButton
+- {static} int BROWSE_USER_PROFILE_REQUEST_CODE
+# void onCreate(Bundle)
+- void loadProfilesFromFirestore()
+# void onActivityResult(int,int,Intent)
+}
+
+
+class com.example.hotevents.CreateEventActivity {
+~ FirebaseFirestore db
+~ FirebaseStorage sref
+~ CollectionReference eventsRef
+~ EditText titleText
+~ TextView startDateText
+~ TextView startTimeText
+~ TextView endDateText
+~ TextView endTimeText
+~ EditText locationText
+~ EditText descriptionText
+~ EditText maxAttendeeText
+~ ImageView posterImage
+~ ImageButton backButton
+~ ImageButton startCalButton
+~ ImageButton endCalButton
+~ FloatingActionButton addImageButton
+~ ImageButton mapButton
+~ Button qrCreateButton
+~ Spinner qrChooseSpinner
+~ Button createButton
+~ Switch maxAttendeeSwitch
+~ LinearLayout maxAttendeeContainer
+~ String title
+~ String eventId
+~ Date startDate
+~ Date endDate
+~ String description
+~ String location
+~ QRCodes qrCode
+~ QRCodes qrCodePromo
+~ Bitmap poster
+~ Integer maxAttendees
+~ Uri posterUri
+~ String storageUri
+~ String organiserId
+~ Event updateEvent
+~ Event newEvent
+~ ArrayList<String> qrCodeArray
+~ ArrayAdapter<String> qrCodeAdapter
+~ QRCodeState codeState
+~ ActivityState activityState
+~ ActivityResultLauncher<Intent> launchSomeActivity
+# void onCreate(Bundle)
+# void returnPreviousActivity()
+# void settingUpSpinner(ArrayList<String>)
+# void getUserData()
+# void setFields(Event)
+~ void imageChooser()
+# void openDateTimeDialog(TextView,TextView)
+# void openTimeDialog(TextView)
+# void maxAttendeeSwitchClick()
+# void qrCreateClick()
+# String[] QRCreate(String)
+# void createButtonClick()
+# void firebaseEventUpload(Event)
+# void finishSaving(DocumentReference)
+# void savePoster(DocumentReference)
+# Boolean isValid()
+# void makeToast(String)
+}
+
+
+enum com.example.hotevents.QRCodeState {
++  CREATE
++  CHOOSE
+}
+
+enum com.example.hotevents.ActivityState {
++  CREATE
++  UPDATE
+}
+
+class com.example.hotevents.NotificationDisplayActivity {
+- ImageView backButton
+- ListView notificationsListView
+- ArrayList<Notification> notificationsList
+- NotificationsAdapter notificationsAdapter
+- FirebaseFirestore db
+- String TAG
+# void onCreate(Bundle)
+- void fetchNotificationsForToken(String)
+}
+
+
+class com.example.hotevents.MakeAnnouncementFragment {
+~ EditText notificationMessageInput
+~ String eventId
+~ String eventTitle
+~ String notiType
+- {static} String TAG
++ {static} MakeAnnouncementFragment newInstance(String,String)
++ void onAttach(Context)
++ Dialog onCreateDialog(Bundle)
+- void sendNotificationToAllSignups()
+- void sendPushNotification(String,String,String)
+}
+
+
+class com.example.hotevents.NotificationStorer {
+- {static} String TAG
++ {static} void storeNotification(String,String,String,String)
+}
+
+
+class com.example.hotevents.MainActivity {
+- FirebaseFirestore db
+- CollectionReference eventsRef
+~ ArrayList<Event> myEventDataArray
+~ ArrayList<String> signedUpUIDs
+~ ArrayList<Event> upcomingEventDataArray
+~ RecyclerView myEventView
+~ RecyclerView upcomingEventView
+~ LinearLayoutManager myEventHorizantleManager
+~ LinearLayoutManager upcomingEventManager
+~ MyEventsAdapter myEventsAdapter
+~ UpcomingEventAdapter upcomingEventsAdapter
+- String UserName
+~ ArrayList<String> SignedUpEvent
+~ DrawerLayout drawerLayout
+~ ImageView menu
+~ LinearLayout profile
+~ Switch toggleGeo
+- {static} String TAG
+- ListenerRegistration userListener
+- TextView textViewName
+- CircleImageView profilePhotoImageView
+- FirebaseStorage storage
+# void onCreate(Bundle)
+- void downloadAndSetProfilePicture(String)
+- void handleNewUserInput(FirebaseFirestore,String,String)
++ {static} void openDrawer(DrawerLayout)
++ {static} void closeDrawer(DrawerLayout)
++ {static} void redirectActivity(Activity,Class)
+# void onResume()
+# void onPause()
+- void fetchUserDataFromFirestore()
+}
+
+
+class com.example.hotevents.SignedUpEventsActivity {
+- {static} String TAG
+~ FirebaseFirestore db
+~ FirebaseStorage sRef
+~ CollectionReference eventsRef
+~ DocumentReference userRef
+~ ArrayList<Event> eventArray
+~ SignedUpEventsActivityAdapter signedUpEventsActivityAdapter
+~ LoggedInUser user
+~ RecyclerView signedUpEventView
+~ LinearLayoutManager signedUpEventLayoutManager
+~ ImageButton backButton
+# void onCreate(Bundle)
+}
+
+
+class com.example.hotevents.BrowseUserProfileActivity {
+- {static} int EDIT_PROFILE_REQUEST_CODE
+- TextView textViewName
+- LinearLayout editProfileButton
+- ImageButton backButton
+- CircleImageView profilePhotoImageView
+- ImageButton removeProfilePhotoButton
+- StorageReference profilePicturesRef
+- ListenerRegistration userListener
+- FirebaseFirestore db
+- FirebaseStorage storage
+# void onCreate(Bundle)
+- void fetchUserDataFromFirestore(String)
+- void downloadAndSetProfilePicture(String)
+- void showProfileInfoDialog()
+- void deleteProfile()
+# void onStop()
+- void updateProfilePictureInDatabase(String,String)
+}
+
+
+class com.example.hotevents.LoggedInUser {
+- String uID
++ String getuID()
++ void setuID(String)
+}
+
+
+class com.example.hotevents.OrganizedEventsActivity {
+- FirebaseFirestore db
+- CollectionReference organizedEventsRef
+~ ArrayList<Event> organizedEventDataArray
+~ RecyclerView organizedEventView
+~ LinearLayoutManager organizedEventHorizantleManager
+~ OrganizedEventsAdapter organizedEventsAdapter
+- ImageView backButton
+- {static} String TAG
+# void onCreate(Bundle)
+}
+
+
+class com.example.hotevents.UpcomingEventActivityAdapter {
+- ArrayList<Event> events
+- Context context
+- View.OnClickListener onClickListener
++ int getItemCount()
++ UpcomingEventActivityViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(UpcomingEventActivityViewHolder,int)
+}
+
+
+class com.example.hotevents.UpcomingEventActivityAdapter$UpcomingEventActivityViewHolder {
++ TextView upcomingEventTitle
++ TextView upcomingEventDescription
++ TextView startDate
++ ImageView upcomingEventPoster
++ TextView upcomingLocation
++ void onClick(View)
+}
+
+
+class com.example.hotevents.EventDetailsAboutFragment {
+- {static} String ARG_PARAM1
+- String eventDescription
++ {static} EventDetailsAboutFragment newInstance(String)
++ void onCreate(Bundle)
++ View onCreateView(LayoutInflater,ViewGroup,Bundle)
+}
+
+
+class com.example.hotevents.SignedUpEventsActivityAdapter {
+- ArrayList<Event> events
+- Context context
++ SignedUpEventsActivityViewHolder onCreateViewHolder(ViewGroup,int)
++ void onBindViewHolder(SignedUpEventsActivityViewHolder,int)
++ int getItemCount()
+}
+
+
+class com.example.hotevents.SignedUpEventsActivityAdapter$SignedUpEventsActivityViewHolder {
++ TextView signedUpEventTitle
++ TextView startDate
++ ImageView poster
++ TextView signedUpEventLocation
++ void onClick(View)
+}
+
+
+class com.example.hotevents.Event {
+- Date startDateTime
+- Date endDateTime
+- String location
+- Integer maxAttendees
+- String organiserId
+- Bitmap poster
+- String posterStr
+- QRCodes qrCode
+- QRCodes qrCodePromo
+- String description
+- String title
+- String eventId
+- MyEventsAdapter myEventsAdapter
+- UpcomingEventAdapter upcomingEventAdapter
+- AdminEventsAdapter adminEventsAdapter
+- OrganizedEventsAdapter organizedEventsAdapter
+- UpcomingEventActivityAdapter upcomingEventActivityAdapter
+- SignedUpEventsActivityAdapter signedUpEventActivityAdapter
++ {static} Creator<Event> CREATOR
++ void setAdapter(MyEventsAdapter)
++ void setAdapterUpComingEvents(UpcomingEventAdapter)
++ void setAdapterAdminEvents(AdminEventsAdapter)
++ void setAdapterOrganizedEvents(OrganizedEventsAdapter)
++ void setAdapterUpcomingEventsActivity(UpcomingEventActivityAdapter)
++ void setAdapterSignedUpEventsActivity(SignedUpEventsActivityAdapter)
++ void writeToParcel(Parcel,int)
++ int describeContents()
++ void setLocation(String)
++ String getLocation()
++ void setTitle(String)
++ String getTitle()
++ void setStartDateTime(Date)
++ void setEndDateTime(Date)
++ void setMaxAttendees(Integer)
++ void setEventId(String)
++ void setOrganiserId(String)
++ void setDescription(String)
++ void setQRCode(QRCodes)
++ void setQRCodePromo(QRCodes)
++ void setPoster(Bitmap)
++ Date getStartDateTime()
++ Date getEndDateTime()
++ String getStartDateStr()
++ String getEndDateStr()
++ String getStartTimeStr()
++ String getEndTimeStr()
++ Integer getMaxAttendees()
++ String getOrganiserId()
++ Bitmap getPoster()
++ void assignPoster(ImageView)
++ String getPosterStr()
++ void setPosterStr(String)
++ String getDescription()
++ QRCodes getQrCode()
++ QRCodes getQrCodePromo()
++ String getEventId()
+- void downloadAndSetPoster(FirebaseStorage,ImageView)
+}
+
+
+
+
+com.example.hotevents.Adapter <|-- com.example.hotevents.UpcomingEventAdapter
+com.example.hotevents.UpcomingEventAdapter +.. com.example.hotevents.UpcomingEventAdapter$UpcomingEventViewHolder
+com.example.hotevents.OnClickListener <|.. com.example.hotevents.UpcomingEventAdapter$UpcomingEventViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.UpcomingEventAdapter$UpcomingEventViewHolder
+com.example.hotevents.Adapter <|-- com.example.hotevents.AttendeeListAdapter
+com.example.hotevents.AttendeeListAdapter +.. com.example.hotevents.AttendeeListAdapter$MyViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.AttendeeListAdapter$MyViewHolder
+java.io.Serializable <|.. com.example.hotevents.QRCodes
+com.google.firebase.messaging.FirebaseMessagingService <|-- com.example.hotevents.MyFirebaseMessagingService
+com.example.hotevents.MyFirebaseMessagingService +.. com.example.hotevents.MyFirebaseMessagingService$MyWorker
+com.example.hotevents.Worker <|-- com.example.hotevents.MyFirebaseMessagingService$MyWorker
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.AdminOptionsActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.AttendeeList
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.UpcomingEventsActivity
+com.bumptech.glide.module.AppGlideModule <|-- com.example.hotevents.MyGlideModule
+com.example.hotevents.Adapter <|-- com.example.hotevents.AdminEventsAdapter
+com.example.hotevents.AdminEventsAdapter +.. com.example.hotevents.AdminEventsAdapter$AdminEventsViewHolder
+com.example.hotevents.OnClickListener <|.. com.example.hotevents.AdminEventsAdapter$AdminEventsViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.AdminEventsAdapter$AdminEventsViewHolder
+com.example.hotevents.Adapter <|-- com.example.hotevents.MyEventsAdapter
+com.example.hotevents.MyEventsAdapter +.. com.example.hotevents.MyEventsAdapter$MyEventViewHolder
+com.example.hotevents.OnClickListener <|.. com.example.hotevents.MyEventsAdapter$MyEventViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.MyEventsAdapter$MyEventViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.EditProfileActivity
+com.example.hotevents.Adapter <|-- com.example.hotevents.OrganizedEventsAdapter
+com.example.hotevents.OrganizedEventsAdapter +.. com.example.hotevents.OrganizedEventsAdapter$OrganizedEventsViewHolder
+com.example.hotevents.OnClickListener <|.. com.example.hotevents.OrganizedEventsAdapter$OrganizedEventsViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.OrganizedEventsAdapter$OrganizedEventsViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.NavigationMenu
+androidx.fragment.app.Fragment <|-- com.example.hotevents.EventDetailsAnnouncementFragment
+android.widget.BaseAdapter <|-- com.example.hotevents.NotificationsAdapter
+com.example.hotevents.NotificationsAdapter +.. com.example.hotevents.NotificationsAdapter$ViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.ProfileActivity
+com.example.hotevents.ProfileActivity +.. com.example.hotevents.ProfileActivity$OnUploadCompleteListener
+android.widget.ArrayAdapter <|-- com.example.hotevents.arr_adapter
+com.example.hotevents.arr_adapter +.. com.example.hotevents.arr_adapter$ViewHolder
+android.app.Activity <|-- com.example.hotevents.AdminBrowseEventsActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.EventDetailsActivity
+com.example.hotevents.EventDetailsActivity +.. com.example.hotevents.EventDetailsActivity$EventPagerAdapter
+com.example.hotevents.FragmentStateAdapter <|-- com.example.hotevents.EventDetailsActivity$EventPagerAdapter
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.BrowseProfilesActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.CreateEventActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.NotificationDisplayActivity
+androidx.fragment.app.DialogFragment <|-- com.example.hotevents.MakeAnnouncementFragment
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.SignedUpEventsActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.hotevents.BrowseUserProfileActivity
+java.io.Serializable <|.. com.example.hotevents.LoggedInUser
+android.app.Activity <|-- com.example.hotevents.OrganizedEventsActivity
+com.example.hotevents.Adapter <|-- com.example.hotevents.UpcomingEventActivityAdapter
+com.example.hotevents.UpcomingEventActivityAdapter +.. com.example.hotevents.UpcomingEventActivityAdapter$UpcomingEventActivityViewHolder
+com.example.hotevents.OnClickListener <|.. com.example.hotevents.UpcomingEventActivityAdapter$UpcomingEventActivityViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.UpcomingEventActivityAdapter$UpcomingEventActivityViewHolder
+androidx.fragment.app.Fragment <|-- com.example.hotevents.EventDetailsAboutFragment
+com.example.hotevents.Adapter <|-- com.example.hotevents.SignedUpEventsActivityAdapter
+com.example.hotevents.SignedUpEventsActivityAdapter +.. com.example.hotevents.SignedUpEventsActivityAdapter$SignedUpEventsActivityViewHolder
+com.example.hotevents.OnClickListener <|.. com.example.hotevents.SignedUpEventsActivityAdapter$SignedUpEventsActivityViewHolder
+com.example.hotevents.ViewHolder <|-- com.example.hotevents.SignedUpEventsActivityAdapter$SignedUpEventsActivityViewHolder
+java.io.Serializable <|.. com.example.hotevents.Event
+android.os.Parcelable <|.. com.example.hotevents.Event
+@enduml

@@ -285,7 +285,7 @@ public class CreateEventActivity extends AppCompatActivity {
      * @param createdEvents
      */
     protected void settingUpSpinner(@Nullable ArrayList<String> createdEvents) {
-        qrCodeArray.add("Select:");
+        qrCodeArray.add("Select:        ");
         qrCodeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, qrCodeArray);
         qrChooseSpinner.setAdapter(qrCodeAdapter);
         qrCodeAdapter.notifyDataSetChanged();
@@ -332,30 +332,6 @@ public class CreateEventActivity extends AppCompatActivity {
                         settingUpSpinner(null);
                     }
                 });
-    }
-
-    /**
-     * Assigns the interactive UI elements to their associated variables for later reference
-     */
-    protected void setViews() {
-        posterImage = findViewById(R.id.poster_image);
-        titleText = findViewById(R.id.title_text);
-        startDateText = findViewById(R.id.start_date_text);
-        endDateText = findViewById(R.id.end_date_text);
-        startTimeText = findViewById(R.id.start_time_text);
-        endTimeText = findViewById(R.id.end_time_text);
-        locationText = findViewById(R.id.location_input_text);
-        descriptionText = findViewById(R.id.description_input_text);
-        maxAttendeeText = findViewById(R.id.max_attendee_input_text);
-        maxAttendeeContainer = findViewById(R.id.max_attendee_container);
-        backButton = findViewById(R.id.backButton);
-        startCalButton = findViewById(R.id.start_cal_button);
-        endCalButton = findViewById(R.id.end_cal_button);
-        addImageButton = findViewById(R.id.add_image_button);
-        qrCreateButton = findViewById(R.id.qrcode_create_button);
-        qrChooseSpinner = findViewById(R.id.qrcode_choose_spinner);
-        createButton = findViewById(R.id.create_event_button);
-        maxAttendeeSwitch = findViewById(R.id.max_attendee_switch);
     }
 
     /**

@@ -65,8 +65,6 @@ public class QRCodes implements Serializable {
         // encoder to generate our qr code.
         qrgEncoder = new QRGEncoder(data, null, Type.TEXT, dimensions);
 
-//        qrgEncoder.setColorWhite(0xFFFFFFFF);
-//        qrgEncoder.setColorBlack(0xFF000000);
         return qrgEncoder.getBitmap(3);
     }
 
