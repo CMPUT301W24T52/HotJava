@@ -352,30 +352,30 @@ public class MainActivity extends AppCompatActivity {
          * @param TAG The tag used for logging.
          * @param toggleGeo The toggle switch for location access.
          */
-        toggleGeo = findViewById(R.id.toggleGeo);
-        toggleGeo.setChecked(true); // Set the toggle switch to true by default
-        toggleGeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Update the field in Firestore based on the toggle state
-                String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                DocumentReference userRef = db.collection("Users").document(deviceId);
-                userRef.update("geo", isChecked)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "Geo toggle state updated successfully");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e(TAG, "Error updating geo toggle state", e);
-                                // Handle failure
-                            }
-                        });
-            }
-        });
+//        toggleGeo = findViewById(R.id.toggleGeo);
+//        toggleGeo.setChecked(true); // Set the toggle switch to true by default
+//        toggleGeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                // Update the field in Firestore based on the toggle state
+//                String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//                DocumentReference userRef = db.collection("Users").document(deviceId);
+//                userRef.update("geo", isChecked)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                Log.d(TAG, "Geo toggle state updated successfully");
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.e(TAG, "Error updating geo toggle state", e);
+//                                // Handle failure
+//                            }
+//                        });
+//            }
+//        });
 
 
         admin.setOnClickListener(new View.OnClickListener() {
