@@ -26,13 +26,13 @@ When first launching this application, HotEvents will check if the current user 
 The following is a high-level overview of this projects code formatting and structure. More in depth details can be found *here* in the HotEvents Wiki.
 
 ### Frontend
-The frontend consists of all displays and media including displaying images, page/activity-view formatting, color preferences, app splash-screen, and all other UI elements.
+The frontend consists of all displays and media including displaying images, page/activity-view formatting, color preferences, app splash-screen, and all other UI elements. All UI formatting done in XML files.
 
 ### Backend
+The backend is responsible for handling the flow of data, making calls to the noSQL database whenever any `User`, `Event`, or `Notification` data is needed, and supporting underlying functionality presented to the user.
 
-### Database Relations
-The database maintains 2 primary collections (Users and Events) and 1 secondary collection (Notifications). The following is a list of attributes for each document contained in each event.
-
+### Database
+The database maintains 2 primary collections (Users and Events) and 1 secondary collection (Notifications) in a noSQL Document-Store format, Firebase. The following is a list of attributes for each document contained in each event.
 ##### User Collection:
 Contains documents corresponding to each User.
 - Name (String)
@@ -43,7 +43,6 @@ Contains documents corresponding to each User.
 - profilePicture-default (link)
 - profilePicture-custom (link)
 - signups (Array of Event ID strings)
-
 ##### Events Collection:
 Contains documents corresponding to each Event. In addition to the attributes below, each events document also contains collections that house user signups and user checkins.
 - Event Title (string)
@@ -55,7 +54,6 @@ Contains documents corresponding to each Event. In addition to the attributes be
 - QRCode-CheckIn (QR string)
 - Location (String/Address)
 - MaxAttendees (Optional- Null if not set, otherwise Int)
-
 ##### Notifications Collection:
 Contains documents corresponding to Notifications regarding events. These notifications are created by the organizer of the respective Event.
 - Event ID (String- reference to a certain Event)
