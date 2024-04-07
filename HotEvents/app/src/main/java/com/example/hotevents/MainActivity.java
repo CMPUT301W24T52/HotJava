@@ -77,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
-    ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
+    ImageView menu, notifications_toolbar;
+    LinearLayout upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin, contact;
     Switch toggleGeo;
     ImageView scannerButton;
