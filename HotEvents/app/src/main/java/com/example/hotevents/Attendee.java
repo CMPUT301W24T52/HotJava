@@ -4,25 +4,19 @@ package com.example.hotevents;
  * Attendee Class meant to represent an attendee for an event
  */
 public class Attendee {
-    private String name;
+    private String UID;
     private int checkinCount;
-    private String profileImageUrl;
 
-    public Attendee(String name, int checkinCount, String profileImageUrl) {
-        this.name = name;
+    public Attendee(String UID, int checkinCount) {
+        this.UID = UID;
         this.checkinCount = checkinCount;
-        this.profileImageUrl = profileImageUrl;
     }
 
-    public String getName() {
-        return name;
+    public String getUID() {
+        return UID;
     }
 
     public int getCheckinCount() {
         return checkinCount;
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
     }
 }

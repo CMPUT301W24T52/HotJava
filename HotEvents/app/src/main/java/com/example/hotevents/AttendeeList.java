@@ -57,13 +57,6 @@ public class AttendeeList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
-        // Marker startMarker = new Marker(map);
-        // startMarker.setPosition(startPoint);
-        // startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-        //
-        // map.getOverlays().add(startMarker);
-
-
         // Get DB and eventId
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getExtras().getString("eventId");
@@ -123,65 +116,33 @@ public class AttendeeList extends AppCompatActivity {
                         // Check if attendee has checked in at least once
                         if (doc.getLong("count") > 0) checkins++;
 
-                        // Grab attendee's user document
-                        db.collection("Users")
-                                .document(doc.getString("UID"))
-                                .get()
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot userDoc = task.getResult();
-                                        if (userDoc.exists()) {
-                                            // Get attendees name, checkin count, and profile picture url
-                                            String name = userDoc.getString("Name");
-                                            int checkinCount = doc.getLong("count").intValue();
-                                            String profilePicture;
-                                            String profilePictureCustom = userDoc.getString("ProfilePictureCustom");
-                                            String profilePictureDefault = userDoc.getString("ProfilePictureDefault");
-
-                                            // Check if custom picture or default
-                                            if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
-                                                profilePicture = profilePictureCustom;
-                                            } else if (profilePictureDefault != null && !profilePictureDefault.isEmpty()) {
-                                                profilePicture = profilePictureDefault;
-                                            } else {
-                                                profilePicture = "gs://hotevents-hotjava.appspot.com/ProfilePictures/profilePictureDefault.png";
-                                            }
-
-                                            // Add new Attendee and notify dataset change
-                                            attendeesArray.add(new Attendee(name, checkinCount, profilePicture));
-                                            attendeeListAdapter.notifyDataSetChanged();
-
-                                            // Add markers if available
-                                            if (doc.get("latitude") != null && doc.get("latitude") != null) {
-                                                double latitude = doc.getDouble("latitude");
-                                                double longitude = doc.getDouble("longitude");
-                                                Log.d(TAG, String.valueOf(latitude));
-                                                Log.d(TAG, String.valueOf(longitude));
-                                                GeoPoint location = new GeoPoint(latitude, longitude);
-                                                Marker marker = new Marker(map);
-                                                marker.setPosition(location);
-                                                marker.setIcon(attendeeMarkerDrawable);
-                                                map.getOverlays().add(marker);
-                                                attendeeMarkers.add(marker);
-                                                Log.d(TAG, "marker added");
-                                            }
-                                            Log.d(TAG, "user added");
-                                        } else {
-                                            Log.d(TAG, "User doesn't exist");
-                                        }
-                                    } else {
-                                        Log.d(TAG, "Failed to grab user");
-                                    }
-                                });
+                        attendeesArray.add(new Attendee(doc.getString("UID"), doc.getLong("count").intValue()));
+                        
+                        // Add markers if available
+                        if (doc.get("latitude") != null && doc.get("latitude") != null) {
+                            double latitude = doc.getDouble("latitude");
+                            double longitude = doc.getDouble("longitude");
+                            Log.d(TAG, String.valueOf(latitude));
+                            Log.d(TAG, String.valueOf(longitude));
+                            GeoPoint location = new GeoPoint(latitude, longitude);
+                            Marker marker = new Marker(map);
+                            marker.setPosition(location);
+                            marker.setIcon(attendeeMarkerDrawable);
+                            map.getOverlays().add(marker);
+                            attendeeMarkers.add(marker);
+                            Log.d(TAG, "marker added");
+                        }
                     }
 
                     // Refresh map
                     map.invalidate();
+                    attendeeListAdapter.notifyDataSetChanged();
 
                     // Set the text to the counts
                     signups_number.setText(String.valueOf(signups));
                     checkins_number.setText(String.valueOf(checkins));
                 });
+
     }
 
     @Override
@@ -194,6 +155,12 @@ public class AttendeeList extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         map.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        eventCheckinListener.remove();
     }
 
     private void setViews() {
