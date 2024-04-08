@@ -60,12 +60,20 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
+        android:id="@+id/qr_scanner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="60dp"
+        android:paddingRight="10dp"
+        android:src="@drawable/baseline_qr_code_scanner_24">
+    </ImageView>
+
+    <ImageView
         android:id="@+id/notifications_toolbar"
-        android:layout_width="70dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="110dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30dp"
+        android:paddingRight="10dp"
         android:src="@drawable/baseline_notifications_none_24">
 
     </ImageView>

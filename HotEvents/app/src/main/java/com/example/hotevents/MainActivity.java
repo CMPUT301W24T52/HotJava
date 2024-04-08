@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +42,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,9 +77,11 @@ public class MainActivity extends AppCompatActivity {
     private String UserName = "";
     ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
-    ImageView menu, notifications_toolbar, upcomingEventList_button, signedUpEventList_button;
-    LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin;
+    ImageView menu, notifications_toolbar;
+    LinearLayout upcomingEventList_button, signedUpEventList_button;
+    LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin, contact;
     Switch toggleGeo;
+    ImageView scannerButton;
     private static final String TAG = "MainActivity";
     private ListenerRegistration userListener;
     private TextView textViewName;
@@ -259,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
         notifications_toolbar = findViewById(R.id.notifications_toolbar);
         organizeEvent = findViewById(R.id.organizeEvent);
         admin = findViewById(R.id.admin);
+        contact = findViewById(R.id.contact);
         profilePhotoImageView = findViewById(R.id.CImageView);
 
 
@@ -346,36 +352,55 @@ public class MainActivity extends AppCompatActivity {
          * @param TAG The tag used for logging.
          * @param toggleGeo The toggle switch for location access.
          */
-        toggleGeo = findViewById(R.id.toggleGeo);
-        toggleGeo.setChecked(true); // Set the toggle switch to true by default
-        toggleGeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Update the field in Firestore based on the toggle state
-                String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                DocumentReference userRef = db.collection("Users").document(deviceId);
-                userRef.update("geo", isChecked)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "Geo toggle state updated successfully");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e(TAG, "Error updating geo toggle state", e);
-                                // Handle failure
-                            }
-                        });
-            }
-        });
+//        toggleGeo = findViewById(R.id.toggleGeo);
+//        toggleGeo.setChecked(true); // Set the toggle switch to true by default
+//        toggleGeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                // Update the field in Firestore based on the toggle state
+//                String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//                DocumentReference userRef = db.collection("Users").document(deviceId);
+//                userRef.update("geo", isChecked)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//                                Log.d(TAG, "Geo toggle state updated successfully");
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.e(TAG, "Error updating geo toggle state", e);
+//                                // Handle failure
+//                            }
+//                        });
+//            }
+//        });
 
 
         admin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 redirectActivity(MainActivity.this, AdminOptionsActivity.class);
+            }
+        });
+
+        contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redirectActivity(MainActivity.this, ContactUsActivity.class);
+            }
+        });
+
+        scannerButton = findViewById(R.id.qr_scanner);
+        scannerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Initialize the scanner
+                IntentIntegrator integrator = new IntentIntegrator(MainActivity.this);
+                integrator.setPrompt("Scan the Promotional QR Code");
+                integrator.setOrientationLocked(false);
+                integrator.initiateScan();
             }
         });
 
@@ -504,5 +529,57 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Get the result from the scanner
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                String scannedText = result.getContents();
+                // Extract event ID from scanned text
+                String eventId = extractEventId(scannedText);
+                if (eventId != null) {
+                    // Retrieve the Event object using the eventId
+                    Event event = findEventById(eventId);
+                    if (event != null) {
+                        // Open the event object with the retrieved Event object
+                        openEventObject(event);
+                    } else {
+                        Toast.makeText(this, "Event not found", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Invalid QR code format", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+    private String extractEventId(String scannedText) {
+        String eventId = null;
+        String[] parts = scannedText.split(":");
+        if (parts.length >= 3 && "hotevents".equals(parts[0]) && "promo".equals(parts[1])) {
+            eventId = parts[2]; // Document ID after "promo:"
+        }
+        return eventId;
+    }
+    private Event findEventById(String eventId) {
+        for (Event event : upcomingEventDataArray) {
+            if (eventId.equals(event.getEventId())) {
+                return event;
+            }
+        }
+        return null; // Event not found
+    }
+
+    private void openEventObject(Event event) {
+        Intent intent = new Intent(this, EventDetailsActivity.class);
+        intent.putExtra("event", (Parcelable) event);
+        startActivity(intent);
+        Log.d("Event", "Opening event object with ID: " + event.getEventId());
+    }
+
 
 }
