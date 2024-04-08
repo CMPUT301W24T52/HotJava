@@ -306,7 +306,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void getLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
                 return;
             }
         }
@@ -744,14 +744,16 @@ public class EventDetailsActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
                 }
-            } else if (Objects.equals(permissions[0], Manifest.permission.ACCESS_FINE_LOCATION)) {
+            }
+        }
+        if (requestCode == 2 && grantResults.length > 0) {
+            if (Objects.equals(permissions[0], Manifest.permission.ACCESS_FINE_LOCATION)) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocation();
                 } else {
                     updateCheckinData(null, null);
                 }
             }
-
         }
     }
 
@@ -781,7 +783,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         shareIntent.setType("image/png");
 
         // Save the QR code bitmap to external storage
-//        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QR Code", null);
+        //        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QR Code", null);
         String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QRCode_" + System.currentTimeMillis(), null);
         Uri bitmapUri = Uri.parse(bitmapPath);
 
