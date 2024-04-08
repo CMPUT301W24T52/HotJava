@@ -252,7 +252,8 @@
                         android:layout_marginLeft="10dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:descendantFocusability="afterDescendants" >
 
                         <androidx.appcompat.widget.SearchView
                             android:id="@+id/searchView"
@@ -261,10 +262,12 @@
                             app:closeIconTint="@color/white"
                             app:defaultQueryHint="Explore the Hot Events"
                             app:iconifiedByDefault="false"
+                            android:imeOptions="actionSearch"
                             app:queryBackground="@drawable/search_view_background"
                             app:queryHint="Search"
                             android:fontFamily="@font/monsterrat_regular"
-                            app:searchIcon="@drawable/baseline_search_24" />
+                            app:searchIcon="@drawable/baseline_search_24"
+                            android:focusable="true"/>
                     </LinearLayout>
 
                     <TextView

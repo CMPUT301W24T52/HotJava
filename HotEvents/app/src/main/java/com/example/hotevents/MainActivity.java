@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> SignedUpEvent;
     DrawerLayout drawerLayout;
     ImageView menu, notifications_toolbar;
+    SearchView eventSearchView;
     LinearLayout upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin, contact;
     Switch toggleGeo;
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        eventSearchView = findViewById(R.id.searchView);
         myEventDataArray = new ArrayList<Event>();
         upcomingEventDataArray = new ArrayList<Event>();
         myEventView = (RecyclerView) findViewById(R.id.signedupevent_list);
@@ -121,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
         myEventView.setAdapter(myEventsAdapter);
         upcomingEventView.setAdapter(upcomingEventsAdapter);
-
 
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -252,9 +254,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
         drawerLayout = findViewById(R.id.drawerLayout);
         menu = findViewById(R.id.menu);
         profile = findViewById(R.id.profile);
@@ -266,6 +265,37 @@ public class MainActivity extends AppCompatActivity {
         admin = findViewById(R.id.admin);
         contact = findViewById(R.id.contact);
         profilePhotoImageView = findViewById(R.id.CImageView);
+
+        eventSearchView.setOnClickListener(v -> {
+            eventSearchView.setIconifiedByDefault(true);
+        });
+        eventSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                populateSearchEvents(query);
+                eventSearchView.clearFocus();
+                eventSearchView.setQuery("", false);
+                eventSearchView.setFocusable(false);
+                eventSearchView.setIconified(true);
+                eventSearchView.setPressed(false);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        eventSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                eventSearchView.setPressed(false);
+                eventSearchView.clearFocus();
+                eventSearchView.setFocusable(false);
+                return false;
+            }
+        });
 
 
         menu.setOnClickListener(new View.OnClickListener() {
@@ -528,6 +558,17 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("ProfileActivity", "No such document");
             }
         });
+    }
+    void populateSearchEvents(String msg){
+        ArrayList<Event> searchEvents = new ArrayList<>();
+        for (Event event : upcomingEventDataArray){
+            if (event.getTitle().toLowerCase().contains(msg.toLowerCase())){
+                searchEvents.add(event);
+            }
+        }
+        Intent intent = new Intent(MainActivity.this, UpcomingEventsActivity.class);
+        intent.putParcelableArrayListExtra("events", searchEvents);
+        startActivity(intent);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
