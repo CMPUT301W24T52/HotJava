@@ -16,6 +16,11 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
+/**
+ * Contains the activity that displays all signed up events according to what
+ * events the user is signed up for. Functions similarly to Upcoming
+ * events activity
+ */
 public class SignedUpEventsActivity extends AppCompatActivity {
     private static final String TAG = "SignedUpActivity";
     //Events

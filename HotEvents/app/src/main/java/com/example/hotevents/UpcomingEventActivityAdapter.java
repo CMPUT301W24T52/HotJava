@@ -22,10 +22,17 @@ import org.checkerframework.checker.units.qual.N;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that represents the adapter for the UpcomingEventActivity Class
+ */
 public class UpcomingEventActivityAdapter extends RecyclerView.Adapter<UpcomingEventActivityAdapter.UpcomingEventActivityViewHolder> {
     private ArrayList<Event> events;
     private Context context;
     private View.OnClickListener onClickListener;
+
+    /**
+     * Class that represents the view holder for each item view
+     */
     public class UpcomingEventActivityViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView upcomingEventTitle;
         public TextView upcomingEventDescription;
@@ -34,6 +41,10 @@ public class UpcomingEventActivityAdapter extends RecyclerView.Adapter<UpcomingE
         public TextView upcomingLocation;
 
 
+        /**
+         * Constructor for View holder
+         * @param itemView View of the given event item displayed
+         */
         public UpcomingEventActivityViewHolder(@NonNull View itemView){
             super(itemView);
             context = itemView.getContext();
@@ -46,6 +57,10 @@ public class UpcomingEventActivityAdapter extends RecyclerView.Adapter<UpcomingE
 
         }
 
+        /**
+         * Handles functionality for event views that are clicked
+         * @param v The view that was clicked.
+         */
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(context, EventDetailsActivity.class);
@@ -56,16 +71,33 @@ public class UpcomingEventActivityAdapter extends RecyclerView.Adapter<UpcomingE
         }
     }
 
+    /**
+     * Method to get size of events array
+     * @return array size
+     */
     @Override
     public int getItemCount() {
         return events.size();
     }
 
+    /**
+     * Constructor for adapter
+     * @param events array of events to handle
+     * @param context context of the current activity
+     */
     public UpcomingEventActivityAdapter(ArrayList<Event> events, Context context){
         this.events = events;
         this.context = context;
     }
 
+    /**
+     * Method to handle functionality when View holder is created
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return ViewHolder object
+     */
     @NonNull
     @Override
     public UpcomingEventActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
@@ -73,6 +105,12 @@ public class UpcomingEventActivityAdapter extends RecyclerView.Adapter<UpcomingE
         return new UpcomingEventActivityViewHolder(itemView);
     }
 
+    /**
+     * Method called when ViewHolder is Bound
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param positions The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull UpcomingEventActivityViewHolder holder, int positions) {
         holder.setIsRecyclable(false);

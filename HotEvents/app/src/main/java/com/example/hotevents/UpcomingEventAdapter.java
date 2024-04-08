@@ -22,16 +22,32 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/**
+ * Adapter class responsible for populating views from Event Array (model)
+ */
 public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdapter.UpcomingEventViewHolder> {
     private ArrayList<Event> upcomingEvents;
     private Context context;
     private Boolean photoDownloaded = false;
 
+    /**
+     * Constructor for Upcoming Events Adapter
+     * @param upcomingEvents Array containing Event objects
+     * @param context activity context
+     */
     public UpcomingEventAdapter(ArrayList<Event> upcomingEvents, Context context){
         this.upcomingEvents = upcomingEvents;
         this.context = context;
     }
 
+    /**
+     * Method called when a view holder is created
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return UpcomingEventViewHolder
+     */
     @NonNull
     @Override
     public UpcomingEventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,6 +55,12 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
         return new UpcomingEventViewHolder(itemView);
     }
 
+    /**
+     * Method called when view holder is bound to Event
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull UpcomingEventViewHolder holder, int position) {
         //https://stackoverflow.com/questions/38182223/recyclerview-wrong-position-set-onbindviewholder
@@ -69,11 +91,18 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 
     }
 
+    /**
+     * method to get item count
+     * @return number of items in upcomingEvents Array
+     */
     @Override
     public int getItemCount() {
         return upcomingEvents.size();
     }
 
+    /**
+     * Class that represents the view holder
+     */
     public class UpcomingEventViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView upcomingEventTitle;
         public TextView upcomingEventDescription;
@@ -83,6 +112,10 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
 
         // ...Other Event Information
 
+        /**
+         * Constructor for viewHolder
+         * @param itemView The view of the item displayed on screen
+         */
         public UpcomingEventViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
@@ -95,6 +128,10 @@ public class UpcomingEventAdapter extends RecyclerView.Adapter<UpcomingEventAdap
             itemView.setOnClickListener(this);
         }
 
+        /**
+         * Method to handle click events for individual item views
+         * @param v The view that was clicked.
+         */
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(context, EventDetailsActivity.class);

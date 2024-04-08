@@ -21,21 +21,36 @@ import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
 
+/**
+ * Class to represent SignedUpEventsActivity Adapter
+ */
 public class SignedUpEventsActivityAdapter extends RecyclerView.Adapter<SignedUpEventsActivityAdapter.SignedUpEventsActivityViewHolder> {
     private ArrayList<Event> events;
     private Context context;
 
+    /**
+     * Constructor for Adapter
+     * @param events array of events to handle
+     * @param context context of current activity
+     */
     public SignedUpEventsActivityAdapter(ArrayList<Event> events, Context context) {
         this.events = events;
         this.context = context;
     }
 
+    /**
+     * Class to represent View Holder
+     */
     public class SignedUpEventsActivityViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView signedUpEventTitle;
         public TextView startDate;
         public ImageView poster;
         public TextView signedUpEventLocation;
 
+        /**
+         * View holder Constructor
+         * @param itemView View of the given event displayed
+         */
         public SignedUpEventsActivityViewHolder(@NonNull View itemView) {
             super(itemView);
             context = itemView.getContext();
@@ -48,6 +63,10 @@ public class SignedUpEventsActivityAdapter extends RecyclerView.Adapter<SignedUp
         }
 
 
+        /**
+         * Method to handle when a view is clicked
+         * @param v The view that was clicked.
+         */
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(context, EventDetailsActivity.class);
@@ -57,6 +76,14 @@ public class SignedUpEventsActivityAdapter extends RecyclerView.Adapter<SignedUp
         }
     }
 
+    /**
+     * Method to handle functionality when View Holder is created
+     * @param parent The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param viewType The view type of the new View.
+     *
+     * @return instance of View holder with given itemView
+     */
     @NonNull
     @Override
     public SignedUpEventsActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -64,6 +91,12 @@ public class SignedUpEventsActivityAdapter extends RecyclerView.Adapter<SignedUp
         return new SignedUpEventsActivityViewHolder(itemView);
     }
 
+    /**
+     * Method to handle functionality when a View Holder is bound
+     * @param holder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull SignedUpEventsActivityViewHolder holder, int position) {
     holder.setIsRecyclable(false);
@@ -86,6 +119,10 @@ public class SignedUpEventsActivityAdapter extends RecyclerView.Adapter<SignedUp
         }
     }
 
+    /**
+     * Method that gets size of adapter array
+     * @return size of array
+     */
     @Override
     public int getItemCount() {
         return events.size();
