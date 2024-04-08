@@ -1,7 +1,8 @@
 package com.example.hotevents;
-
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
+import android.widget.TextView;
 import org.junit.Test;
 
 public class ProfileActivityTest {
@@ -16,6 +17,12 @@ public class ProfileActivityTest {
 
         // Create ProfileActivity instance
         ProfileActivity profileActivity = new ProfileActivity();
+
+        // Mock TextViews
+        profileActivity.textViewName = mock(TextView.class);
+        profileActivity.textViewEmail = mock(TextView.class);
+        profileActivity.textViewContact = mock(TextView.class);
+        profileActivity.textViewLocation = mock(TextView.class);
 
         // Set mock data to TextViews
         profileActivity.textViewName.setText(name);
