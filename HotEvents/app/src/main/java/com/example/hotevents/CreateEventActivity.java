@@ -56,11 +56,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Page for creating and updating an event
- * TODO:
- * - Set up choose QR button
- * - Fix location picker from the map
- * - Set up the update event components
+ * Class that handles the activity for creating and updating the events
  */
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -106,7 +102,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Integer maxAttendees = null;
     Uri posterUri = null;
     String storageUri = null;
-    String organiserId;
+    String organiserId = "4a2d37f1b5970890"; //Default user for espresso testing
     Event updateEvent = null;
     Event newEvent = null;
 
@@ -135,9 +131,9 @@ public class CreateEventActivity extends AppCompatActivity {
 
 
     /**
-     * Started on creation of the activity. Assigns the views to variables, assigns the click events
-     * for all of the buttons, grabs argument from main page intent, and sets up the required
-     * firebase references
+     * This method is started on creation of the activity. Assigns the views to variables,
+     * assigns the click events for all of the buttons, grabs argument from main page intent,
+     * and sets up the required firebase references
      *
      * @param savedInstanceState
      */
@@ -201,7 +197,10 @@ public class CreateEventActivity extends AppCompatActivity {
 
         // Getting the arguments from the Intent
         Intent myIntent = getIntent();
-        organiserId = myIntent.getStringExtra("organiser");
+        String temp = myIntent.getStringExtra("organiser");
+        if (temp != null){
+            organiserId = temp;
+        }
 
         // Querying the current user and using their info to set up the QR Choose string array
         getUserData();
@@ -218,26 +217,11 @@ public class CreateEventActivity extends AppCompatActivity {
             imageChooser();
         });
 
-        // Date input events
-        // https://www.geeksforgeeks.org/how-to-popup-datepicker-while-clicking-on-edittext-in-android/
-        // https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html
-        // https://developer.android.com/reference/android/app/DatePickerDialog
-        // https://developer.android.com/reference/android/app/TimePickerDialog
-
-
-
-
-        // Location input events
-        // https://developers.google.com/codelabs/maps-platform/location-places-android#4
-        // https://www.geeksforgeeks.org/how-to-implement-google-map-inside-fragment-in-android/
-
-
-
         qrCreateButton.setOnClickListener(v -> {
             qrCreateClick();
         });
 
-
+        //Querying the user's QR codes from previously created events and adding them to the
         qrChooseSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -260,17 +244,12 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-        Log.d(TAG, "made it here");
-
     }
 
     /**
      * Returns to the previous activity when event is created or back button is pressed
-     * TODO
-     * - Currently only returns back to MainActivity. Will be fixed once edit functionality is corrected
+     * Different logic based on whether the CreateEventActivity was accessed from EventDetailsActivity
+     * or MainActivity
      */
     protected void returnPreviousActivity() {
         if (activityState == ActivityState.UPDATE) {
@@ -287,11 +266,14 @@ public class CreateEventActivity extends AppCompatActivity {
         finish();
     }
 
-    // Querying the Created Events array from the user and creating the spinner list based on
-    // The QR codes that can be retrieved
-    // Reference: https://stackoverflow.com/questions/13377361/how-to-create-a-drop-down-list
+    /**
+     * Querying the Created Events array from the user and creating the spinner list based on
+     * the QR codes that can be retrieved
+     * Reference: https://stackoverflow.com/questions/13377361/how-to-create-a-drop-down-list
+     * @param createdEvents
+     */
     protected void settingUpSpinner(@Nullable ArrayList<String> createdEvents) {
-        qrCodeArray.add("Select:");
+        qrCodeArray.add("Select:        ");
         qrCodeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, qrCodeArray);
         qrChooseSpinner.setAdapter(qrCodeAdapter);
         qrCodeAdapter.notifyDataSetChanged();
@@ -320,6 +302,9 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Retrieving the database user data based on the organiser ID/device ID
+     */
     protected void getUserData() {
         db.collection("Users")
                 .document(organiserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -331,35 +316,17 @@ public class CreateEventActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        Log.e("Getting User Data", e.toString());
                         settingUpSpinner(null);
                     }
                 });
     }
 
     /**
-     * Assigns the interactive UI elements to their associated variables for later reference
+     * Triggers when user tries to update the event from EventDetailsActivity
+     * Takes the passed in event to be updated and populates the UI fields with the data
+     * @param myEvent The event to be updated, passed in by EventDetailsActivity
      */
-    protected void setViews() {
-        posterImage = findViewById(R.id.poster_image);
-        titleText = findViewById(R.id.title_text);
-        startDateText = findViewById(R.id.start_date_text);
-        endDateText = findViewById(R.id.end_date_text);
-        startTimeText = findViewById(R.id.start_time_text);
-        endTimeText = findViewById(R.id.end_time_text);
-        locationText = findViewById(R.id.location_input_text);
-        descriptionText = findViewById(R.id.description_input_text);
-        maxAttendeeText = findViewById(R.id.max_attendee_input_text);
-        maxAttendeeContainer = findViewById(R.id.max_attendee_container);
-        backButton = findViewById(R.id.backButton);
-        startCalButton = findViewById(R.id.start_cal_button);
-        endCalButton = findViewById(R.id.end_cal_button);
-        addImageButton = findViewById(R.id.add_image_button);
-        qrCreateButton = findViewById(R.id.qrcode_create_button);
-        qrChooseSpinner = findViewById(R.id.qrcode_choose_spinner);
-        createButton = findViewById(R.id.create_event_button);
-        maxAttendeeSwitch = findViewById(R.id.max_attendee_switch);
-    }
-
     protected void setFields(Event myEvent) {
         Log.d("Update event", "Setting the fields");
         titleText.setText(myEvent.getTitle());
@@ -509,10 +476,10 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     /**
-     * When the QR Code create button is pressed, start the process of generating the QR Code.
-     * The encoded string has the format [app:type:eventId] and the dimensions of the QR code come
-     * from the size of the device.
-     * Also creates the promotional QR code for later saving within the database
+     * Sets the QRCodeState enum to the CREATE state
+     * Ensures that when the event gets created, the QR code gets created as well
+     * Since the QR Code string includes the event ID that gets randomly generated by Firebase,
+     * the actual creation of the code must be pushed until after the event gets created.
      */
     protected void qrCreateClick() {
         codeState = QRCodeState.CREATE;
@@ -522,6 +489,11 @@ public class CreateEventActivity extends AppCompatActivity {
         makeToast("QR Code created!");
     }
 
+    /**
+     * Creates the checkin and promo QR Codes based on the event ID that gets passed in as an argument
+     * @param event Event ID of recently generated event
+     * @return Strings of both QR codes to be saved on firebase
+     */
     protected String[] QRCreate(String event) {
         String type = "checkin";
 
@@ -576,8 +548,6 @@ public class CreateEventActivity extends AppCompatActivity {
             return;
         }
 
-        // Getting the firebase storage URL and saving it to a global variabl
-
         // Getting the maxAttendees field
         if (maxAttendeeSwitch.isChecked()) {
             maxAttendees = Integer.parseInt(maxAttendeeText.getText().toString());
@@ -595,7 +565,6 @@ public class CreateEventActivity extends AppCompatActivity {
      *
      * @param event The class instance containing all of the input data
      */
-
     protected void firebaseEventUpload(Event event) {
         // Creating the map to set the data to the event
         Map<String, Object> eventMap = new HashMap<>();
@@ -659,6 +628,11 @@ public class CreateEventActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Now that the event is created, create the QR codes or store the chosen QR Code
+     * This happens last due to needed the eventID, however this event ID gets created by firebase
+     * @param docRef DocumentReference of event in Firebase
+     */
     protected void finishSaving(DocumentReference docRef) {
         // Case where both of the QR codes must be created
         // qrCode == null && qrCodePromo == null
@@ -680,11 +654,6 @@ public class CreateEventActivity extends AppCompatActivity {
             docRef.update("QRCode", qrCode.getEncodedStr());
             docRef.update("QRCodePromo", qrCodeStrArr[1]);
         }
-        // Edit event case. Both the QR code and the promo QR code were fetched from firebase already
-        //        else{
-        //            docRef.update("QRCode", qrCode.getEncodedStr());
-        //            docRef.update("QRCodePromo", qrCodePromo.getEncodedStr());
-        //        }
 
         newEvent.setEventId(docRef.getId());
         newEvent.setQRCode(qrCode);
@@ -750,25 +719,11 @@ public class CreateEventActivity extends AppCompatActivity {
             return false;
         }
 
-        // Checking whether the location is valid
-        // Testing Geocode stuff
-        //        Geocoder geocoder = new Geocoder(this);
-        //        Log.d("Location Validation", locationText.getText().toString());
-        //
-        //        try {
-        //            List<Address> addressList = geocoder.getFromLocationName(locationText.getText().toString(), 1);
-        //            //Log.d("Location Validation", "Location: " + addressList.get(0).getAddressLine(0));
-        //        } catch (IOException e) {
-        //            Log.e("Location Validation", e.toString());
-        //            makeToast("Please ensure the location is valid");
-        //            return false;
-        //        }
-
         return true;
     }
 
     /**
-     * Generate the toast for saying what error with the input is
+     * Method to generate toasts based on a string passed in
      *
      * @param errStr The string detailing the error to report to the user
      */
