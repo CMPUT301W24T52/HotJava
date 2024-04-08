@@ -20,8 +20,14 @@ import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * ProfileActivity displays user profile information and allows editing.
+ */
 public class ProfileActivity extends AppCompatActivity {
 
+    /**
+     * Request code for editing profile.
+     */
     protected static final int EDIT_PROFILE_REQUEST_CODE = 1;
 
     protected TextView textViewName;
@@ -38,6 +44,11 @@ public class ProfileActivity extends AppCompatActivity {
     protected FirebaseStorage storage;
     private StorageReference profilePicturesRef;
 
+    /**
+     * Initializes UI components and fetches user data.
+     *
+     * @param savedInstanceState The saved instance state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +70,9 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes UI components.
+     */
     protected void setupUI() {
         textViewName = findViewById(R.id.textViewName);
         textViewEmail = findViewById(R.id.textViewEmail);
@@ -69,6 +83,13 @@ public class ProfileActivity extends AppCompatActivity {
         profilePhotoImageView = findViewById(R.id.imageViewProfilePhoto);
     }
 
+    /**
+     * Handles result from editing profile activity.
+     *
+     * @param requestCode The request code.
+     * @param resultCode  The result code.
+     * @param data        The intent data.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -77,6 +98,9 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Fetches user data from Firestore database.
+     */
     protected void fetchUserDataFromFirestore() {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -117,6 +141,9 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Stops listening for changes when the activity is stopped.
+     */
     @Override
     protected void onStop() {
         super.onStop();

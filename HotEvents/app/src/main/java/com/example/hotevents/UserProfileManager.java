@@ -15,6 +15,9 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+/**
+ * The UserProfileManager class manages user profile-related functionalities.
+ */
 public class UserProfileManager {
 
     private final Context context; // Add context field
@@ -25,6 +28,11 @@ public class UserProfileManager {
     private final StorageReference profilePicturesRef;
     private ListenerRegistration userListener;
 
+    /**
+     * Constructs a new UserProfileManager object.
+     *
+     * @param context The context of the application.
+     */
     public UserProfileManager(Context context) {
         this.context = context; // Initialize context
 
@@ -33,6 +41,12 @@ public class UserProfileManager {
         profilePicturesRef = storage.getReference().child("ProfilePictures");
     }
 
+    /**
+     * Retrieves the singleton instance of UserProfileManager.
+     *
+     * @param context The context of the application.
+     * @return The singleton instance of UserProfileManager.
+     */
     public static synchronized UserProfileManager getInstance(Context context) {
         if (instance == null) {
             instance = new UserProfileManager(context);
@@ -40,6 +54,11 @@ public class UserProfileManager {
         return instance;
     }
 
+    /**
+     * Fetches user data from Firestore and provides it via a callback.
+     *
+     * @param callback The callback to handle fetched user data.
+     */
     public void fetchUserData(UserDataCallback callback) {
         // Get device ID or user ID
         String userId = "unique_user_id"; // Replace with actual user ID retrieval logic
@@ -59,6 +78,12 @@ public class UserProfileManager {
         });
     }
 
+    /**
+     * Loads the profile picture into the provided ImageView based on the DocumentSnapshot.
+     *
+     * @param imageView        The ImageView to load the profile picture into.
+     * @param documentSnapshot The DocumentSnapshot containing user data.
+     */
     public void loadProfilePicture(ImageView imageView, DocumentSnapshot documentSnapshot) {
         if (documentSnapshot != null && documentSnapshot.exists()) {
             if (documentSnapshot.contains("ProfilePictureCustom")) {
@@ -82,6 +107,12 @@ public class UserProfileManager {
         }
     }
 
+    /**
+     * Downloads the profile picture from Firebase Storage and sets it into the provided ImageView.
+     *
+     * @param imageView         The ImageView to set the profile picture into.
+     * @param profilePictureUrl The URL of the profile picture in Firebase Storage.
+     */
     public void downloadAndSetProfilePicture(ImageView imageView, String profilePictureUrl) {
         // Create a reference to the Firebase Storage URL
         StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
@@ -110,6 +141,12 @@ public class UserProfileManager {
         });
     }
 
+    /**
+     * Generates a default profile photo with the provided initial character.
+     *
+     * @param initialChar The initial character of the user's name.
+     * @return The generated default profile photo as a Bitmap.
+     */
     public Bitmap generateDefaultProfilePhoto(char initialChar) {
         // Access resources using context
         int imageSize = context.getResources().getDimensionPixelSize(R.dimen.profile_image_size);
@@ -131,15 +168,24 @@ public class UserProfileManager {
         return bitmap;
     }
 
-
-
+    /**
+     * Stops listening for changes in user data.
+     */
     public void stopListening() {
         if (userListener != null) {
             userListener.remove();
         }
     }
 
+    /**
+     * Interface for handling fetched user data.
+     */
     public interface UserDataCallback {
+        /**
+         * Invoked when user data is received.
+         *
+         * @param documentSnapshot The DocumentSnapshot containing user data.
+         */
         void onDataReceived(DocumentSnapshot documentSnapshot);
     }
 }
