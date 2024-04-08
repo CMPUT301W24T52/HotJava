@@ -10,7 +10,7 @@ HotJava is an event-organizing mobile platform for android, written in Java. Use
 - Harsh
 - Bryan
 - Sergio
-- Deepish
+- Dipesh
 
 ### Instructions/How-To:
 Below is a list of general instructions to begin proper operation of the HotEvents organizing platform from both an attendee and event organizer role.
