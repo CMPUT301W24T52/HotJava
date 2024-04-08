@@ -23,6 +23,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Represents the display for activity that contains all upcoming activities
+ * Is also used when a user searches for an event, the array of events is passed
+ * to the activity
+ */
 public class UpcomingEventsActivity extends AppCompatActivity {
     private static final String TAG = "UpcomingEventsActivity";
 

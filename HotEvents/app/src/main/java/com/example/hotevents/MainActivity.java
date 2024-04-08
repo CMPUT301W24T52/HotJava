@@ -55,11 +55,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Home Page and control center of program
- * TODO:
- * - Change Menu button to Hamburger Icon
- * - Provide endpoints to integrate other components
- * - Make Event Icons functional
- * - [Optional] Refresh Functionality
+ * Contains routes to all other activities and is largely responsible for handling core
+ * db functions such as User and Event updates
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -82,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     SearchView eventSearchView;
     LinearLayout upcomingEventList_button, signedUpEventList_button;
     LinearLayout profile, signedUpEvents, organizedEvents, notifications, organizeEvent, admin, contact;
-    Switch toggleGeo;
     ImageView scannerButton;
     private static final String TAG = "MainActivity";
     private ListenerRegistration userListener;
@@ -370,44 +366,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /**
-         * Initializes and sets up the toggle switch for location access.
-         *
-         * This method initializes the toggle switch for location access, sets it to true by default,
-         * and sets up a listener to handle changes to the toggle state. When the toggle state changes,
-         * it updates the corresponding field in the Firestore database.
-         *
-         * @param context The context of the activity.
-         * @param db The instance of the Firestore database.
-         * @param TAG The tag used for logging.
-         * @param toggleGeo The toggle switch for location access.
-         */
-//        toggleGeo = findViewById(R.id.toggleGeo);
-//        toggleGeo.setChecked(true); // Set the toggle switch to true by default
-//        toggleGeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                // Update the field in Firestore based on the toggle state
-//                String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//                DocumentReference userRef = db.collection("Users").document(deviceId);
-//                userRef.update("geo", isChecked)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//                                Log.d(TAG, "Geo toggle state updated successfully");
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.e(TAG, "Error updating geo toggle state", e);
-//                                // Handle failure
-//                            }
-//                        });
-//            }
-//        });
-
-
         admin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -559,6 +517,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * On execution of searchView query, this method will generate an array of
+     * events that contain the query string in the event title. It will then
+     * start UpcomingEventsActivity, passing the searched events array rather than
+     * the default upcomingEvents array
+     * @param msg Query that is used to compare against event titles
+     * NOTE: Will create activity regardless of whether the event array contains
+     *       any Events
+     */
     void populateSearchEvents(String msg){
         ArrayList<Event> searchEvents = new ArrayList<>();
         for (Event event : upcomingEventDataArray){
