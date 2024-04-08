@@ -28,7 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * EditProfileActivity allows users to edit their profile information and profile photo.
  */
 public class EditProfileActivity extends AppCompatActivity {
-    private static final int IMAGE_PICK_REQUEST_CODE = 1;
+    public static final int IMAGE_PICK_REQUEST_CODE = 1;
 
     // UI elements
     private CircleImageView profilePhotoImageView;
@@ -148,7 +148,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     }
 
-    private void uploadPhoto(Uri photoUri) {
+    protected void uploadPhoto(Uri photoUri) {
         // Generating unique name for the image
         String imageName = deviceId + "EDITED.png";
 
@@ -188,7 +188,7 @@ public class EditProfileActivity extends AppCompatActivity {
      *
      * @param profilePictureUrl The URL of the profile picture.
      */
-    private void downloadAndSetProfilePicture(String profilePictureUrl) {
+    protected void downloadAndSetProfilePicture(String profilePictureUrl) {
         // Create a reference to the Firebase Storage URL
         StorageReference photoRef = storage.getReferenceFromUrl(profilePictureUrl);
 
