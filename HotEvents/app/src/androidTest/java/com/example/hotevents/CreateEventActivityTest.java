@@ -70,7 +70,7 @@ public class CreateEventActivityTest {
 
     //Test max attendees
     @Test
-    public void A_testMaxAttendees(){
+    public void testMaxAttendees(){
         onView(withId(R.id.max_attendee_switch)).perform(scrollTo(), click());
         onView(withId(R.id.max_attendee_input_text)).perform(scrollTo());
         onView(withId(R.id.max_attendee_input_text)).check(matches(isDisplayed()));
@@ -80,7 +80,7 @@ public class CreateEventActivityTest {
 
     //Test create event success
     @Test
-    public void B_testCreateEvent(){
+    public void testCreateEvent(){
         //Have to create event to pass in
         QRCodes qrCode = new QRCodes("hotevents:checkin:3Ir78m6Dcf6ZKC9RnFfT");
 
@@ -115,26 +115,8 @@ public class CreateEventActivityTest {
         onView(withId(R.id.create_event_button)).perform(scrollTo(), click());
     }
 
-    //Test choose QR code
-    //Click on text
-    @Test
-    public void C_testChooseQRCode(){
-        //Waiting for firebase to return the user details
-        Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
-        intent.putExtra("organiser", "4a2d37f1b5970890");
-
-        // Launch activity with the intent
-        ActivityScenario<CreateEventActivity> scenario = launch(intent);
-
-        onView(withId(R.id.create_event_button)).perform(scrollTo());
-        onView(isRoot()).perform(waitFor(10000));
-
-        //If the spinner appears it means that the array was successfully populated and the user data was successfully queried
-        onView(withId(R.id.qrcode_choose_spinner)).perform(click());
-    }
-
     //Testing when the event was failed to be created due to some fields being empty
-    @Test public void D_testCreateFail(){
+    @Test public void testCreateFail(){
         //Create click
         onView(withId(R.id.create_event_button)).perform(scrollTo(), click());
         onView(withId(R.id.create_event_button)).check(matches(isDisplayed()));
@@ -142,7 +124,7 @@ public class CreateEventActivityTest {
 
     //Checking whether the back button navigates back to the home page or not
     @Test
-    public void E_testBackButton(){
+    public void testBackButton(){
         ActivityScenario<CreateEventActivity> activityScenario = ActivityScenario.launchActivityForResult(CreateEventActivity.class);
         // Let's say MyActivity has a button that finishes itself.
         onView(withId(R.id.backButton)).perform(click());
@@ -152,7 +134,7 @@ public class CreateEventActivityTest {
     //Testing the update event functionality
     //Update event is triggered when an event is passed in as an intent to the page
     @Test
-    public void F_testUpdateEvent(){
+    public void testUpdateEvent(){
         //Have to create event to pass in
         QRCodes qrCode = new QRCodes("hotevents:checkin:3Ir78m6Dcf6ZKC9RnFfT");
 

@@ -217,21 +217,6 @@ public class CreateEventActivity extends AppCompatActivity {
             imageChooser();
         });
 
-        // Date input events
-        // https://www.geeksforgeeks.org/how-to-popup-datepicker-while-clicking-on-edittext-in-android/
-        // https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html
-        // https://developer.android.com/reference/android/app/DatePickerDialog
-        // https://developer.android.com/reference/android/app/TimePickerDialog
-
-
-
-
-        // Location input events
-        // https://developers.google.com/codelabs/maps-platform/location-places-android#4
-        // https://www.geeksforgeeks.org/how-to-implement-google-map-inside-fragment-in-android/
-
-
-
         qrCreateButton.setOnClickListener(v -> {
             qrCreateClick();
         });
@@ -258,11 +243,6 @@ public class CreateEventActivity extends AppCompatActivity {
                 // Do nothing if nothing selected
             }
         });
-
-
-
-
-        Log.d(TAG, "made it here");
 
     }
 
@@ -567,8 +547,6 @@ public class CreateEventActivity extends AppCompatActivity {
             makeToast("Start date cannot be after end date");
             return;
         }
-
-        // Getting the firebase storage URL and saving it to a global variabl
 
         // Getting the maxAttendees field
         if (maxAttendeeSwitch.isChecked()) {
