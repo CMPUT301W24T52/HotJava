@@ -26,7 +26,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -57,6 +59,7 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -258,6 +261,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                     .addOnSuccessListener(aVoid -> {
                                                         // Successfully stored the device ID in Firestore
                                                         Log.d(TAG, "Device ID stored in Firestore for event: " + eventName);
+                                                        handleButtonBehaviour();
                                                         // You can add further logic here if needed
                                                         handleButtonBehaviour();
                                                         addToMySignupArray(deviceId, eventId);
@@ -306,7 +310,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void getLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
                 return;
             }
         }
@@ -744,14 +748,16 @@ public class EventDetailsActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Notifications not allowed", Toast.LENGTH_SHORT).show();
                 }
-            } else if (Objects.equals(permissions[0], Manifest.permission.ACCESS_FINE_LOCATION)) {
+            }
+        }
+        if (requestCode == 2 && grantResults.length > 0) {
+            if (Objects.equals(permissions[0], Manifest.permission.ACCESS_FINE_LOCATION)) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocation();
                 } else {
                     updateCheckinData(null, null);
                 }
             }
-
         }
     }
 
@@ -781,7 +787,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         shareIntent.setType("image/png");
 
         // Save the QR code bitmap to external storage
-//        String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QR Code", null);
         String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), qrBitmap, "QRCode_" + System.currentTimeMillis(), null);
         Uri bitmapUri = Uri.parse(bitmapPath);
 

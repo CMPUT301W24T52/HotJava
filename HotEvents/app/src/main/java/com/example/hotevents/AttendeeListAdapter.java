@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -22,10 +24,12 @@ public class AttendeeListAdapter extends RecyclerView.Adapter<AttendeeListAdapte
 
     Context context;
     ArrayList<Attendee> attendeesArray;
+    FirebaseFirestore db;
 
     public AttendeeListAdapter(Context context, ArrayList<Attendee> attendeesArray) {
         this.context = context;
         this.attendeesArray = attendeesArray;
+        db = FirebaseFirestore.getInstance();
     }
 
     @NonNull
@@ -39,17 +43,39 @@ public class AttendeeListAdapter extends RecyclerView.Adapter<AttendeeListAdapte
     public void onBindViewHolder(@NonNull AttendeeListAdapter.MyViewHolder holder, int position) {
         // Whenever an item pops into view, set the items data
         Attendee attendee = attendeesArray.get(position);
-        holder.attendeeName.setText(attendee.getName());
+        db.collection("Users")
+                .document(attendee.getUID())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot doc = task.getResult();
+                        if (doc.exists()) {
+                            holder.attendeeName.setText(doc.getString("Name"));
+                            String profilePicture;
+                            String profilePictureCustom = doc.getString("ProfilePictureCustom");
+                            String profilePictureDefault = doc.getString("ProfilePictureDefault");
+
+                            // Check if custom picture or default
+                            if (profilePictureCustom != null && !profilePictureCustom.isEmpty()) {
+                                profilePicture = profilePictureCustom;
+                            } else if (profilePictureDefault != null && !profilePictureDefault.isEmpty()) {
+                                profilePicture = profilePictureDefault;
+                            } else {
+                                profilePicture = "gs://hotevents-hotjava.appspot.com/ProfilePictures/profilePictureDefault.png";
+                            }
+                            StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profilePicture);
+                            Glide.with(context)
+                                    .load(storageRef)
+                                    .into(holder.attendeePhoto);
+                        }
+                    }
+                });
         holder.attendeeCheckin.setText("Check in: " + attendee.getCheckinCount());
         if (attendee.getCheckinCount() > 0) {
             holder.checkinCheckmark.setImageResource(R.drawable.greencheckmark);
         } else {
             holder.checkinCheckmark.setImageResource(R.drawable.greycheckmark);
         }
-        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(attendee.getProfileImageUrl());
-        Glide.with(context)
-                .load(storageRef)
-                .into(holder.attendeePhoto);
     }
 
     @Override
