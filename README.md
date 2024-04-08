@@ -78,5 +78,6 @@ Contains documents corresponding to Notifications regarding events. These notifi
 [Database Structure](https://github.com/CMPUT301W24T52/HotJava/wiki/Database-Structure)\
 [High-View UML](https://github.com/CMPUT301W24T52/HotJava/wiki/High%E2%80%90View-UML)\
 [Overview, Staging, and Timeline](https://github.com/CMPUT301W24T52/HotJava/wiki/Overview,-Staging,-and-Timeline)\
+[Sprint Planning](https://github.com/CMPUT301W24T52/HotJava/wiki/Sprint-Planning)\
 [Storyboard - UI & Functionality](https://github.com/CMPUT301W24T52/HotJava/wiki/Storyboard-%E2%80%90-UI-&-Functionality)
 
