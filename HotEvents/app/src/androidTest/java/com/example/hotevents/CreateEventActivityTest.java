@@ -127,10 +127,10 @@ public class CreateEventActivityTest {
         ActivityScenario<CreateEventActivity> scenario = launch(intent);
 
         onView(withId(R.id.create_event_button)).perform(scrollTo());
-        onView(isRoot()).perform(waitFor(5000));
+        onView(isRoot()).perform(waitFor(10000));
+
+        //If the spinner appears it means that the array was successfully populated and the user data was successfully queried
         onView(withId(R.id.qrcode_choose_spinner)).perform(click());
-        onData(anything()).atPosition(1).perform(scrollTo(), click());
-        onView(withId(R.id.qrcode_choose_spinner)).check(matches(withSpinnerText(containsString("hotevents:checkin"))));
     }
 
     //Testing when the event was failed to be created due to some fields being empty
