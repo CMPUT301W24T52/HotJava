@@ -252,7 +252,8 @@
                         android:layout_marginLeft="10dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:descendantFocusability="afterDescendants" >
 
                         <androidx.appcompat.widget.SearchView
                             android:id="@+id/searchView"
@@ -261,10 +262,12 @@
                             app:closeIconTint="@color/white"
                             app:defaultQueryHint="Explore the Hot Events"
                             app:iconifiedByDefault="false"
+                            android:imeOptions="actionSearch"
                             app:queryBackground="@drawable/search_view_background"
                             app:queryHint="Search"
                             android:fontFamily="@font/monsterrat_regular"
-                            app:searchIcon="@drawable/baseline_search_24" />
+                            app:searchIcon="@drawable/baseline_search_24"
+                            android:focusable="true"/>
                     </LinearLayout>
 
                     <TextView
@@ -279,17 +282,39 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/searchLayout" />
 
-                    <ImageView
+<!--                    <ImageView-->
+<!--                        android:id="@+id/signedUpEvents_button"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/searchLayout"-->
+<!--                        android:layout_marginEnd="30dp"-->
+<!--                        android:layout_marginTop="25dp"-->
+<!--                        android:src="@drawable/baseline_arrow_forward_ios_24"-->
+<!--                        android:clickable="true"-->
+<!--                        />-->
+                    <!-- See all -->
+                    <LinearLayout
                         android:id="@+id/signedUpEvents_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/searchLayout"
-                        android:layout_marginEnd="30dp"
+                        android:layout_marginEnd="20dp"
                         android:layout_marginTop="25dp"
-                        android:src="@drawable/baseline_arrow_forward_ios_24"
-                        android:clickable="true"
-                        />
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableRight="@drawable/baseline_arrow_right_16"
+                            android:drawablePadding="1dp"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:padding="10dp"
+                            android:text="See All"
+                            android:textColor="#747688"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <RelativeLayout
                         android:id="@+id/horizontalScrollView"
@@ -331,16 +356,36 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
 
-                    <ImageView
+<!--                    <ImageView-->
+<!--                        android:id="@+id/upcomingEventsList_button"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/horizontalScrollView"-->
+<!--                        android:layout_marginEnd="20dp"-->
+<!--                        android:src="@drawable/baseline_arrow_forward_ios_24"/>-->
+
+                    <!-- See all -->
+                    <LinearLayout
                         android:id="@+id/upcomingEventsList_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/horizontalScrollView"
                         android:layout_marginEnd="20dp"
-                        android:src="@drawable/baseline_arrow_forward_ios_24"/>
+                        android:orientation="horizontal">
 
-
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableRight="@drawable/baseline_arrow_right_16"
+                            android:drawablePadding="1dp"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:padding="10dp"
+                            android:text="See All"
+                            android:textColor="#747688"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"

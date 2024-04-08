@@ -109,36 +109,36 @@
         </LinearLayout>
 
         <!-- Location -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/location"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:orientation="vertical">
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/location"-->
+<!--            android:layout_marginStart="12dp"-->
+<!--            android:layout_marginEnd="12dp"-->
+<!--            android:orientation="vertical">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Location"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                android:fontFamily="@font/monsterrat_regular"
-                android:padding="10dp"
-                android:drawableLeft="@drawable/baseline_room_24"
-                android:drawablePadding="8dp"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Location"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:fontFamily="@font/monsterrat_regular"-->
+<!--                android:padding="10dp"-->
+<!--                android:drawableLeft="@drawable/baseline_room_24"-->
+<!--                android:drawablePadding="8dp"/>-->
 
-            <Switch
-                android:id="@+id/toggleGeo"
-                android:layout_width="299dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/monsterrat_regular"
-                android:paddingLeft="38dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="10dp"
-                android:text="Allow location sharing when checkIn for an event"
-                android:textSize="15dp" />
-        </LinearLayout>
+<!--            <Switch-->
+<!--                android:id="@+id/toggleGeo"-->
+<!--                android:layout_width="299dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:fontFamily="@font/monsterrat_regular"-->
+<!--                android:paddingLeft="38dp"-->
+<!--                android:paddingTop="5dp"-->
+<!--                android:paddingBottom="10dp"-->
+<!--                android:text="Allow location sharing when checkIn for an event"-->
+<!--                android:textSize="15dp" />-->
+<!--        </LinearLayout>-->
 
         <!-- Notifications -->
         <LinearLayout
@@ -182,13 +182,34 @@
                 android:drawablePadding="8dp"/>
         </LinearLayout>
 
+        <!-- Contact -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="250dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contact Us"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/monsterrat_regular"
+                android:padding="10dp"
+                android:drawableLeft="@drawable/baseline_call_24"
+                android:drawablePadding="8dp"/>
+        </LinearLayout>
+
         <!-- Admin -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/admin"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="150dp"
             android:layout_marginEnd="12dp"
             android:orientation="horizontal">
 
