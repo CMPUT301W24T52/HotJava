@@ -72,7 +72,7 @@ public class BrowseProfilesActivity extends AppCompatActivity {
     /**
      * Method to load profiles from Firestore.
      */
-    private void loadProfilesFromFirestore() {
+    protected void loadProfilesFromFirestore() {
         // Assuming "Users" is the collection name in Firestore
         db.collection("Users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

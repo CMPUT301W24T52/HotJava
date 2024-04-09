@@ -74,8 +74,16 @@ public class BrowseUserProfileActivity extends AppCompatActivity {
         // Retrieve the device ID from the Intent
         String deviceId = getIntent().getStringExtra("deviceId");
 
-        // Use the device ID to fetch user profile data from Firestore
-        fetchUserDataFromFirestore(deviceId);
+        // Check if deviceId is null
+        if (deviceId != null) {
+            // Use the device ID to fetch user profile data from Firestore
+            fetchUserDataFromFirestore(deviceId);
+        } else {
+            Log.e("BrowseUserProfileActivity", "Device ID is null");
+        }
+
+//        // Use the device ID to fetch user profile data from Firestore
+//        fetchUserDataFromFirestore(deviceId);
 
         // Set click listeners
         backButton.setOnClickListener(v -> onBackPressed());
