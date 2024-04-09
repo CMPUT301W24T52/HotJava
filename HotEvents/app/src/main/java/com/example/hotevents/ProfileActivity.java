@@ -37,7 +37,10 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int EDIT_PROFILE_REQUEST_CODE = 1;
 
     // UI elements
-    private TextView textViewName, textViewEmail, textViewContact, textViewLocation;
+    protected TextView textViewName;
+    protected TextView textViewEmail;
+    protected TextView textViewContact;
+    protected TextView textViewLocation;
     private CircleImageView profilePhotoImageView;
     private ImageButton backButton;
     private LinearLayout editProfileButton;
