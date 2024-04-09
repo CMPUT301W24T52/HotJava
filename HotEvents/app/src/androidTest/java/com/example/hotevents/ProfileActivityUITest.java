@@ -39,6 +39,4 @@ public class ProfileActivityUITest {
         Espresso.onView(withId(R.id.linearEditProfile)).perform(click());
         Espresso.onView(withText("Edit Profile")).check(matches(isDisplayed()));
     }
-
-    // You can add more test cases to validate user interactions and UI behavior
 }
