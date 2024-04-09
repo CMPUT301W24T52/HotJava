@@ -36,6 +36,4 @@ public class OrganizedEventsAdapterTest {
         adapter = new OrganizedEventsAdapter(new ArrayList<>(), mock(Context.class));
         assertEquals(0, adapter.getItemCount());
     }
-
-    // Add more test cases for other methods as needed
 }
