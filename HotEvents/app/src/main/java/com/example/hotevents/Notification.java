@@ -10,6 +10,8 @@ public class Notification {
     private String eventId;
     private String notificationMessage;
     private Date timestamp;
+    private String poster;
+
 
     /**
      * Constructs a new Notification object.
@@ -19,11 +21,12 @@ public class Notification {
      * @param notificationMessage The message of the notification.
      * @param timestamp           The timestamp of the notification.
      */
-    public Notification(String fcmToken, String eventId, String notificationMessage, Date timestamp) {
+    public Notification(String fcmToken, String eventId, String notificationMessage, Date timestamp,String poster) {
         this.fcmToken = fcmToken;
         this.eventId = eventId;
         this.notificationMessage = notificationMessage;
         this.timestamp = timestamp;
+        this.poster = poster;
     }
 
     public String getFcmToken() {
@@ -56,5 +59,13 @@ public class Notification {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getPoster() {
+        return poster;
+    }
+
+    public void setPoster(String poster) {
+        this.poster = poster;
     }
 }
