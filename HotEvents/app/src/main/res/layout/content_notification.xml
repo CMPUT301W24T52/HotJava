@@ -15,7 +15,7 @@
         android:layout_height="80dp"
         android:layout_weight="1"
         android:padding="8dp"
-        android:src="@drawable/hot_night_poster"
+        android:src="@drawable/ic_announcement"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -5,7 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +60,7 @@ public class NotificationsAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.messageTextView = convertView.findViewById(R.id.notification_message);
             holder.timestampTextView = convertView.findViewById(R.id.notification_timestamp);
+            holder.poster = convertView.findViewById(R.id.imageView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -64,11 +71,23 @@ public class NotificationsAdapter extends BaseAdapter {
         holder.messageTextView.setText(notification.getNotificationMessage());
         holder.timestampTextView.setText(formatTimestamp(notification.getTimestamp()));
 
+        // Check if the poster URL is not null
+        if (notification.getPoster() != null) {
+            // Fetch and display the poster
+            StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(notification.getPoster());
+            Glide.with(mContext)
+                    .load(storageRef)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching
+                    .skipMemoryCache(true)
+                    .into(holder.poster);
+        }
         return convertView;
     }
+
 
     private static class ViewHolder {
         TextView messageTextView;
         TextView timestampTextView;
+        ImageView poster;
     }
 }

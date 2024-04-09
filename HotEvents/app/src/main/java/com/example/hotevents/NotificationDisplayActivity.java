@@ -3,7 +3,6 @@ package com.example.hotevents;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -14,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -97,20 +95,31 @@ public class NotificationDisplayActivity extends AppCompatActivity {
                             String eventId = document.getString("eventId");
                             String notificationMessage = document.getString("notificationMessage");
                             Date timestamp = document.getDate("timestamp"); // Retrieve timestamp as Timestamp
-//                            Date date = null;
-//                            if (timestamp != null) {
-//                                date = Date.toDate(); // Convert Timestamp to Date
-//                            }
+
                             // Check if any of the fields is null
                             if (fcmToken != null && eventId != null && notificationMessage != null) {
-                                // Create a Notification object with the retrieved data
-                                Notification notification = new Notification(fcmToken, eventId, notificationMessage,timestamp);
-                                // Add the notification to the list
-                                notificationsList.add(notification);
+                                // Retrieve poster URL from the event collection
+                                db.collection("Events").document(eventId).get()
+                                        .addOnCompleteListener(eventTask -> {
+                                            if (eventTask.isSuccessful()) {
+                                                DocumentSnapshot eventDocument = eventTask.getResult();
+                                                if (eventDocument.exists()) {
+                                                    String posterUrl = eventDocument.getString("Poster");
+                                                    // Create a Notification object with the retrieved data
+                                                    Notification notification = new Notification(fcmToken, eventId, notificationMessage, timestamp, posterUrl);
+                                                    // Add the notification to the list
+                                                    notificationsList.add(notification);
+                                                    // Notify the adapter that the data set has changed
+                                                    notificationsAdapter.notifyDataSetChanged();
+                                                } else {
+                                                    Log.e(TAG, "Event document doesn't exist");
+                                                }
+                                            } else {
+                                                Log.e(TAG, "Error fetching event document", eventTask.getException());
+                                            }
+                                        });
                             }
                         }
-                        // Notify the adapter that the data set has changed
-                        notificationsAdapter.notifyDataSetChanged();
                         Log.d(TAG, "All Notifications fetched");
                     } else {
                         // Handle the error
@@ -119,4 +128,5 @@ public class NotificationDisplayActivity extends AppCompatActivity {
                     }
                 });
     }
+
 }

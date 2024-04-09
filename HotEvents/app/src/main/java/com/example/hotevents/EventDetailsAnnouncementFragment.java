@@ -98,7 +98,7 @@ public class EventDetailsAnnouncementFragment extends Fragment {
                             if (fcmToken != null && eventId != null && notificationMessage != null && !processednotificationMessage.contains(notificationMessage)) {
                                 // Add the event ID to the set of processed event IDs
                                 processednotificationMessage.add(notificationMessage);
-                                Notification announcement = new Notification(fcmToken, eventId, notificationMessage, timestamp);
+                                Notification announcement = new Notification(fcmToken, eventId, notificationMessage, timestamp,null);
                                 announcementList.add(announcement);
                             }
                         }
