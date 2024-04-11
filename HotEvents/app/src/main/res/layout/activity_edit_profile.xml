@@ -99,6 +99,7 @@
             android:minHeight="48dp"
             android:background="#dfe8e3"
             android:inputType="textPersonName"
+            android:maxLength="25"
             android:textColor="@color/black"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,6 +118,7 @@
             android:minHeight="48dp"
             android:background="#dfe8e3"
             android:inputType="textEmailAddress"
+            android:maxLength="25"
             android:textColor="@color/black"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -136,6 +138,7 @@
             android:background="#dfe8e3"
             android:minHeight="48dp"
             android:inputType="phone"
+            android:maxLength="10"
             android:textColor="@color/black"/>
     </com.google.android.material.textfield.TextInputLayout>
 
